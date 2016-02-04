@@ -1,0 +1,8 @@
+{
+  "name": "ElasticExport",
+  "description": null,
+  "namespace": "ElasticExport",
+  "author": "plentymarkets",
+  "type": "export",
+  "service_provider": "ElasticExport\\ElasticExportServiceProvider"
+}
