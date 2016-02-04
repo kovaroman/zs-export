@@ -1,0 +1,1 @@
+# plenty-plugin-elastic-export
