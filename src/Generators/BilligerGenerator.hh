@@ -2,17 +2,18 @@
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
+use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
-use ElasticExport\Helper\ItemExportHelper;
+use ElasticExport\Helper\ElasticExportHelper;
 
 class BilligerGenerator extends CSVGenerator
 {
 	/*
-     * @var ItemExportHelper
+     * @var ElasticExportHelper
      */
-    private ItemExportHelper $itemExportHelper;
+    private ElasticExportHelper $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
@@ -21,12 +22,12 @@ class BilligerGenerator extends CSVGenerator
 
 	/**
      * BilligerGenerator constructor.
-     * @param ItemExportHelper $itemExportHelper
+     * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
-    public function __construct(ItemExportHelper $itemExportHelper, ArrayHelper $arrayHelper)
+    public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper)
     {
-        $this->itemExportHelper = $itemExportHelper;
+        $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
     }
 
@@ -37,7 +38,7 @@ class BilligerGenerator extends CSVGenerator
 	{
 		if($resultData instanceof RecordList)
 		{
-			$settingsMap = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
+			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
 			$this->setDelimiter(";");
 
@@ -63,31 +64,21 @@ class BilligerGenerator extends CSVGenerator
 				$data = array();
 
 				$data['aid'] = $item->itemBase->id;
-				$data['name'] = $this->itemExportHelper->getName($item, $settingsMap);
+				$data['name'] = $this->elasticExportHelper->getName($item, $settings);
 				$data['price'] = number_format($item->variationRetailPrice->price, 2, '.', '');
 				// link
 				$data['brand'] = $item->itemBase->producer;
 				// ean
-				$data['desc'] = $this->itemExportHelper->getDescription($item, $settingsMap, 256);
+				$data['desc'] = $this->elasticExportHelper->getDescription($item, $settings, 256);
                 // shop_cat
-                //
-                // §i
 
-                $data['dlv_time'] = $this->getAvailability($item, $settingsMap);
+                $data['dlv_time'] = $this->elasticExportHelper->getAvailability($item, $settings);
                 // dlv_cost
                 // ppu
                 // mpnr
-
 
 				$this->addCSVContent(array_values($data));
 			}
 		}
 	}
-
-	private function getAvailability(Item $item, array<string, string>$settingsMap):int
-	{		
-
-		return 0;
-	}
-
 }

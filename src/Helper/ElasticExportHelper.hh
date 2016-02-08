@@ -4,25 +4,26 @@ namespace ElasticExport\Helper;
 
 
 use Plenty\Modules\Item\DataLayer\Models\Record;
+use Plenty\Modules\Helper\Models\KeyValue;
 
 /**
- * Class ItemDescriptionHelper
- * @package ElasticExport\Helper
+ * Class ElasticExportHelper
+ * @package ElasticExportHelper\Helper
  */
-class ItemExportHelper
+class ElasticExportHelper
 {
     /**
      * Get name.
      *
-     * @param  Record $item
-     * @param  array  $settings
+     * @param  Record    $item
+     * @param  KeyValue  $settings
      * @return string
      */
-    public function getName(Record $item, array<string, string>$settings):string
+    public function getName(Record $item, KeyValue $settings):string
 	{
-		if(array_key_exists('nameId', $settings))
+		if($settings->get('nameId'))
 		{
-			switch($settings['nameId'])
+			switch($settings->get('nameId'))
 			{
 				case 3:
 					return $item->itemDescription->name3;
@@ -43,24 +44,24 @@ class ItemExportHelper
      * Get description.
      *
      * @param  Record        $item
-     * @param  array<string, string>$settings
+     * @param  KeyValue      $settings
      * @param  int           $defaultDescriptionLength
      * @return string
      */
-    public function getDescription(Record $item, array<string, string>$settings, int $defaultDescriptionLength):string
+    public function getDescription(Record $item, KeyValue $settings, int $defaultDescriptionLength):string
     {
-        if(array_key_exists('descriptionLength', $settings))
+        if($settings->get('descriptionLength'))
         {
-            $descriptionLength = $settings['descriptionLength'];
+            $descriptionLength = $settings->get('descriptionLength');
         }
         else
         {
             $descriptionLength = $defaultDescriptionLength;
         }
 
-        if(array_key_exists('descriptionType', $settings))
+        if($settings->get('descriptionType'))
         {
-            switch($settings['descriptionType'])
+            switch($settings->get('descriptionType'))
             {
                 case 'shortDescription':
                     return substr(strip_tags($item->itemDescription->shortDescription), 0, $descriptionLength);
@@ -76,4 +77,24 @@ class ItemExportHelper
 
         return substr(strip_tags($item->itemDescription->description), 0, $descriptionLength);
     }
+
+    /**
+	 * Get variation availability days.
+	 * @param  Record   $item
+	 * @param  KeyValue $settings
+	 * @return int
+	 */
+	public function getAvailability(Record $item, KeyValue $settings):int
+	{
+		if($settings->get('transferItemAvailability'))
+		{
+            $availabilityIdString = 'itemAvailability' . $item->variationBase->availability;
+
+		    return $settings->get($availabilityIdString);
+		}
+
+		// TODO match variation avialibility Id with the system configuration
+
+		return 1;
+	}
 }
