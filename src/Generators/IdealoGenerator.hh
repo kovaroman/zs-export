@@ -1,8 +1,7 @@
 <?hh // strict
 namespace ElasticExport\Generators;
 
-
-use ElasticExport\Helper\ItemDescriptionHelper;
+use ElasticExport\Helper\ItemExportHelper;
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 
@@ -15,15 +14,15 @@ class IdealoGenerator extends CSVGenerator
     /*
      * @var
      */
-    private ItemDescriptionHelper $itemDescriptionHelper;
+    private ItemExportHelper $itemExportHelper;
 
     /**
      * IdealoGenerator constructor.
-     * @param ItemDescriptionHelper $itemDescriptionHelper
+     * @param ItemExportHelper $itemExportHelper
      */
-    public function __construct(ItemDescriptionHelper $itemDescriptionHelper)
+    public function __construct(ItemExportHelper $itemExportHelper)
     {
-        $this->itemDescriptionHelper = $itemDescriptionHelper;
+        $this->itemExportHelper = $itemExportHelper;
     }
 
     protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void

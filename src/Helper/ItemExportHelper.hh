@@ -9,7 +9,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
  * Class ItemDescriptionHelper
  * @package ElasticExport\Helper
  */
-class ItemDescriptionHelper
+class ItemExportHelper
 {
     /**
      * Get name.
@@ -18,7 +18,7 @@ class ItemDescriptionHelper
      * @param  array  $settings
      * @return string
      */
-    private function getName(Record $item, array<string, string>$settings):string
+    public function getName(Record $item, array<string, string>$settings):string
 	{
 		if(array_key_exists('nameId', $settings))
 		{
@@ -44,13 +44,18 @@ class ItemDescriptionHelper
      *
      * @param  Record        $item
      * @param  array<string, string>$settings
+     * @param  int           $defaultDescriptionLength
      * @return string
      */
-    private function getDescription(Record $item, array<string, string>$settings,int $descriptionLength):string
+    public function getDescription(Record $item, array<string, string>$settings, int $defaultDescriptionLength):string
     {
         if(array_key_exists('descriptionLength', $settings))
         {
             $descriptionLength = $settings['descriptionLength'];
+        }
+        else
+        {
+            $descriptionLength = $defaultDescriptionLength;
         }
 
         if(array_key_exists('descriptionType', $settings))
