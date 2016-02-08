@@ -14,13 +14,20 @@ class BilligerGenerator extends CSVGenerator
      */
     private ItemExportHelper $itemExportHelper;
 
+	/*
+	 * @var ArrayHelper
+	 */
+	private ArrayHelper $arrayHelper;
+
 	/**
      * BilligerGenerator constructor.
      * @param ItemExportHelper $itemExportHelper
+     * @param ArrayHelper $arrayHelper
      */
-    public function __construct(ItemExportHelper $itemExportHelper)
+    public function __construct(ItemExportHelper $itemExportHelper, ArrayHelper $arrayHelper)
     {
         $this->itemExportHelper = $itemExportHelper;
+		$this->arrayHelper = $arrayHelper;
     }
 
 	/**
@@ -28,15 +35,10 @@ class BilligerGenerator extends CSVGenerator
 	 */
 	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
 	{
-
 		if($resultData instanceof RecordList)
 		{
-			$settings = array();
+			$settingsMap = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			foreach($formatSettings as $formatSetting)
-			{
-				$settings[$formatSetting->key] = $formatSetting->value;
-			}
 			$this->setDelimiter(";");
 
 			$this->addCSVContent([
@@ -61,17 +63,17 @@ class BilligerGenerator extends CSVGenerator
 				$data = array();
 
 				$data['aid'] = $item->itemBase->id;
-				$data['name'] = $this->itemExportHelper->getName($item, $settings);
+				$data['name'] = $this->itemExportHelper->getName($item, $settingsMap);
 				$data['price'] = number_format($item->variationRetailPrice->price, 2, '.', '');
 				// link
 				$data['brand'] = $item->itemBase->producer;
 				// ean
-				$data['desc'] = $this->itemExportHelper->getDescription($item, $settings, 256);
+				$data['desc'] = $this->itemExportHelper->getDescription($item, $settingsMap, 256);
                 // shop_cat
                 //
                 // §i
 
-                $data['dlv_time'] = $this->getAvailability($item, 0 , 50);
+                $data['dlv_time'] = $this->getAvailability($item, $settingsMap);
                 // dlv_cost
                 // ppu
                 // mpnr
@@ -82,8 +84,10 @@ class BilligerGenerator extends CSVGenerator
 		}
 	}
 
-	private function getAvailability(Record $item, int $defaultReturnValue = 0, int $returnAverageDays = 0):string
-	{
-		return 'available';
+	private function getAvailability(Item $item, array<string, string>$settingsMap):int
+	{		
+
+		return 0;
 	}
+
 }
