@@ -107,7 +107,7 @@ class ElasticExportHelper
      * @param  {[type]} bool      $useIntReferrer =             false Choos if referrer id should be used as integer.
      * @return {[type]}           Item url.
      */
-    public function getUrl(Record $item, KeyValue $settings, $baseLink, bool $addReferrer = true, bool $useIntReferrer = false):string
+    public function getUrl(Record $item, KeyValue $settings, string $baseLink, bool $addReferrer = true, bool $useIntReferrer = false):string
 	{
 		$urlParams = [];
 
