@@ -130,4 +130,28 @@ class ElasticExportHelper
 
 		return $link;
 	}
+
+    /**
+     * Get category.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator
+     * @return string
+     */
+    public function getCategory(Record $item, KeyValue $settings, string $separator = ' > '):string
+	{
+        return 'Category: ' . $item->variationStandardCategory->categoryId;
+
+        /* TODO
+        $categoryData = ItemDataLayerHelperCategory::getCategoryById($item->variationStandardCategory->categoryId);
+
+
+		if($categoryData->getBranchName())
+		{
+			return implode($separator, $categoryData->getBranchName());
+		}
+
+		return '';
+        */
+	}
 }

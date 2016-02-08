@@ -50,7 +50,7 @@ class BilligerGenerator extends CSVGenerator
 					'brand',
 					//'ean',
 					'desc',
-					//'shop_cat',
+					'shop_cat',
 					//'image',
 					'dlv_time',
 					//'dlv_cost',
@@ -70,8 +70,7 @@ class BilligerGenerator extends CSVGenerator
 				$data['brand'] = $item->itemBase->producer;
 				// ean
 				$data['desc'] = $this->elasticExportHelper->getDescription($item, $settings, 256);
-                // shop_cat
-
+                $data['shop_cat'] = $this->elasticExportHelper->getCategory($item, $settings);
                 $data['dlv_time'] = $this->elasticExportHelper->getAvailability($item, $settings);
                 // dlv_cost
                 // ppu

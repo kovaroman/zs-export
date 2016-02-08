@@ -38,7 +38,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 				'variationImageList' => [
 	                'params' => [
 	                        'type' => 'all', // Imageurl1  to Imageurl5
-							// 'referenceMarketplace' => get reference,
+							// 'referenceMarketplace' => get reference, // TODO change with format setting option
 	                ],
 	                'fields' => [
 	                    'imageId',
@@ -60,6 +60,15 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 				'variationRetailPrice' => [
 					'price'
 				],
+
+                'variationStandardCategory' => [
+            		'params' => [
+            			'plentyId' => 1000 // TODO change with format setting option
+            		],
+            		'fields' => [
+            			'categoryId'
+            		],
+            	],
 
 				'variationBarcode' => [
 					'params' => [
