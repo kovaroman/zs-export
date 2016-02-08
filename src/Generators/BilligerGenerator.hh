@@ -46,7 +46,7 @@ class BilligerGenerator extends CSVGenerator
 					'aid',
 					'name',
 					'price',
-					//'link',
+					'link',
 					'brand',
 					//'ean',
 					'desc',
@@ -61,12 +61,12 @@ class BilligerGenerator extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-				$data = array();
+				$data = [];
 
 				$data['aid'] = $item->itemBase->id;
 				$data['name'] = $this->elasticExportHelper->getName($item, $settings);
 				$data['price'] = number_format($item->variationRetailPrice->price, 2, '.', '');
-				// link
+				$data['link'] = $this->elasticExportHelper->getUrl($item, $settings, 'http://master.plentymarkets.com', true, false);
 				$data['brand'] = $item->itemBase->producer;
 				// ean
 				$data['desc'] = $this->elasticExportHelper->getDescription($item, $settings, 256);

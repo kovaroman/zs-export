@@ -97,4 +97,37 @@ class ElasticExportHelper
 
 		return 1;
 	}
+
+    /**
+     * Get the item URL.
+     * @param  {[type]} Record    $item           [description]
+     * @param  {[type]} KeyValue  $settings       [description]
+     * @param  {[type]} $baseLink [description]
+     * @param  {[type]} bool      $addReferrer    =             true  Choose if referrer id should be added as parameter.
+     * @param  {[type]} bool      $useIntReferrer =             false Choos if referrer id should be used as integer.
+     * @return {[type]}           Item url.
+     */
+    public function getUrl(Record $item, KeyValue $settings, $baseLink, bool $addReferrer = true, bool $useIntReferrer = false):string
+	{
+		$urlParams = [];
+
+		$link = '/a-' . $item->itemBase->id . '/';
+
+		if($addReferrer && $settings->get('orderSource'))
+		{
+            $urlParams[] = 'ReferrerID=' . ($useIntReferrer ? (int) $settings->get('orderSource') : $settings->get('orderSource'));
+		}
+
+		if(strlen($settings->get('urlParam')))
+		{
+			$urlParams[] = $settings->get('urlParam');
+		}
+
+		if (is_array($urlParams) && count($urlParams) > 0)
+		{
+			$link .= '?' . implode('&', $urlParams);
+		}
+
+		return $link;
+	}
 }
