@@ -6,10 +6,10 @@ namespace ElasticExport\Helper;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 
 /**
- * Class ItemDescriptionHelper
- * @package ElasticExport\Helper
+ * Class ElasticExportHelper
+ * @package ElasticExportHelper\Helper
  */
-class ItemExportHelper
+class ElasticExportHelper
 {
     /**
      * Get name.

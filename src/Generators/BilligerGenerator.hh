@@ -5,22 +5,22 @@ use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
-use ElasticExport\Helper\ItemExportHelper;
+use ElasticExport\Helper\ElasticExportHelper;
 
 class BilligerGenerator extends CSVGenerator
 {
 	/*
-     * @var ItemExportHelper
+     * @var ElasticExportHelper
      */
-    private ItemExportHelper $itemExportHelper;
+    private ElasticExportHelper $elasticExportHelper;
 
 	/**
      * BilligerGenerator constructor.
-     * @param ItemExportHelper $itemExportHelper
+     * @param ElasticExportHelper $elasticExportHelper
      */
-    public function __construct(ItemExportHelper $itemExportHelper)
+    public function __construct(ElasticExportHelper $elasticExportHelper)
     {
-        $this->itemExportHelper = $itemExportHelper;
+        $this->elasticExportHelper = $elasticExportHelper;
     }
 
 	/**
@@ -61,12 +61,12 @@ class BilligerGenerator extends CSVGenerator
 				$data = array();
 
 				$data['aid'] = $item->itemBase->id;
-				$data['name'] = $this->itemExportHelper->getName($item, $settings);
+				$data['name'] = $this->elasticExportHelper->getName($item, $settings);
 				$data['price'] = number_format($item->variationRetailPrice->price, 2, '.', '');
 				// link
 				$data['brand'] = $item->itemBase->producer;
 				// ean
-				$data['desc'] = $this->itemExportHelper->getDescription($item, $settings, 256);
+				$data['desc'] = $this->elasticExportHelper->getDescription($item, $settings, 256);
                 // shop_cat
                 //
                 // §i
