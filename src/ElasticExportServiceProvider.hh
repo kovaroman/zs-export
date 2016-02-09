@@ -14,6 +14,18 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 
 	public function exports(ExportPresetContainer $container):void
 	{
+		$formats = ['Idealo','Billiger'];
+
+		foreach ($formats as $format)
+		{
+			$container->add(
+				$format.'Format',
+				'ElasticExport\ResultFields\\'.$format,
+				'ElasticExport\Generators\\'.$format,
+				'ElasticExport\Filters\\' . $format
+			);
+		}
+
 
 		$container->add(
             'BilligerFormat',

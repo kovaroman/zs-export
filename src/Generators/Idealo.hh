@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 
 /**
- * Class IdealoGenerator
+ * Class Idealo
  * @package ElasticExport\Generators
  */
-class IdealoGenerator extends CSVGenerator
+class Idealo extends CSVGenerator
 {
     /*
      * @var
