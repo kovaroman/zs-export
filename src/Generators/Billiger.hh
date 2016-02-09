@@ -8,7 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
-class BilligerGenerator extends CSVGenerator
+class Billiger extends CSVGenerator
 {
 	/*
      * @var ElasticExportHelper
@@ -73,7 +73,7 @@ class BilligerGenerator extends CSVGenerator
                 $data['shop_cat'] = $this->elasticExportHelper->getCategory($item, $settings);
                 $data['dlv_time'] = $this->elasticExportHelper->getAvailability($item, $settings);
 				$data['dlv_cost'] = number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', '');
-				
+
                 // ppu
                 // mpnr
 

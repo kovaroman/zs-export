@@ -14,7 +14,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 
 	public function exports(ExportPresetContainer $container):void
 	{
-		$formats = ['Idealo','Billiger'];
+		$formats = ['Idealo', 'Billiger'];
 
 		foreach ($formats as $format)
 		{
@@ -25,79 +25,5 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 				'ElasticExport\Filters\\' . $format
 			);
 		}
-
-
-		$container->add(
-            'BilligerFormat',
-            [
-                'itemBase'=> [
-                    'id',
-                    'producer',
-                ],
-
-				'itemDescription' => [
-					'params' => [
-						'language' => 'de', // TODO change
-					],
-					'fields' => [
-						'name1',
-						'description',
-						'shortDescription',
-                    	'technicalData',
-					],
-				],
-
-				'variationImageList' => [
-	                'params' => [
-	                        'type' => 'all', // Imageurl1  to Imageurl5
-							// 'referenceMarketplace' => get reference, // TODO change with format setting option
-	                ],
-	                'fields' => [
-	                    'imageId',
-	                    'type',
-	                    'fileType',
-	                    'path',
-	                    'position',
-	                    'lastUpdateTimestamp',
-	                    'createTimestamp',
-	                    'cleanImageName',
-	                ]
-
-				],
-
-				'variationBase' => [
-					'availability'
-				],
-
-				'variationRetailPrice' => [
-					'price',
-					'basePrice',
-				],
-
-                'variationStandardCategory' => [
-            		'params' => [
-            			'plentyId' => 1000 // TODO change with format setting option
-            		],
-            		'fields' => [
-            			'categoryId'
-            		],
-            	],
-
-				'variationBarcode' => [
-					'params' => [
-						'EAN' => [
-							'barcodeType' => 'EANGeneral',
-						],
-					],
-					'fields' => [
-						'code',
-						'createdTimestamp',
-						'barcodeId',
-					]
-				],
-            ],
-            BilligerGenerator::class,
-            []
-        );
 	}
 }

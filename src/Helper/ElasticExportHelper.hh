@@ -115,9 +115,9 @@ class ElasticExportHelper
 
         $link = ''; // TODO UrlBuilder get url_content
 
-		if($addReferrer && $settings->get('orderSource'))
+		if($addReferrer && $settings->get('referrerId'))
 		{
-            $urlParams[] = 'ReferrerID=' . ($useIntReferrer ? (int) $settings->get('orderSource') : $settings->get('orderSource'));
+            $urlParams[] = 'ReferrerID=' . ($useIntReferrer ? (int) $settings->get('referrerId') : $settings->get('referrerId'));
 		}
 
 		if(strlen($settings->get('urlParam')))
@@ -181,5 +181,54 @@ class ElasticExportHelper
 
 
         return 1.2;
+    }
+
+    public function getBasePrice(Record $item, KeyValue $settings, string $separator = '/', bool $compact = false, bool $dotPrice = false, string $singleValueReturn = '', string $currency = ''):string
+	{
+		$price = number_format($item->variationRetailPrice->price, 2, '.', '');
+        $content = $item->variationBase->content;
+        $unit = 'KGM'; // TODO ItemDataLayerHelperUnit::getUnitById($item->variationBase->unitId);
+
+		$basePrice = $this->getBasePriceDetails($content, $price, $unit);
+
+        return '100 Euro/KG';
+	}
+
+
+    private function getBasePriceDetails(int $lot, float $price, string $unit):array<mixed>
+    {
+        $lot = $lot == 0 ? 1 : $lot; // TODO  PlentyStringUtils::numberFormatLot($lot, true);
+		$basePrice = 0;
+		$basePriceLot = 1;
+        $unit = strlen($unit) ? $unit : 'C62';
+        $basePriceUnit = $unit;
+
+		$factor = 1.0;
+
+		if($unit == 'LTR' || $unit == 'KGM')
+		{
+			$basePriceLot = 1;
+		}
+		elseif($unit == 'GRM' || $unit == 'MLT')
+		{
+			if($lot <= 250)
+			{
+				$basePriceLot = 100;
+			}
+			else
+			{
+				$factor = 1000.0;
+				$basePriceLot = 1;
+				$basePriceUnit = $unit =='GRM' ? 'KGM' : 'LTR';
+			}
+		}
+		else
+		{
+			$basePriceLot = 1;
+		}
+
+		$endLot = ($basePriceLot/$lot);
+
+		return array($basePriceLot, $price * $factor * $endLot, $basePriceUnit);
     }
 }
