@@ -53,7 +53,7 @@ class BilligerGenerator extends CSVGenerator
 					'shop_cat',
 					//'image',
 					'dlv_time',
-					//'dlv_cost',
+					'dlv_cost',
 					//'ppu',
 					//'mpnr',
 
@@ -66,13 +66,14 @@ class BilligerGenerator extends CSVGenerator
 				$data['aid'] = $item->itemBase->id;
 				$data['name'] = $this->elasticExportHelper->getName($item, $settings);
 				$data['price'] = number_format($item->variationRetailPrice->price, 2, '.', '');
-				$data['link'] = $this->elasticExportHelper->getUrl($item, $settings, 'http://master.plentymarkets.com', true, false);
+				$data['link'] = $this->elasticExportHelper->getUrl($item, $settings, true, false);
 				$data['brand'] = $item->itemBase->producer;
 				// ean
 				$data['desc'] = $this->elasticExportHelper->getDescription($item, $settings, 256);
                 $data['shop_cat'] = $this->elasticExportHelper->getCategory($item, $settings);
                 $data['dlv_time'] = $this->elasticExportHelper->getAvailability($item, $settings);
-                // dlv_cost
+				$data['dlv_cost'] = number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', '');
+				
                 // ppu
                 // mpnr
 

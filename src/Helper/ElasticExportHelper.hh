@@ -12,6 +12,9 @@ use Plenty\Modules\Helper\Models\KeyValue;
  */
 class ElasticExportHelper
 {
+    const SHIPPING_COST_TYPE_FLAT = 'flat';
+    const SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+
     /**
      * Get name.
      *
@@ -102,16 +105,15 @@ class ElasticExportHelper
      * Get the item URL.
      * @param  {[type]} Record    $item           [description]
      * @param  {[type]} KeyValue  $settings       [description]
-     * @param  {[type]} $baseLink [description]
      * @param  {[type]} bool      $addReferrer    =             true  Choose if referrer id should be added as parameter.
      * @param  {[type]} bool      $useIntReferrer =             false Choos if referrer id should be used as integer.
      * @return {[type]}           Item url.
      */
-    public function getUrl(Record $item, KeyValue $settings, string $baseLink, bool $addReferrer = true, bool $useIntReferrer = false):string
+    public function getUrl(Record $item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false):string
 	{
 		$urlParams = [];
 
-		$link = '/a-' . $item->itemBase->id . '/';
+        $link = ''; // TODO UrlBuilder get url_content
 
 		if($addReferrer && $settings->get('orderSource'))
 		{
@@ -154,4 +156,30 @@ class ElasticExportHelper
 		return '';
         */
 	}
+
+    /**
+     * Get shipping cost.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return float
+     */
+    public function getShippingCost(Record $item, KeyValue $settings):float
+    {
+        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
+        {
+            return $settings->get('shippingCostFlat');
+        }
+
+        switch($settings->get('shippingCostConfiguration'))
+        {
+            case 1:
+                // TODO use new shipping cost helper
+
+            case 2:
+                // TODO use new shipping cost helper
+        }
+
+
+        return 1.2;
+    }
 }

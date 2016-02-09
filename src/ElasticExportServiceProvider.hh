@@ -58,7 +58,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 				],
 
 				'variationRetailPrice' => [
-					'price'
+					'price',
+					'basePrice',
 				],
 
                 'variationStandardCategory' => [
