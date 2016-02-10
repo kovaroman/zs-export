@@ -54,7 +54,7 @@ class Billiger extends ResultFields
 
             'variationImageList' => [
                 'params' => [
-                        'type' => 'all',
+                        'type' => 'variation',
                         'referenceMarketplace' => $settings->get('reffererId'),
                 ],
                 'fields' => [
@@ -69,7 +69,8 @@ class Billiger extends ResultFields
             ],
 
             'variationBase' => [
-                'availability'
+                'availability',
+                'model',
             ],
 
             'variationRetailPrice' => [

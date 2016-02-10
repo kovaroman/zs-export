@@ -54,28 +54,27 @@ class Billiger extends CSVGenerator
 					//'image',
 					'dlv_time',
 					'dlv_cost',
-					//'ppu',
-					//'mpnr',
+					'ppu',
+					'mpnr',
 
 			]);
 
 			foreach($resultData as $item)
 			{
-				$data = [];
-
-				$data['aid'] = $item->itemBase->id;
-				$data['name'] = $this->elasticExportHelper->getName($item, $settings);
-				$data['price'] = number_format($item->variationRetailPrice->price, 2, '.', '');
-				$data['link'] = $this->elasticExportHelper->getUrl($item, $settings, true, false);
-				$data['brand'] = $item->itemBase->producer;
-				// ean
-				$data['desc'] = $this->elasticExportHelper->getDescription($item, $settings, 256);
-                $data['shop_cat'] = $this->elasticExportHelper->getCategory($item, $settings);
-                $data['dlv_time'] = $this->elasticExportHelper->getAvailability($item, $settings);
-				$data['dlv_cost'] = number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', '');
-
-                // ppu
-                // mpnr
+				$data = [
+					'aid' 		=> $item->itemBase->id,
+					'name' 		=> $this->elasticExportHelper->getName($item, $settings),
+					'price' 	=> number_format($item->variationRetailPrice->price, 2, '.', ''),
+					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
+					'brand' 	=> $item->itemBase->producer,
+					//'image'		=> $this->elasticExportHelper->getImages($item, $settings, 1);
+					'desc' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),
+	                'shop_cat' 	=> $this->elasticExportHelper->getCategory($item, $settings),
+	                'dlv_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
+					'dlv_cost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+	                'ppu' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
+	                'mpnr' 		=> $item->variationBase->model,
+				];
 
 				$this->addCSVContent(array_values($data));
 			}
