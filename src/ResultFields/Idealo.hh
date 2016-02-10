@@ -11,8 +11,9 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 class Idealo extends ResultFields
 {
 
-    protected function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
+    public function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         //code here
+        return [];
     }
 }

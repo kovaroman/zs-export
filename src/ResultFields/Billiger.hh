@@ -30,7 +30,7 @@ class Billiger extends ResultFields
      * @param  array<FormatSetting> $formatSettings = []
      * @return array
      */
-    protected function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
+    public function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 

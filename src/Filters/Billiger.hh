@@ -3,6 +3,7 @@ namespace ElasticExport\Filters;
 
 use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
+use Plenty\Modules\Helper\Services\ArrayHelper;
 
 
 class Billiger extends Filters
@@ -26,7 +27,7 @@ class Billiger extends Filters
      * @param  array<FormatSetting> $formatSettings = []
      * @return array
      */
-    protected function generateFilters(array<FormatSetting> $formatSettings = []):array<string, mixed>
+    public function generateFilters(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 

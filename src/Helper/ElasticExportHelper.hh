@@ -183,19 +183,60 @@ class ElasticExportHelper
         return 1.2;
     }
 
-    public function getBasePrice(Record $item, KeyValue $settings, string $separator = '/', bool $compact = false, bool $dotPrice = false, string $singleValueReturn = '', string $currency = ''):string
+    /**
+     * Get base price.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator         =             '/'
+     * @param  bool     $compact           =             false
+     * @param  bool     $dotPrice          =             false
+     * @param  string   $currency          =             ''
+     * @return string
+     */
+    public function getBasePrice(Record $item, KeyValue $settings, string $separator = '/', bool $compact = false, bool $dotPrice = false, string $currency = ''):string
 	{
-		$price = number_format($item->variationRetailPrice->price, 2, '.', '');
-        $content = $item->variationBase->content;
-        $unit = 'KGM'; // TODO ItemDataLayerHelperUnit::getUnitById($item->variationBase->unitId);
+        $currency = strlen($currency) ? $currency : 'EUR'; // TODO $currency = get default currency
+		$price = (float) $item->variationRetailPrice->price;
+        $lot = (int) $item->variationBase->content;
+        $unit = 'KGM'; // TODO ItemDataLayerHelperUnit::getUnitById($item->variationBase->unitId, $settings->get('lang'));
 
-		$basePrice = $this->getBasePriceDetails($content, $price, $unit);
+		$basePriceDetails = $this->getBasePriceDetails($lot, $price, $unit);
 
-        return '100 Euro/KG';
+		if((float) $basePriceDetails['price'] <= 0 || ((int) $basePriceDetails['lot'] <= 1 && $basePriceDetails['unit'] == 'C62'))
+		{
+			return '';
+		}
+
+		if ($dotPrice == true)
+		{
+			$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
+		}
+		else
+		{
+			$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, ',', '');
+		}
+
+		if ($compact == true)
+		{
+			// TODO return	'('.$price.$currency.$separator.$lot.$this->getMeasureUnitShortcut($unit, $this->config->getLang()).')';
+		}
+		else
+		{
+			// TODO return	$price.' '.$currency.$separator. $lot.' '.$this->getMeasureUnit($unit, $this->config->getLang());
+		}
+
+
+        return 'base price';
 	}
 
-
-    private function getBasePriceDetails(int $lot, float $price, string $unit):array<mixed>
+    /**
+     * Get base price details.
+     * @param  int    $lot
+     * @param  float  $price
+     * @param  string $unit
+     * @return Map
+     */
+    private function getBasePriceDetails(int $lot, float $price, string $unit):Map<string,mixed>
     {
         $lot = $lot == 0 ? 1 : $lot; // TODO  PlentyStringUtils::numberFormatLot($lot, true);
 		$basePrice = 0;
@@ -229,6 +270,6 @@ class ElasticExportHelper
 
 		$endLot = ($basePriceLot/$lot);
 
-		return array($basePriceLot, $price * $factor * $endLot, $basePriceUnit);
+		return Map{'lot' => (int) $basePriceLot, 'price' => (float) $price * $factor * $endLot, 'unit' => (string) $basePriceUnit};
     }
 }

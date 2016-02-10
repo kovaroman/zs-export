@@ -11,8 +11,9 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 class Idealo extends Filters
 {
 
-    protected function generateFilters(array<FormatSetting> $formatSettings = []):array<string, mixed>
+    public function generateFilters(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         //code here
+        return [];
     }
 }
