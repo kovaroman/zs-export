@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Billiger
+ * Class Shopping
  * @package ElasticExport\ResultFields
  */
-class Billiger extends ResultFields
+class Shopping extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class Billiger extends ResultFields
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Billiger constructor.
+     * Shopping constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)

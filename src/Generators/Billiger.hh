@@ -21,7 +21,7 @@ class Billiger extends CSVGenerator
 	private ArrayHelper $arrayHelper;
 
 	/**
-     * BilligerGenerator constructor.
+     * Billiger constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
