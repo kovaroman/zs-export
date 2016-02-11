@@ -14,7 +14,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 
 	public function exports(ExportPresetContainer $container):void
 	{
-		$formats = ['Idealo', 'Billiger', 'Shopping'];
+		$formats = ['Idealo', 'Billiger', 'Shopping','PreisRoboter'];
 
 		foreach ($formats as $format)
 		{
