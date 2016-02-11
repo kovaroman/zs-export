@@ -59,6 +59,11 @@ class Geizhals extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+                if(!$this->valid($item))
+                {
+                    continue;
+                }
+
 				$data = [
 					'Hersteller' 		=> $item->itemBase->producer,
 					'Produktcode' 		=> $item->itemBase->id,
@@ -77,5 +82,20 @@ class Geizhals extends CSVGenerator
 				$this->addCSVContent(array_values($data));
 			}
 		}
+	}
+
+	/**
+	 * Check if item is valid.
+	 * @param  Record $item
+	 * @return bool
+	 */
+	private function valid(Record $item):bool
+	{
+		if($item->variationStock->stockNet <= 0 && $item->variationBase->limitOrderByStockSelect == 1)
+		{
+			return false;
+		}
+		
+		return true;
 	}
 }

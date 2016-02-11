@@ -70,6 +70,10 @@ class Geizhals extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
+                'limitOrderByStockSelect',
+            ],
+            'variationStock' => [
+                'stockNet'
             ],
 
             'variationRetailPrice' => [
