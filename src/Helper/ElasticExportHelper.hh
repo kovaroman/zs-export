@@ -261,6 +261,47 @@ class ElasticExportHelper
     }
 
     /**
+     * Get payement extra charge.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  int      $methodOfPaymentId
+     * @return float
+     */
+    public function getPaymentExtraCharge(Record $item, KeyValue $settings, int $methodOfPaymentId):float
+    {
+        $methodOfPaymentList = array(); // TODO call helper to get all method og payments
+
+        if(is_array($methodOfPaymentList) && count($methodOfPaymentList) > 0)
+		{
+            if(1==1) // TODO check if the given mathodOfPaymentId is valid $methodOfPaymentList[$methodOfPaymentId] instanceof PaymentMethodData)
+            {
+                if($methodOfPaymentList[$methodOfPaymentId]->getFeeForeignPercentageWebshop())
+                {
+                    return ((float) $methodOfPaymentList[$methodOfPaymentId]->getFeeForeignPercentageWebshop() / 100) * $this->getPrice($item, $settings);
+                }
+                else
+                {
+                    return (float) $methodOfPaymentList[$methodOfPaymentId]->getFeeForeignFlatRateWebshop();
+                }
+            }
+		}
+
+        return 0.0;
+    }
+
+    /**
+     * Get the attribute value set short frontend name. Ex. blue, XL
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return string
+     */
+    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings):string
+    {
+        $attributeValueSetShortFrontendName = ''; // TODO call ItemDataLAyerHelperAttribute to get the attributeValueSetShortFrontendName
+        return 'rot, xs';
+    }
+
+    /**
      * Get base price.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -331,7 +372,7 @@ class ElasticExportHelper
 
     /**
      * Get item character value by backend name.
-     * @param  Record $item     
+     * @param  Record $item
      * @param  string $backendName
      * @return string
      */
@@ -343,7 +384,7 @@ class ElasticExportHelper
 
             if($itemCharacterBackendName == $backendName)
             {
-                return $itemCharacter->characterValue;
+                return (string) $itemCharacter->characterValue;
             }
         }
 
