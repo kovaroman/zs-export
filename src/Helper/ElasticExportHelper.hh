@@ -1,7 +1,5 @@
 <?hh // strict
-
 namespace ElasticExport\Helper;
-
 
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
@@ -12,35 +10,97 @@ use Plenty\Modules\Helper\Models\KeyValue;
  */
 class ElasticExportHelper
 {
-    const SHIPPING_COST_TYPE_FLAT = 'flat';
-    const SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+    const string SHIPPING_COST_TYPE_FLAT = 'flat';
+    const string SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+
+    const string IMAGE_POSITION0 = 'position0';
+    const string IMAGE_FIRST = 'firstImage';
+
+    const int REMOVE_HTML_TAGS = 1;
+    const int KEEP_HTML_TAGS = 0;
+
+    const int ITEM_URL_NO = 0;
+    const int ITEM_URL_YES = 1;
+
+    const int TRANSFER_ITEM_AVAILABILITY_NO = 0;
+    const int TRANSFER_ITEM_AVAILABILITY_YES = 1;
+
+    const int TRANSFER_OFFER_PRICE_NO = 0;
+    const int TRANSFER_OFFER_PRICE_YES = 1;
 
     /**
      * Get name.
      *
      * @param  Record    $item
      * @param  KeyValue  $settings
+     * @param  int $defaultNameLength
      * @return string
      */
-    public function getName(Record $item, KeyValue $settings):string
+    public function getName(Record $item, KeyValue $settings, int $defaultNameLength):string
 	{
-		if($settings->get('nameId'))
+		switch($settings->get('nameId'))
 		{
-			switch($settings->get('nameId'))
-			{
-				case 3:
-					return $item->itemDescription->name3;
+			case 3:
+				$name = $item->itemDescription->name3;
+                break;
 
-				case 2:
-					return $item->itemDescription->name2;
+			case 2:
+				$name = $item->itemDescription->name2;
+                break;
 
-				case 1:
-				default:
-					return $item->itemDescription->name1;
-			}
+			case 1:
+			default:
+				$name = $item->itemDescription->name1;
+                break;
+		}
+
+        $nameLength = $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength;
+
+        return $name;
+    }
+
+    /**
+     * Get preview text.
+     *
+     * @param  Record        $item
+     * @param  KeyValue      $settings
+     * @param  int           $defaultPreviewTextLength
+     * @return string
+     */
+    public function getPreviewText(Record $item, KeyValue $settings, int $defaultPreviewTextLength):string
+    {
+        switch($settings->get('previewTextType'))
+        {
+            case 'itemShortDescription':
+                $previewText = $item->itemDescription->shortDescription;
+                break;
+
+            case 'technicalData':
+                $previewText = $item->itemDescription->technicalData;
+                break;
+
+            case 'itemDescriptionAndTechnicalData':
+                $previewText = $item->itemDescription->description . ' ' . $item->itemDescription->technicalData;
+                break;
+
+            case 'itemDescription':
+                $previewText = $item->itemDescription->description;
+                break;
+
+            case 'dontTransfer':
+            default:
+                $previewText = '';
+                break;
         }
 
-        return $item->itemDescription->name1;
+        $descriptionLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
+
+        if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $previewText = strip_tags($previewText, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+        }
+
+        return substr($previewText, 0, $descriptionLength);
     }
 
     /**
@@ -53,32 +113,34 @@ class ElasticExportHelper
      */
     public function getDescription(Record $item, KeyValue $settings, int $defaultDescriptionLength):string
     {
-        if($settings->get('descriptionLength'))
+        switch($settings->get('descriptionType'))
         {
-            $descriptionLength = $settings->get('descriptionLength');
-        }
-        else
-        {
-            $descriptionLength = $defaultDescriptionLength;
-        }
+            case 'itemShortDescription':
+                $description = $item->itemDescription->shortDescription;
+                break;
 
-        if($settings->get('descriptionType'))
-        {
-            switch($settings->get('descriptionType'))
-            {
-                case 'shortDescription':
-                    return substr(strip_tags($item->itemDescription->shortDescription), 0, $descriptionLength);
+            case 'technicalData':
+                $description = $item->itemDescription->technicalData;
+                break;
 
-                case 'technicalData':
-                    return substr(strip_tags($item->itemDescription->technicalData), 0, $descriptionLength);
+            case 'itemDescriptionAndTechnicalData':
+                $description = $item->itemDescription->description . ' ' . $item->itemDescription->technicalData;
+                break;
 
-                case 'description':
-                default:
-                    return substr(strip_tags($item->itemDescription->description), 0, $descriptionLength);
-            }
+            case 'itemDescription':
+            default:
+                $description = $item->itemDescription->description;
+                break;
         }
 
-        return substr(strip_tags($item->itemDescription->description), 0, $descriptionLength);
+        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
+
+        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+        }
+
+        return substr($description, 0, $descriptionLength);
     }
 
     /**
@@ -89,7 +151,7 @@ class ElasticExportHelper
 	 */
 	public function getAvailability(Record $item, KeyValue $settings):int
 	{
-		if($settings->get('transferItemAvailability'))
+		if($settings->get('transferItemAvailability') == self::TRANSFER_ITEM_AVAILABILITY_YES)
 		{
             $availabilityIdString = 'itemAvailability' . $item->variationBase->availability;
 
@@ -103,14 +165,19 @@ class ElasticExportHelper
 
     /**
      * Get the item URL.
-     * @param  {[type]} Record    $item           [description]
-     * @param  {[type]} KeyValue  $settings       [description]
+     * @param  {[type]} Record    $item
+     * @param  {[type]} KeyValue  $settings
      * @param  {[type]} bool      $addReferrer    =             true  Choose if referrer id should be added as parameter.
      * @param  {[type]} bool      $useIntReferrer =             false Choos if referrer id should be used as integer.
      * @return {[type]}           Item url.
      */
     public function getUrl(Record $item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false):string
 	{
+        if($settings->get('itemUrl') == self::ITEM_URL_NO)
+        {
+            return '';
+        }
+
 		$urlParams = [];
 
         $link = ''; // TODO UrlBuilder get url_content
@@ -183,6 +250,16 @@ class ElasticExportHelper
         return 1.2;
     }
 
+    public function getPrice(Record $item, KeyValue $settings):float
+    {
+        if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
+        {
+            return $item->variationRetailPrice->price;
+        }
+
+        return 0.0;
+    }
+
     /**
      * Get base price.
      * @param  Record   $item
@@ -228,6 +305,30 @@ class ElasticExportHelper
 
         return 'base price';
 	}
+
+    /**
+     * Get main image.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return string
+     */
+    public function getMainImage(Record $item, KeyValue $settings):string
+    {
+        foreach($item->variationImageList as $image)
+        {
+            if($settings->get('imagePosition') == self::IMAGE_FIRST)
+            {
+                return $image->path;
+            }
+            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image->position == 0)
+            {
+                return $image->path;
+            }
+        }
+
+        return '';
+    }
+
 
     /**
      * Get base price details.

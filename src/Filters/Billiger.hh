@@ -34,7 +34,7 @@ class Billiger extends Filters
         return [
             'variationVisibility.isVisibleForMarketplace' => [
                 'mandatoryAllMarketplace' => [],
-                'mandatoryOneMarketplace' => [$settings->get('referrerId')],
+                'mandatoryOneMarketplace' => [2],
             ],
         ];
     }

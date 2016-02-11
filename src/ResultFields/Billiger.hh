@@ -88,9 +88,7 @@ class Billiger extends ResultFields
 
             'variationBarcode' => [
                 'params' => [
-                    'EAN' => [
-                        'barcodeType' => 'EANGeneral',
-                    ],
+                    'barcodeType' => $settings->get('barcode'),                    
                 ],
                 'fields' => [
                     'code',
