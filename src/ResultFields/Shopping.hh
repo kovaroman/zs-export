@@ -95,6 +95,12 @@ class Shopping extends ResultFields
                     'barcodeId',
                 ]
             ],
+            'itemCharacterList' => [
+                'itemCharacterId',
+                'characterId',
+                'characterValue',
+                'characterValueType',                
+            ],
         ];
     }
 }

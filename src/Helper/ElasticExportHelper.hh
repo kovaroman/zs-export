@@ -329,6 +329,27 @@ class ElasticExportHelper
         return '';
     }
 
+    /**
+     * Get item character value by backend name.
+     * @param  Record $item     
+     * @param  string $backendName
+     * @return string
+     */
+    public function getItemCharacterByBackendName(Record $item, string $backendName):string
+    {
+        foreach($item->itemCharacterList as $itemCharacter)
+        {
+            $itemCharacterBackendName = ''; // TODO get itemCharacterBackendName use helper
+
+            if($itemCharacterBackendName == $backendName)
+            {
+                return $itemCharacter->characterValue;
+            }
+        }
+
+        return '';
+    }
+
 
     /**
      * Get base price details.
