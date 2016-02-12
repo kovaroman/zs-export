@@ -79,7 +79,7 @@ class Billiger extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('referrerId'),
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
                     'categoryId'
