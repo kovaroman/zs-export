@@ -1,6 +1,7 @@
 <?hh // strict
 namespace ElasticExport\Helper;
 
+use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 
@@ -27,6 +28,16 @@ class ElasticExportHelper
 
     const int TRANSFER_OFFER_PRICE_NO = 0;
     const int TRANSFER_OFFER_PRICE_YES = 1;
+
+    /**
+     * CategoryBranchRepositoryContract $categoryBranchRepository
+     */
+    private CategoryBranchRepositoryContract $categoryBranchRepository;
+
+    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository)
+    {
+        $this->categoryBranchRepository = $categoryBranchRepository;
+    }
 
     /**
      * Get name.
@@ -211,17 +222,14 @@ class ElasticExportHelper
 	{
         return 'Category: ' . $item->variationStandardCategory->categoryId;
 
-        /* TODO
-        $categoryData = ItemDataLayerHelperCategory::getCategoryById($item->variationStandardCategory->categoryId);
+        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId);
 
-
-		if($categoryData->getBranchName())
+        if(is_array($categoryBranch->getBranchName()) && count($categoryBranch))
 		{
-			return implode($separator, $categoryData->getBranchName());
+			return implode($separator, $categoryBranch->getBranchName());
 		}
 
 		return '';
-        */
 	}
 
     /**
