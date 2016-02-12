@@ -2,6 +2,7 @@
 namespace ElasticExport\Helper;
 
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
+use Plenty\Modules\Helper\Contracts\KeyValueStorageRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
@@ -35,9 +36,21 @@ class ElasticExportHelper
      */
     private CategoryBranchRepositoryContract $categoryBranchRepository;
 
-    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository)
+    /**
+     * KeyValueStorageRepositoryContract $keyValueStorageRepository
+     */
+    private KeyValueStorageRepositoryContract $keyValueStorageRepository;
+
+    /**
+     * ElasticExportHelper constructor.
+     * @param CategoryBranchRepositoryContract $categoryBranchRepository
+     * @param KeyValueStorageRepositoryContract $keyValueStorageRepository
+     */
+    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,KeyValueStorageRepositoryContract $keyValueStorageRepository)
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
+
+        $this->keyValueStorageRepository = $keyValueStorageRepository;
     }
 
     /**
