@@ -234,11 +234,9 @@ class ElasticExportHelper
      */
     public function getCategory(Record $item, KeyValue $settings, string $separator = ' > '):string
 	{
-        return 'Category: ' . $item->variationStandardCategory->categoryId;
+        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
 
-        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId);
-
-        if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch))
+        if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch->branch))
 		{
 			return implode($separator, $categoryBranch->branch);
 		}
