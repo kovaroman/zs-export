@@ -4,6 +4,7 @@ namespace ElasticExport\Helper;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
+use Plenty\Modules\Category\Models\CategoryBranch;
 
 /**
  * Class ElasticExportHelper
@@ -224,9 +225,9 @@ class ElasticExportHelper
 
         $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId);
 
-        if(is_array($categoryBranch->getBranchName()) && count($categoryBranch))
+        if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch))
 		{
-			return implode($separator, $categoryBranch->getBranchName());
+			return implode($separator, $categoryBranch->branch);
 		}
 
 		return '';
