@@ -17,6 +17,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 		$formats = [
 			'Billiger',
 			'Geizhals',
+            'Guenstiger',
 			'Idealo',
 			'PreisRoboter',
 			'Shopzilla',
