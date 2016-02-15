@@ -6,6 +6,7 @@ use Plenty\Modules\Helper\Contracts\KeyValueStorageRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
+use Plenty\Modules\Unit\Contracts\UnitLangRepositoryContract;
 
 /**
  * Class ElasticExportHelper
@@ -42,15 +43,23 @@ class ElasticExportHelper
     private KeyValueStorageRepositoryContract $keyValueStorageRepository;
 
     /**
+     * UnitLangRepositoryContract $unitLangRepository
+     */
+    private UnitLangRepositoryContract $unitLangRepository;
+
+    /**
      * ElasticExportHelper constructor.
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param KeyValueStorageRepositoryContract $keyValueStorageRepository
+     * @param UnitLangRepositoryContrat $unitLangRepository
      */
-    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,KeyValueStorageRepositoryContract $keyValueStorageRepository)
+    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository, KeyValueStorageRepositoryContract $keyValueStorageRepository, UnitLangRepositoryContract $unitLangRepository)
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
 
         $this->keyValueStorageRepository = $keyValueStorageRepository;
+
+        $this->unitLangRepository = $unitLangRepository;
     }
 
     /**
@@ -333,12 +342,23 @@ class ElasticExportHelper
      */
     public function getBasePrice(Record $item, KeyValue $settings, string $separator = '/', bool $compact = false, bool $dotPrice = false, string $currency = ''):string
 	{
-        $currency = strlen($currency) ? $currency : 'EUR'; // TODO $currency = get default currency
+        $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
 		$price = (float) $item->variationRetailPrice->price;
         $lot = (int) $item->variationBase->content;
-        $unit = 'KGM'; // TODO ItemDataLayerHelperUnit::getUnitById($item->variationBase->unitId, $settings->get('lang'));
+        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang'));
 
-		$basePriceDetails = $this->getBasePriceDetails($lot, $price, $unit);
+        if(!is_null($unitLang))
+        {
+            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
+            $unitName = $unitLang->plenty_unit_lang_name;
+        }
+        else
+        {
+            $unitShortcut = '';
+            $unitName = '';
+        }
+
+		$basePriceDetails = $this->getBasePriceDetails($lot, $price, $unitShortcut);
 
 		if((float) $basePriceDetails['price'] <= 0 || ((int) $basePriceDetails['lot'] <= 1 && $basePriceDetails['unit'] == 'C62'))
 		{
@@ -356,15 +376,12 @@ class ElasticExportHelper
 
 		if ($compact == true)
 		{
-			// TODO return	'('.$price.$currency.$separator.$lot.$this->getMeasureUnitShortcut($unit, $this->config->getLang()).')';
+			return	'(' . $price . $currency . $separator . $lot . $unitShortcut . ')';
 		}
 		else
 		{
-			// TODO return	$price.' '.$currency.$separator. $lot.' '.$this->getMeasureUnit($unit, $this->config->getLang());
+			return	$price . ' ' . $currency . $separator . $lot . ' ' . $unitName;
 		}
-
-
-        return 'base price';
 	}
 
     /**
@@ -387,6 +404,11 @@ class ElasticExportHelper
             }
         }
 
+        return '';
+    }
+
+    public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = ''):string
+    {
         return '';
     }
 
@@ -454,5 +476,21 @@ class ElasticExportHelper
 		$endLot = ($basePriceLot/$lot);
 
 		return Map{'lot' => (int) $basePriceLot, 'price' => (float) $price * $factor * $endLot, 'unit' => (string) $basePriceUnit};
+    }
+
+    /**
+     * Get default currency from configuration.
+     * @return string
+     */
+    private function getDefaultCurrency():string
+    {
+        $config = $this->keyValueStorageRepository->loadValue('var_general.inc.php');
+
+        if(is_array($config) && is_string($config['cfgCurrency']))
+        {
+            return $config['cfgCurrency'];
+        }
+
+        return 'EUR';
     }
 }
