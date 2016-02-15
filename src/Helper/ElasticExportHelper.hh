@@ -7,6 +7,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\Unit\Contracts\UnitLangRepositoryContract;
+use Plenty\Modules\Unit\Models\UnitLang;
 
 /**
  * Class ElasticExportHelper
@@ -347,7 +348,7 @@ class ElasticExportHelper
         $lot = (int) $item->variationBase->content;
         $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang'));
 
-        if(!is_null($unitLang))
+        if($unitLang instanceof UnitLang)
         {
             $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
             $unitName = $unitLang->plenty_unit_lang_name;
