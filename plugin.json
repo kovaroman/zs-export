@@ -4,5 +4,5 @@
   "namespace": "ElasticExport",
   "author": "plentymarkets",
   "type": "export",
-  "service_provider": "ElasticExport\\ElasticExportServiceProvider"
+  "serviceProvider": "ElasticExport\\ElasticExportServiceProvider"
 }
