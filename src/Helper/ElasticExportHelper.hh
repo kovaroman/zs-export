@@ -397,6 +397,7 @@ class ElasticExportHelper
      */
     public function getMainImage(Record $item, KeyValue $settings):string
     {
+        //TODO use URL Bilder for image path
         foreach($item->variationImageList as $image)
         {
             if($settings->get('imagePosition') == self::IMAGE_FIRST)
