@@ -8,6 +8,7 @@ use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\Unit\Contracts\UnitLangRepositoryContract;
 use Plenty\Modules\Unit\Models\UnitLang;
+use Plenty\Modules\Character\Contracts\CharacterItemNameRepositoryContract;
 
 /**
  * Class ElasticExportHelper
@@ -49,18 +50,29 @@ class ElasticExportHelper
     private UnitLangRepositoryContract $unitLangRepository;
 
     /**
+     * CharacterItemNameRepositoryContract $characterItemNameRepository
+     */
+    private CharacterItemNameRepositoryContract $characterItemNameRepository;
+
+    /**
      * ElasticExportHelper constructor.
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param KeyValueStorageRepositoryContract $keyValueStorageRepository
-     * @param UnitLangRepositoryContrat $unitLangRepository
+     * @param UnitLangRepositoryContract $unitLangRepository
+     * @param CharacterItemNameRepositoryContract $characterItemNameRepository
      */
-    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository, KeyValueStorageRepositoryContract $keyValueStorageRepository, UnitLangRepositoryContract $unitLangRepository)
+    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
+                                KeyValueStorageRepositoryContract $keyValueStorageRepository,
+                                UnitLangRepositoryContract $unitLangRepository,
+                                CharacterItemNameRepositoryContract $characterItemNameRepository)
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
 
         $this->keyValueStorageRepository = $keyValueStorageRepository;
 
         $this->unitLangRepository = $unitLangRepository;
+
+        $this->characterItemNameRepository = $characterItemNameRepository;
     }
 
     /**
@@ -397,7 +409,7 @@ class ElasticExportHelper
      */
     public function getMainImage(Record $item, KeyValue $settings):string
     {
-        //TODO use URL Bilder for image path
+        //TODO use URL builder for image path
         foreach($item->variationImageList as $image)
         {
             if($settings->get('imagePosition') == self::IMAGE_FIRST)
@@ -421,14 +433,15 @@ class ElasticExportHelper
     /**
      * Get item character value by backend name.
      * @param  Record $item
+     * @param KeyValue $settings
      * @param  string $backendName
      * @return string
      */
-    public function getItemCharacterByBackendName(Record $item, string $backendName):string
+    public function getItemCharacterByBackendName(Record $item, KeyValue $settings, string $backendName):string
     {
         foreach($item->itemCharacterList as $itemCharacter)
         {
-            $itemCharacterBackendName = ''; // TODO get itemCharacterBackendName use helper
+            $itemCharacterBackendName = $this->characterItemNameRepository->findCharacterItem($itemCharacter->itemCharacterId, $settings->get('lang')? $settings->get('lang') : 'de');
 
             if($itemCharacterBackendName == $backendName)
             {

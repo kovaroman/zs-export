@@ -75,7 +75,7 @@ class Shopping extends CSVGenerator
 					'Verfügbar' 			=> 'Ja',
 					'Verfügbarkeitdetails' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 	                'Versand: Landtarif' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-	                'Produkttyp' 			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, 'product_type'),
+	                'Produkttyp' 			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, 'product_type'),
 					'Grundpreis' 			=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 
