@@ -8,6 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
+
 class Billiger extends CSVGenerator
 {
 	/*
@@ -57,13 +58,13 @@ class Billiger extends CSVGenerator
 					'ppu',
 					'mpnr',
 
-			]);
+			]);;
 
 			foreach($resultData as $item)
 			{
 				$data = [
 					'aid' 		=> $item->itemBase->id,
-					'name' 		=> $this->elasticExportHelper->getName($item, $settings, 256),
+					'name' 		=> $this->elasticExportHelper->getName($item, $settings, 2),
 					'price' 	=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'brand' 	=> $item->itemBase->producer,

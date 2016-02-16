@@ -30,11 +30,7 @@ class Geizhals extends Filters
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        return [
-            'variationVisibility.isVisibleForMarketplace' => [
-                'mandatoryAllMarketplace' => [],
-                'mandatoryOneMarketplace' => [$settings->get('referrerId')],
-            ],
+        return [],
         ];
     }
 }

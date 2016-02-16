@@ -75,21 +75,21 @@ class Idealo extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$data = [
-					'article_id' => $item->itemBase->id, // TODO article_id . price_id . attribute_value_set_id,
-					'deeplink' => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'name' => $this->elasticExportHelper->getName($item, $settings, 256),
+					'article_id' 		=> $item->variationBase->id, // TODO article_id . price_id . attribute_value_set_id,
+					'deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
+					'name' 				=> $this->elasticExportHelper->getName($item, $settings, 256),
 					'short_description' => $item->itemDescription->shortDescription,
-					'description' => $this->elasticExportHelper->getDescription($item, $settings, 256),
-					'article_no' => $item->variationBase->customNumber,
-					'producer' => $item->itemBase->producer,
-					'model' => $item->variationBase->model,
-					'availability' => $this->elasticExportHelper->getAvailability($item, $settings),
-					'ean' => $item->variationBarcode->code,
-					'isbn' => $item->variationBarcode->code, // TODO get isbn
-					'fedas' => $item->itemBase->fedas,
-					'warranty' => '', // TODO warranty
-					'price' => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
-					'price_old' => '', // TODO get UVP price,
+					'description' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),
+					'article_no' 		=> $item->variationBase->customNumber,
+					'producer' 			=> $item->itemBase->producer,
+					'model' 			=> $item->variationBase->model,
+					'availability' 		=> $this->elasticExportHelper->getAvailability($item, $settings),
+					'ean'	 			=> $item->variationBarcode->code,
+					'isbn' 				=> $item->variationBarcode->code, // TODO get isbn
+					'fedas' 			=> $item->itemBase->fedas,
+					'warranty' 			=> '', // TODO warranty
+					'price' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'price_old' 		=> '', // TODO get UVP price,
 					'weight' => $item->variationBase->weightG,
 					'category1' => '', // TODO category1
 					'category2' => '', // TODO category2
@@ -102,7 +102,7 @@ class Idealo extends CSVGenerator
 					'image_url' => $this->elasticExportHelper->getImages($item, $settings, ';'),
 					'base_price' => $this->elasticExportHelper->getBasePrice($item, $settings),
 					// TODO free_text_field?
-				];				
+				];
 
 				$this->addCSVContent(array_values($data));
 			}

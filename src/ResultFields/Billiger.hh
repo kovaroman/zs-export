@@ -42,20 +42,17 @@ class Billiger extends ResultFields
 
             'itemDescription' => [
                 'params' => [
-                    'language' => $settings->get('lang'),
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
                 'fields' => [
                     ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1',
-                    ($settings->get('descriptionType') == 'itemShortDescription') ? 'shortDescription' : '',
-                    ($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') ? 'description' : '',
-                    ($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') ? 'technicalData' : '',
                 ],
             ],
 
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('reffererId'),
+                    'referenceMarketplace' => '2',
                 ],
                 'fields' => [
                     'imageId',
@@ -79,7 +76,7 @@ class Billiger extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId'),
+                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
                 ],
                 'fields' => [
                     'categoryId'
@@ -88,7 +85,7 @@ class Billiger extends ResultFields
 
             'variationBarcode' => [
                 'params' => [
-                    'barcodeType' => $settings->get('barcode'),
+                    'barcodeType' => 'EAN',
                 ],
                 'fields' => [
                     'code',
