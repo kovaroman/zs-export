@@ -53,7 +53,7 @@ class Geizhals extends CSVGenerator
 				'Verfügbarkeit',
 				'Herstellercode',
 				'EAN',
-				'Kategorie',
+				//'Kategorie',
 				'Grundpreis',
 			]);
 
@@ -64,10 +64,12 @@ class Geizhals extends CSVGenerator
                     continue;
                 }
 
+				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
+
 				$data = [
 					'Hersteller' 		=> $item->itemBase->producer,
 					'Produktcode' 		=> $item->itemBase->id,
-					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings, 256) . ' ' . $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings),
+					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings, 256) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'Deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'Vorkasse' 			=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->elasticExportHelper->getPaymentExtraCharge($item, $settings, 0), 2, '.', ''),

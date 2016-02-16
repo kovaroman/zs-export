@@ -350,7 +350,7 @@ class ElasticExportHelper
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
 		$price = (float) $item->variationRetailPrice->price;
         $lot = (int) $item->variationBase->content;
-        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang'));
+        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
         if($unitLang instanceof UnitLang)
         {
