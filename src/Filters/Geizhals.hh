@@ -30,7 +30,6 @@ class Geizhals extends Filters
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        return [],
-        ];
+        return [];
     }
 }
