@@ -381,11 +381,11 @@ class ElasticExportHelper
 
 		if ($compact == true)
 		{
-			return	'(' . $price . $currency . $separator . $lot . $unitShortcut . ')';
+			return	'(' . (string) $basePriceDetails['price'] . $currency . $separator . (string) $basePriceDetails['lot'] . $unitShortcut . ')';
 		}
 		else
 		{
-			return	$price . ' ' . $currency . $separator . $lot . ' ' . $unitName;
+			return	(string) $basePriceDetails['price'] . ' ' . $currency . $separator . (string) $basePriceDetails['lot'] . ' ' . $unitName;
 		}
 	}
 
