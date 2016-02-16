@@ -85,6 +85,17 @@ class Geizhals extends ResultFields
                 'availability',
                 'model',
                 'limitOrderByStockSelect',
+                'unitId',
+                'content',
+            ],
+
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual',
+                ],
+                'fields' => [
+                    'stockNet'
+                ]
             ],
 
             'variationRetailPrice' => [
@@ -96,7 +107,9 @@ class Geizhals extends ResultFields
                     'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
                 ],
                 'fields' => [
-                    'categoryId'
+                    'categoryId',
+                    'plentyId',
+                    'manually',
                 ],
             ],
 

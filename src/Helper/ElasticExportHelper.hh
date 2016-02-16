@@ -91,7 +91,7 @@ class ElasticExportHelper
 
         $nameLength = $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength;
 
-        return $name;
+        return substr($name, 0, $nameLength);
     }
 
     /**
@@ -327,8 +327,12 @@ class ElasticExportHelper
      */
     public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings):string
     {
-        $attributeValueSetShortFrontendName = ''; // TODO call ItemDataLAyerHelperAttribute to get the attributeValueSetShortFrontendName
-        return 'rot, xs';
+        if($item->variationBase->attributeValueSetId)
+        {
+            return 'rot, xs'; // TODO call ItemDataLAyerHelperAttribute to get the attributeValueSetShortFrontendName
+        }
+
+        return '';
     }
 
     /**
