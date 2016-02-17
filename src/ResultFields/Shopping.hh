@@ -86,6 +86,7 @@ class Shopping extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
+                'weightG',
             ],
 
             'variationRetailPrice' => [
