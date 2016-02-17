@@ -1,7 +1,6 @@
 <?hh // strict
 namespace ElasticExport;
 
-use ElasticExport\Generators\BilligerGenerator;
 use Plenty\Modules\DataExchange\Services\ExportPresetContainer;
 use Plenty\Plugin\DataExchangeServiceProvider;
 
@@ -17,9 +16,11 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 		$formats = [
 			'Billiger',
 			'Geizhals',
-            'Guenstiger',
+			'GoogleShopping',
+			'Guenstiger',
 			'Idealo',
 			'PreisRoboter',
+			'Rakuten',
 			'Shopzilla',
 			'Shopping',
 		];
