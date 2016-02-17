@@ -10,6 +10,7 @@ use ElasticExport\Helper\ElasticExportHelper;
 
 class Guenstiger extends CSVGenerator
 {
+    const string DELIMITER = '|';
 	/*
      * @var ElasticExportHelper
      */
@@ -40,17 +41,17 @@ class Guenstiger extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter('|');
+			$this->setDelimiter(self::DELIMITER);
 
 			$this->addCSVContent([
                 'bezeichnung',
                 'preis',
                 'deeplink',
+                'ean',
                 'beschreibung',
                 'bilderlink',
                 'lieferzeiten',
                 'lieferkosten',
-                'ean',
 	            'grundpreis',
 			]);
 

@@ -42,7 +42,7 @@ class Guenstiger extends ResultFields
 
             'itemDescription' => [
                 'params' => [
-                    'language' => $settings->get('lang'),
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
                 'fields' => [
 					'name1',
@@ -81,7 +81,7 @@ class Guenstiger extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('referrerId'),
+                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
                 ],
                 'fields' => [
                     'categoryId'
