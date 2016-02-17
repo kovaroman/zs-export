@@ -83,6 +83,7 @@ class Geizhals extends ResultFields
 
             'variationBase' => [
                 'availability',
+                'attributeValueSetId',
                 'model',
                 'limitOrderByStockSelect',
                 'unitId',
@@ -121,6 +122,11 @@ class Geizhals extends ResultFields
                     'code',
                     'barcodeId',
                 ]
+            ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId',
             ],
         ];
 

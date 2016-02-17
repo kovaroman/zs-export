@@ -2,12 +2,15 @@
 namespace ElasticExport\Helper;
 
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
-use Plenty\Modules\Helper\Contracts\KeyValueStorageRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\Unit\Contracts\UnitLangRepositoryContract;
 use Plenty\Modules\Unit\Models\UnitLang;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+
+
 
 /**
  * Class ElasticExportHelper
@@ -39,28 +42,25 @@ class ElasticExportHelper
     private CategoryBranchRepositoryContract $categoryBranchRepository;
 
     /**
-     * KeyValueStorageRepositoryContract $keyValueStorageRepository
-     */
-    private KeyValueStorageRepositoryContract $keyValueStorageRepository;
-
-    /**
      * UnitLangRepositoryContract $unitLangRepository
      */
     private UnitLangRepositoryContract $unitLangRepository;
 
+    private AttributeValueLangRepositoryContract $attributeValueLangRepository;
+
     /**
      * ElasticExportHelper constructor.
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
-     * @param KeyValueStorageRepositoryContract $keyValueStorageRepository
-     * @param UnitLangRepositoryContrat $unitLangRepository
+     * @param UnitLangRepositoryContract $unitLangRepository
+     * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
      */
-    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository, KeyValueStorageRepositoryContract $keyValueStorageRepository, UnitLangRepositoryContract $unitLangRepository)
+    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository, UnitLangRepositoryContract $unitLangRepository, AttributeValueLangRepositoryContract $attributeValueLangRepository)
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
 
-        $this->keyValueStorageRepository = $keyValueStorageRepository;
-
         $this->unitLangRepository = $unitLangRepository;
+
+        $this->attributeValueLangRepository = $attributeValueLangRepository;
     }
 
     /**
@@ -327,12 +327,23 @@ class ElasticExportHelper
      */
     public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings):string
     {
+        $values = [];
+
         if($item->variationBase->attributeValueSetId)
         {
-            return 'rot, xs'; // TODO call ItemDataLAyerHelperAttribute to get the attributeValueSetShortFrontendName
+            foreach($item->variationAttributeValueList as $attribute)
+            {
+                $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                if($attributeValueLang instanceof AttributeValueLang)
+                {
+                    $values[] = $attributeValueLang->name;
+                }
+
+            }
         }
 
-        return '';
+        return implode(', ', $values);
     }
 
     /**
@@ -489,7 +500,7 @@ class ElasticExportHelper
      */
     private function getDefaultCurrency():string
     {
-        $config = $this->keyValueStorageRepository->loadValue('var_general.inc.php');
+        $config = []; // TODO load config
 
         if(is_array($config) && is_string($config['cfgCurrency']))
         {
