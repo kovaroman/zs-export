@@ -31,11 +31,6 @@ private ArrayHelper $arrayHelper;
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        return [
-            'variationVisibility.isVisibleForMarketplace' => [
-                'mandatoryAllMarketplace' => [],
-                'mandatoryOneMarketplace' => [2],
-            ],
-        ];
+        return [];
     }
 }
