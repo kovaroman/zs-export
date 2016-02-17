@@ -37,7 +37,7 @@ private ArrayHelper $arrayHelper;
 
             'itemDescription' => [
                 'params' => [
-                    'language' => $settings->get('lang'),
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
                 'fields' => [
                     'name1',
@@ -74,7 +74,7 @@ private ArrayHelper $arrayHelper;
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('referrerId'),
+                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
                 ],
                 'fields' => [
                     'categoryId'
