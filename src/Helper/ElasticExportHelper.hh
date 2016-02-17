@@ -81,7 +81,7 @@ class ElasticExportHelper
      * @param  int $defaultNameLength
      * @return string
      */
-    public function getName(Record $item, KeyValue $settings, int $defaultNameLength):string
+    public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 240):string
 	{
 		switch($settings->get('nameId'))
 		{
