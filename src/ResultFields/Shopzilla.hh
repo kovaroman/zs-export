@@ -61,7 +61,7 @@ class Shopzilla extends ResultFields
 
             'itemDescription' => [
                 'params' => [
-                    'language' => $settings->get('lang'),
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
                 'fields' => $itemDescriptionFields,
             ],
@@ -85,6 +85,7 @@ class Shopzilla extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
+                'weightG'
             ],
 
             'variationRetailPrice' => [
