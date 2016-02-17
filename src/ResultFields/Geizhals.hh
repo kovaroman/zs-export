@@ -35,7 +35,7 @@ class Geizhals extends ResultFields
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
 
-        $itemDescriptionFields = array();
+        $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
         if($settings->get('descriptionType') == 'itemShortDescription')
@@ -71,13 +71,10 @@ class Geizhals extends ResultFields
                     'type' => 'variation',
                     'referenceMarketplace' => $settings->get('referrerId'),
                 ],
-                'fields' => [
-                    'imageId',
+                'fields' => [                    
                     'type',
-                    'fileType',
                     'path',
                     'position',
-                    'cleanImageName',
                 ]
             ],
 
@@ -105,7 +102,7 @@ class Geizhals extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
                     'categoryId',

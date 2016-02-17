@@ -53,7 +53,7 @@ class Geizhals extends CSVGenerator
 				'Verfügbarkeit',
 				'Herstellercode',
 				'EAN',
-				//'Kategorie',
+				'Kategorie',
 				'Grundpreis',
 			]);
 
@@ -77,7 +77,7 @@ class Geizhals extends CSVGenerator
 					'Verfügbarkeit' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 					'Herstellercode' 	=> $item->variationBase->model,
 					'EAN' 				=> $item->variationBarcode->code,
-					//'Kategorie' 		=> $this->elasticExportHelper->getCategory($item, $settings),
+					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item, $settings),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 
@@ -92,8 +92,7 @@ class Geizhals extends CSVGenerator
 	 * @return bool
 	 */
 	private function valid(Record $item):bool
-	{
-        return true; // TODO
+	{        
 		if($item->variationStock->stockNet <= 0 && $item->variationBase->limitOrderByStockSelect == 1)
 		{
 			return false;
