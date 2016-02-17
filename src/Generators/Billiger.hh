@@ -64,7 +64,7 @@ class Billiger extends CSVGenerator
 			{
 				$data = [
 					'aid' 		=> $item->itemBase->id,
-					'name' 		=> $this->elasticExportHelper->getName($item, $settings, 2),
+					'name' 		=> $this->elasticExportHelper->getName($item, $settings),
 					'price' 	=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'brand' 	=> $item->itemBase->producer,
