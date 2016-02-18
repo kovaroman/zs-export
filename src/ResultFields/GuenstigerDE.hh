@@ -1,4 +1,4 @@
-<?hh // strict
+<?hh //strict
 namespace ElasticExport\ResultFields;
 
 use Plenty\Modules\DataExchange\Contracts\ResultFields;
@@ -6,25 +6,30 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Idealo
+ * Class GuenstigerDE
  * @package ElasticExport\ResultFields
  */
-class PreisRoboter extends ResultFields
+class GuenstigerDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
 	 */
-private ArrayHelper $arrayHelper;
+	private ArrayHelper $arrayHelper;
 
     /**
-     * Billiger constructor.
+     * Guenstiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
     {
-        $this->arrayHelper = $arrayHelper;
+		$this->arrayHelper = $arrayHelper;
     }
 
+    /**
+     * Generate result fields.
+     * @param  array<FormatSetting> $formatSettings = []
+     * @return array
+     */
     public function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
@@ -40,17 +45,19 @@ private ArrayHelper $arrayHelper;
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
                 'fields' => [
-                    'name1',
-                    'description',
-                    'shortDescription',
-                    'technicalData',
+					'name1',
+					'name2',
+					'name3',
+					'description',
+					'shortDescription',
+					'technicalData',
                 ],
             ],
 
             'variationImageList' => [
                 'params' => [
-                        'type' => 'variation',
-                        'referenceMarketplace' => $settings->get('reffererId'),
+                    'type' => 'variation',
+                    'referenceMarketplace' => $settings->get('reffererId'),
                 ],
                 'fields' => [
                     'imageId',

@@ -10,7 +10,7 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Unit\Models\UnitLang;
 use Plenty\Modules\Helper\Models\KeyValue;
 
-class Rakuten extends CSVGenerator
+class RakutenDE extends CSVGenerator
 {
 	const string CHARACTER_TYPE_ENERGY_CLASS		= 'energie_klasse';
 	const string CHARACTER_TYPE_ENERGY_CLASS_GROUP	= 'energie_klassen_gruppe';

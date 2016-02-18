@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Guenstiger
+ * Class ShopzillaDE
  * @package ElasticExport\ResultFields
  */
-class Guenstiger extends ResultFields
+class ShopzillaDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class Guenstiger extends ResultFields
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Guenstiger constructor.
+     * Shopzilla constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -34,6 +34,25 @@ class Guenstiger extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        $itemDescriptionFields = array();
+
+        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
+
+        if($settings->get('descriptionType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'shortDescription';
+        }
+
+        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
+
+        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'technicalData';
+        }
+
         return [
             'itemBase'=> [
                 'id',
@@ -44,14 +63,7 @@ class Guenstiger extends ResultFields
                 'params' => [
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' => [
-					'name1',
-					'name2',
-					'name3',
-					'description',
-					'shortDescription',
-					'technicalData',
-                ],
+                'fields' => $itemDescriptionFields,
             ],
 
             'variationImageList' => [
@@ -73,6 +85,7 @@ class Guenstiger extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
+                'weightG'
             ],
 
             'variationRetailPrice' => [

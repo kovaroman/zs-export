@@ -5,7 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class Shopzilla extends Filters
+class ShopzillaDE extends Filters
 {
     /*
 	 * @var ArrayHelper

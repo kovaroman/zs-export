@@ -6,20 +6,20 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 
-class PreisRoboter extends Filters
+class GuenstigerDE extends Filters
 {
     /*
 	 * @var ArrayHelper
 	 */
-private ArrayHelper $arrayHelper;
+	private ArrayHelper $arrayHelper;
 
     /**
-     * Billiger constructor.
+     * Guenstiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
     {
-        $this->arrayHelper = $arrayHelper;
+		$this->arrayHelper = $arrayHelper;
     }
 
     /**

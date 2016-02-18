@@ -9,10 +9,10 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 
 /**
- * Class Idealo
+ * Class PreisRoboterDE
  * @package ElasticExport\Generators
  */
-class PreisRoboter extends CSVGenerator
+class PreisRoboterDE extends CSVGenerator
 {
     /*
      * @var

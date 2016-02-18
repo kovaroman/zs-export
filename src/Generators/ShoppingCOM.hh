@@ -8,7 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
-class Shopping extends CSVGenerator
+class ShoppingCOM extends CSVGenerator
 {
 	/*
      * @var ElasticExportHelper

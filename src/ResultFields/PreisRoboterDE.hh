@@ -1,4 +1,4 @@
-<?hh //strict
+<?hh // strict
 namespace ElasticExport\ResultFields;
 
 use Plenty\Modules\DataExchange\Contracts\ResultFields;
@@ -6,52 +6,28 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Shopping
+ * Class PreisRoboterDE
  * @package ElasticExport\ResultFields
  */
-class Shopping extends ResultFields
+class PreisRoboter extends ResultFields
 {
     /*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+private ArrayHelper $arrayHelper;
 
     /**
-     * Shopping constructor.
+     * Billiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
     {
-		$this->arrayHelper = $arrayHelper;
+        $this->arrayHelper = $arrayHelper;
     }
 
-    /**
-     * Generate result fields.
-     * @param  array<FormatSetting> $formatSettings = []
-     * @return array
-     */
     public function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
-
-        $itemDescriptionFields = array();
-
-        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
-
-        if($settings->get('descriptionType') == 'itemShortDescription')
-        {
-            $itemDescriptionFields[] = 'shortDescription';
-        }
-
-        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
-        {
-            $itemDescriptionFields[] = 'description';
-        }
-
-        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
-        {
-            $itemDescriptionFields[] = 'technicalData';
-        }
 
         return [
             'itemBase'=> [
@@ -63,14 +39,18 @@ class Shopping extends ResultFields
                 'params' => [
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' =>
-                    $itemDescriptionFields,
+                'fields' => [
+                    'name1',
+                    'description',
+                    'shortDescription',
+                    'technicalData',
+                ],
             ],
 
             'variationImageList' => [
                 'params' => [
-                    'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('reffererId'),
+                        'type' => 'variation',
+                        'referenceMarketplace' => $settings->get('reffererId'),
                 ],
                 'fields' => [
                     'imageId',
@@ -86,7 +66,6 @@ class Shopping extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
-                'weightG',
             ],
 
             'variationRetailPrice' => [
@@ -110,12 +89,6 @@ class Shopping extends ResultFields
                     'code',
                     'barcodeId',
                 ]
-            ],
-            'itemCharacterList' => [
-                'itemCharacterId',
-                'characterId',
-                'characterValue',
-                'characterValueType',                
             ],
         ];
     }

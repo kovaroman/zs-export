@@ -8,7 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
-class Geizhals extends CSVGenerator
+class GeizhalsDE extends CSVGenerator
 {
 	/*
      * @var ElasticExportHelper
@@ -92,7 +92,7 @@ class Geizhals extends CSVGenerator
 	 * @return bool
 	 */
 	private function valid(Record $item):bool
-	{        
+	{
 		if($item->variationStock->stockNet <= 0 && $item->variationBase->limitOrderByStockSelect == 1)
 		{
 			return false;
