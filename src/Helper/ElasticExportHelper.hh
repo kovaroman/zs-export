@@ -37,6 +37,9 @@ class ElasticExportHelper
     const int TRANSFER_OFFER_PRICE_NO = 0;
     const int TRANSFER_OFFER_PRICE_YES = 1;
 
+    const string BARCODE_EAN = 'EAN_13';
+    const string BARCODE_ISBN = 'ISBN';
+
     /**
      * CategoryBranchRepositoryContract $categoryBranchRepository
      */
@@ -128,7 +131,7 @@ class ElasticExportHelper
      * @param  int           $defaultPreviewTextLength
      * @return string
      */
-    public function getPreviewText(Record $item, KeyValue $settings, int $defaultPreviewTextLength):string
+    public function getPreviewText(Record $item, KeyValue $settings, int $defaultPreviewTextLength = 0):string
     {
         switch($settings->get('previewTextType'))
         {
@@ -154,14 +157,19 @@ class ElasticExportHelper
                 break;
         }
 
-        $descriptionLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
+        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
 
         if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
             $previewText = strip_tags($previewText, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
         }
 
-        return substr($previewText, 0, $descriptionLength);
+        if($previewTextLength <= 0)
+        {
+            return $previewText;
+        }
+
+        return substr($previewText, 0, $previewTextLength);
     }
 
     /**
@@ -172,7 +180,7 @@ class ElasticExportHelper
      * @param  int           $defaultDescriptionLength
      * @return string
      */
-    public function getDescription(Record $item, KeyValue $settings, int $defaultDescriptionLength):string
+    public function getDescription(Record $item, KeyValue $settings, int $defaultDescriptionLength = 0):string
     {
         switch($settings->get('descriptionType'))
         {
@@ -199,6 +207,11 @@ class ElasticExportHelper
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
             $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+        }
+
+        if($descriptionLength <= 0)
+        {
+            return $description;
         }
 
         return substr($description, 0, $descriptionLength);
@@ -471,6 +484,26 @@ class ElasticExportHelper
             if($itemCharacterBackendName == $backendName)
             {
                 return (string) $itemCharacter->characterValue;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Get barcode by a given type.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $barcodeType
+     * @return string
+     */
+    public function getBarcodeByType(Record $item, KeyValue $settings, string $barcodeType):string
+    {
+        foreach($item->variationBarcodeList as $variationBarcode)
+        {
+            if($variationBarcode->barcodeType == $barcodeType)
+            {
+                return (string) $variationBarcode->code;
             }
         }
 

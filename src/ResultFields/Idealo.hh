@@ -29,6 +29,24 @@ class Idealo extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        $itemDescriptionFields = ['urlContent'];
+        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
+
+        if($settings->get('descriptionType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'shortDescription';
+        }
+
+        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
+
+        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'technicalData';
+        }
+
         return [
             'itemBase'=> [
                 'id',
@@ -37,53 +55,41 @@ class Idealo extends ResultFields
 
             'itemDescription' => [
                 'params' => [
-                    'language' => $settings->get('lang'),
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' => [
-                    ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1',
-                    ($settings->get('descriptionType') == 'itemShortDescription') ? 'shortDescription' : '',
-                    ($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') ? 'description' : '',
-                    ($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') ? 'technicalData' : '',
-                ],
+                'fields' => $itemDescriptionFields,
             ],
 
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('reffererId'),
                 ],
                 'fields' => [
-                    'imageId',
                     'type',
-                    'fileType',
                     'path',
                     'position',
-                    'cleanImageName',
                 ]
-
             ],
 
             'variationRecommendedRetailPrice' => [
-                    'price', //[float]
-                    'retailPrice', //[float]
-                    'retailPriceNet', //[float]
-                    'basePrice', //[float]
-                    'basePriceNet', //[float]
-                    'unitPrice', //[float]
-                    'unitPriceNet', //[float]
-                    'orderParamsMarkup', //[float]
-                    'orderParamsMarkupNet', //[float]
-                    'vatId', //[integer]
-                    'vatValue', //[float]
-                    'currency', //[mixed]
-                    'exchangeRatio', //[float]
-                    'minimumOrderQuantity', //[float]
-                    'lastUpdateTimestamp' //[mixed]
+                'price', //[float]
             ],
 
             'variationBase' => [
                 'availability',
+                'attributeValueSetId',
                 'model',
+                'limitOrderByStockSelect',
+                'unitId',
+                'content',
+            ],
+
+            'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
             ],
 
             'variationRetailPrice' => [
@@ -95,18 +101,10 @@ class Idealo extends ResultFields
                     'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
-                    'categoryId'
+                    'categoryId',
+                    'plentyId',
+                    'manually',
                 ],
-            ],
-
-            'variationBarcode' => [
-                'params' => [
-                    'barcodeType' => $settings->get('barcode'),
-                ],
-                'fields' => [
-                    'code',
-                    'barcodeId',
-                ]
             ],
         ];
     }
