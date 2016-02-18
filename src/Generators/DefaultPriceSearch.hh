@@ -87,8 +87,8 @@ class DefaultPriceSearch extends CSVGenerator
                     'producer'              => $item->itemBase->producer,
                     'model'                 => $item->variationBase->model,
                     'availability'          => $this->elasticExportHelper->getAvailability($item, $settings),
-                    'ean'                   => $item->variationBarcode->code,
-                    'isbn'                  => $item->variationBarcode->code, //TODO isbn
+                    'ean'                   => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'isbn'                  => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
                     'fedas'                 => $item->itemBase->fedas,
                     'unit'                  => '',
                     'price'                 => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
