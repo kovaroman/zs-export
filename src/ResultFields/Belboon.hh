@@ -47,6 +47,7 @@ class Belboon extends ResultFields
                 'fields' => [
 										'keywords',
                     ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1',
+										'urlContent',
                 ],
             ],
 
