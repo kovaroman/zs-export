@@ -95,14 +95,12 @@ private ArrayHelper $arrayHelper;
                 ],
             ],
 
-            'variationBarcode' => [
-                'params' => [
-                    'barcodeType' => $settings->get('barcode'),
-                ],
-                'fields' => [
-                    'code',
-                    'barcodeId',
-                ]
+            'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
             ],
         ];
     }

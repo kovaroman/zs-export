@@ -11,6 +11,7 @@ use ElasticExport\Helper\ElasticExportHelper;
 
 class DefaultPriceSearch extends CSVGenerator
 {
+    const string DELIMITER = ' ';
     /*
      * @var ElasticExportHelper
      */
@@ -41,7 +42,7 @@ class DefaultPriceSearch extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(";");
+			$this->setDelimiter(self::DELIMITER);
 
 			$this->addCSVContent([
 					'article_id',
