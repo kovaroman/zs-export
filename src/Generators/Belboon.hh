@@ -7,6 +7,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
+use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 
 class Belboon extends CSVGenerator
 {
@@ -14,17 +15,20 @@ class Belboon extends CSVGenerator
 
     const string IMAGE_SIZE_WIDTH = 'width';
     const string IMAGE_SIZE_HEIGHT = 'height';
-	/*
+
+    /*
      * @var ElasticExportHelper
      */
     private ElasticExportHelper $elasticExportHelper;
 
-	/*
-	 * @var ArrayHelper
-	 */
-	private ArrayHelper $arrayHelper;
 
-	/**
+
+  	/*
+  	 * @var ArrayHelper
+  	 */
+  	private ArrayHelper $arrayHelper;
+
+	  /**
      * Belboon constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
@@ -78,7 +82,7 @@ class Belboon extends CSVGenerator
           'Brand'                       => $item->itemBase->producer,
           'Price'                       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
           'Currency'                    => $item->variationRetailPrice->currency,
-          'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings, true, false),
+          'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
           'Image_Small_URL'             => '', // TODO small image url
           'Image_Small_WIDTH'           => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
           'Image_Small_HEIGHT'          => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
