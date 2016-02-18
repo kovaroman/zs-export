@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class DefaultPriceSearch
+ * Class BasicPriceSearchEngine
  * @package ElasticExport\ResultFields
  */
-class DefaultPriceSearch extends ResultFields
+class BasicPriceSearchEngine extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class DefaultPriceSearch extends ResultFields
 private ArrayHelper $arrayHelper;
 
     /**
-     * DefaultPriceSearch constructor.
+     * BasicPriceSearchEngine constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -95,13 +95,16 @@ private ArrayHelper $arrayHelper;
                 ],
             ],
 
-            'variationBarcodeList' => [
-                'variationId',
-                'code',
-                'barcodeId',
-                'barcodeType',
-                'barcodeName',
+            'variationBarcode' => [
+                'params' => [
+                    'barcodeType' => $settings->get('barcode'),
+                ],
+                'fields' => [
+                    'code',
+                    'barcodeId',
+                ]
             ],
+
         ];
     }
 }

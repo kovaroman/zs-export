@@ -5,7 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class DefaultPriceSearch extends Filters
+class BasicPriceSearchEngine extends Filters
 {
     /*
 	 * @var ArrayHelper
@@ -13,7 +13,7 @@ class DefaultPriceSearch extends Filters
 private ArrayHelper $arrayHelper;
 
     /**
-     * DefaultPriceSearch constructor.
+     * BasicPriceSearchEngine constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)

@@ -9,9 +9,8 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
 
-class DefaultPriceSearch extends CSVGenerator
+class BasicPriceSearchEngine extends CSVGenerator
 {
-    const string DELIMITER = ' ';
     /*
      * @var ElasticExportHelper
      */
@@ -23,7 +22,7 @@ class DefaultPriceSearch extends CSVGenerator
     private ArrayHelper $arrayHelper;
 
     /**
-     * DefaultPriceSearch constructor.
+     * BasicPriceSearchEngine constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
@@ -42,7 +41,7 @@ class DefaultPriceSearch extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(self::DELIMITER);
+			$this->setDelimiter(";");
 
 			$this->addCSVContent([
 					'article_id',
@@ -88,8 +87,8 @@ class DefaultPriceSearch extends CSVGenerator
                     'producer'              => $item->itemBase->producer,
                     'model'                 => $item->variationBase->model,
                     'availability'          => $this->elasticExportHelper->getAvailability($item, $settings),
-                    'ean'                   => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
-                    'isbn'                  => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
+                    'ean'                   => $item->variationBarcode->code,
+                    'isbn'                  => $item->variationBarcode->code, //TODO isbn
                     'fedas'                 => $item->itemBase->fedas,
                     'unit'                  => '',
                     'price'                 => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
