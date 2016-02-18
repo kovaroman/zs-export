@@ -34,6 +34,25 @@ class Shopzilla extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        $itemDescriptionFields = array();
+
+        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
+
+        if($settings->get('descriptionType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'shortDescription';
+        }
+
+        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
+
+        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'technicalData';
+        }
+
         return [
             'itemBase'=> [
                 'id',
@@ -42,14 +61,9 @@ class Shopzilla extends ResultFields
 
             'itemDescription' => [
                 'params' => [
-                    'language' => $settings->get('lang'),
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' => [
-                    ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1',
-                    ($settings->get('descriptionType') == 'itemShortDescription') ? 'shortDescription' : '',
-                    ($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') ? 'description' : '',
-                    ($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') ? 'technicalData' : '',
-                ],
+                'fields' => $itemDescriptionFields,
             ],
 
             'variationImageList' => [
@@ -71,6 +85,7 @@ class Shopzilla extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
+                'weightG'
             ],
 
             'variationRetailPrice' => [
@@ -79,7 +94,7 @@ class Shopzilla extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('referrerId'),
+                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
                 ],
                 'fields' => [
                     'categoryId'

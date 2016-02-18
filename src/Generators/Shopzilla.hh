@@ -72,7 +72,7 @@ class Shopzilla extends CSVGenerator
 					'Bild-URL' 			=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'SKU' 				=> $item->itemBase->id,
 					'Bestand' 			=> 'Auf Lager',
-					'Versandgewicht' 	=> '',
+					'Versandgewicht' 	=> $item->variationBase->weightG,
 					'Zustand' 			=> 'Neu',
 					'Versandkosten' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
 					'Gebot' 			=> '',

@@ -1,7 +1,6 @@
 <?hh // strict
 namespace ElasticExport;
 
-use ElasticExport\Generators\BilligerGenerator;
 use Plenty\Modules\DataExchange\Services\ExportPresetContainer;
 use Plenty\Plugin\DataExchangeServiceProvider;
 
@@ -18,9 +17,11 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 			'Belboon',
 			'Billiger',
 			'Geizhals',
+			'GoogleShopping',
 			'Guenstiger',
 			'Idealo',
 			'PreisRoboter',
+			'Rakuten',
 			'Shopzilla',
 			'Shopping',
 		];
