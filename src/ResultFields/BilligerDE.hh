@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Geizhals
+ * Class BilligerDE
  * @package ElasticExport\ResultFields
  */
-class Geizhals extends ResultFields
+class BilligerDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class Geizhals extends ResultFields
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Geizhals constructor.
+     * Billiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -33,7 +33,6 @@ class Geizhals extends ResultFields
     public function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
-
 
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
@@ -53,7 +52,7 @@ class Geizhals extends ResultFields
             $itemDescriptionFields[] = 'technicalData';
         }
 
-        $fields = [
+        return [
             'itemBase'=> [
                 'id',
                 'producer',
@@ -69,13 +68,13 @@ class Geizhals extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('referrerId'),
                 ],
-                'fields' => [                    
+                'fields' => [
                     'type',
                     'path',
                     'position',
                 ]
+
             ],
 
             'variationBase' => [
@@ -85,15 +84,6 @@ class Geizhals extends ResultFields
                 'limitOrderByStockSelect',
                 'unitId',
                 'content',
-            ],
-
-            'variationStock' => [
-                'params' => [
-                    'type' => 'virtual',
-                ],
-                'fields' => [
-                    'stockNet'
-                ]
             ],
 
             'variationRetailPrice' => [
@@ -120,14 +110,6 @@ class Geizhals extends ResultFields
                     'barcodeId',
                 ]
             ],
-
-            'variationAttributeValueList' => [
-                'attributeId',
-                'attributeValueId',
-            ],
         ];
-
-
-        return $fields;
     }
 }

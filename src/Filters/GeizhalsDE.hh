@@ -5,7 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class Rakuten extends Filters
+class GeizhalsDE extends Filters
 {
     /*
 	 * @var ArrayHelper
@@ -13,7 +13,7 @@ class Rakuten extends Filters
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Rakuten constructor.
+     * Billiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)

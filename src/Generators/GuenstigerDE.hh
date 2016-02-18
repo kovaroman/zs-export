@@ -8,9 +8,9 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
-
-class Billiger extends CSVGenerator
+class GuenstigerDE extends CSVGenerator
 {
+    const string DELIMITER = '|';
 	/*
      * @var ElasticExportHelper
      */
@@ -22,7 +22,7 @@ class Billiger extends CSVGenerator
 	private ArrayHelper $arrayHelper;
 
 	/**
-     * Billiger constructor.
+     * Guenstiger constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
@@ -41,41 +41,32 @@ class Billiger extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(";");
+			$this->setDelimiter(self::DELIMITER);
 
 			$this->addCSVContent([
-					'aid',
-					'name',
-					'price',
-					'link',
-					'brand',
-					'ean',
-					'desc',
-					'shop_cat',
-					'image',
-					'dlv_time',
-					'dlv_cost',
-					'ppu',
-					'mpnr',
-
-			]);;
+                'bezeichnung',
+                'preis',
+                'deeplink',
+                'ean',
+                'beschreibung',
+                'bilderlink',
+                'lieferzeiten',
+                'lieferkosten',
+	            'grundpreis',
+			]);
 
 			foreach($resultData as $item)
 			{
 				$data = [
-					'aid' 		=> $item->itemBase->id,
-					'name' 		=> $this->elasticExportHelper->getName($item, $settings),
-					'price' 	=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
-					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'brand' 	=> $item->itemBase->producer,
-					'ean' 		=> $item->variationBarcode->code,
-					'desc' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),
-	                'shop_cat' 	=> $this->elasticExportHelper->getCategory($item, $settings),
-					'image'		=> $this->elasticExportHelper->getMainImage($item, $settings),
-					'dlv_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
-					'dlv_cost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-	                'ppu' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
-	                'mpnr' 		=> $item->variationBase->model,
+					'bezeichnung'      => $this->elasticExportHelper->getName($item, $settings, 256),
+					'preis' 	       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'deeplink' 		   => $this->elasticExportHelper->getUrl($item, $settings, true, false),
+					'ean' 		       => $item->variationBarcode->code,
+					'beschreibung' 	   => $this->elasticExportHelper->getDescription($item, $settings, 256),
+					'bilderlink'	   => $this->elasticExportHelper->getMainImage($item, $settings),
+					'lieferzeiten' 	   => $this->elasticExportHelper->getAvailability($item, $settings),
+					'lieferkosten' 	   => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+	                'grundpreis' 	   => $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 
 				$this->addCSVContent(array_values($data));

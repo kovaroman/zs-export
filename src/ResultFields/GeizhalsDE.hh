@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Shopzilla
+ * Class GeizhalsDE
  * @package ElasticExport\ResultFields
  */
-class Shopzilla extends ResultFields
+class GeizhalsDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class Shopzilla extends ResultFields
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Shopzilla constructor.
+     * Geizhals constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -34,8 +34,8 @@ class Shopzilla extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        $itemDescriptionFields = array();
 
+        $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
         if($settings->get('descriptionType') == 'itemShortDescription')
@@ -53,7 +53,7 @@ class Shopzilla extends ResultFields
             $itemDescriptionFields[] = 'technicalData';
         }
 
-        return [
+        $fields = [
             'itemBase'=> [
                 'id',
                 'producer',
@@ -69,23 +69,31 @@ class Shopzilla extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('reffererId'),
+                    'referenceMarketplace' => $settings->get('referrerId'),
                 ],
                 'fields' => [
-                    'imageId',
                     'type',
-                    'fileType',
                     'path',
                     'position',
-                    'cleanImageName',
                 ]
-
             ],
 
             'variationBase' => [
                 'availability',
+                'attributeValueSetId',
                 'model',
-                'weightG'
+                'limitOrderByStockSelect',
+                'unitId',
+                'content',
+            ],
+
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual',
+                ],
+                'fields' => [
+                    'stockNet'
+                ]
             ],
 
             'variationRetailPrice' => [
@@ -94,22 +102,32 @@ class Shopzilla extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
-                    'categoryId'
+                    'categoryId',
+                    'plentyId',
+                    'manually',
                 ],
             ],
 
             'variationBarcode' => [
                 'params' => [
-                    'barcodeType' => $settings->get('barcode'),
+                    'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
                 ],
                 'fields' => [
                     'code',
                     'barcodeId',
                 ]
             ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId',
+            ],
         ];
+
+
+        return $fields;
     }
 }

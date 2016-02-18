@@ -6,7 +6,7 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 
-class Shopping extends Filters
+class ShoppingCOM extends Filters
 {
     /*
 	 * @var ArrayHelper

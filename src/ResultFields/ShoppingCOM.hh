@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Billiger
+ * Class ShoppingCOM
  * @package ElasticExport\ResultFields
  */
-class Billiger extends ResultFields
+class ShoppingCOM extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class Billiger extends ResultFields
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Billiger constructor.
+     * Shopping constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -34,6 +34,25 @@ class Billiger extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        $itemDescriptionFields = array();
+
+        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
+
+        if($settings->get('descriptionType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'shortDescription';
+        }
+
+        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
+
+        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'technicalData';
+        }
+
         return [
             'itemBase'=> [
                 'id',
@@ -44,15 +63,14 @@ class Billiger extends ResultFields
                 'params' => [
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' => [
-                    ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1',
-                ],
+                'fields' =>
+                    $itemDescriptionFields,
             ],
 
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => '2',
+                    'referenceMarketplace' => $settings->get('reffererId'),
                 ],
                 'fields' => [
                     'imageId',
@@ -68,6 +86,7 @@ class Billiger extends ResultFields
             'variationBase' => [
                 'availability',
                 'model',
+                'weightG',
             ],
 
             'variationRetailPrice' => [
@@ -85,12 +104,18 @@ class Billiger extends ResultFields
 
             'variationBarcode' => [
                 'params' => [
-                    'barcodeType' => 'EAN',
+                    'barcodeType' => $settings->get('barcode'),
                 ],
                 'fields' => [
                     'code',
                     'barcodeId',
                 ]
+            ],
+            'itemCharacterList' => [
+                'itemCharacterId',
+                'characterId',
+                'characterValue',
+                'characterValueType',
             ],
         ];
     }

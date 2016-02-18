@@ -8,7 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
-class Shopzilla extends CSVGenerator
+class ShopzillaDE extends CSVGenerator
 {
 	/*
      * @var ElasticExportHelper

@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Rakuten
+ * Class RakutenDE
  * @package ElasticExport\ResultFields
  */
-class Rakuten extends ResultFields
+class RakutenDE extends ResultFields
 {
 	/*
 	 * @var ArrayHelper
@@ -24,7 +24,7 @@ class Rakuten extends ResultFields
 	{
 		$this->arrayHelper = $arrayHelper;
 	}
-		
+
 	/**
 	 * Generate result fields.
 	 * @param  array<FormatSetting> $formatSettings = []
@@ -78,7 +78,7 @@ class Rakuten extends ResultFields
 					'type' => 'variation',
 					'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
 				],
-				'fields' => [					
+				'fields' => [
 					'type',
 					'path',
 					'position',

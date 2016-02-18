@@ -15,15 +15,15 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 	{
 		$formats = [
 			'Belboon',
-			'Billiger',
-			'Geizhals',
+			'BilligerDE',
+			'GeizhalsDE',
 			'GoogleShopping',
-			'Guenstiger',
+			'GuenstigerDE',
 			'Idealo',
-			'PreisRoboter',
-			'Rakuten',
-			'Shopzilla',
-			'Shopping',
+			'PreisRoboterDE',
+			'RakutenDE',
+			'ShopzillaDE',
+			'ShoppingCOM',
 		];
 
 		foreach ($formats as $format)

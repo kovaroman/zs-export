@@ -11,6 +11,7 @@ use Plenty\Modules\Unit\Models\UnitLang;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
 use Plenty\Modules\Character\Contracts\CharacterItemNameRepositoryContract;
+use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 
 
 /**
@@ -63,6 +64,11 @@ class ElasticExportHelper
     private CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository;
 
     /**
+     * UrlBuilderRepositoryContract $urlBuilderRepository
+     */
+    private UrlBuilderRepositoryContract $urlBuilderRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -70,12 +76,14 @@ class ElasticExportHelper
      * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
      * @param CharacterItemNameRepositoryContract $characterItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
+     * @param UrlBuilderRepositoryContract $urlBuilderRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
                                 AttributeValueLangRepositoryContract $attributeValueLangRepository,
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
-                                CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
+                                CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
+                                UrlBuilderRepositoryContract $urlBuilderRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -87,6 +95,8 @@ class ElasticExportHelper
         $this->characterItemNameRepository = $characterItemNameRepository;
 
         $this->categoryBranchMarketplaceRepository = $categoryBranchMarketplaceRepository;
+
+        $this->urlBuilderRepository = $urlBuilderRepository;
     }
 
     /**
@@ -230,9 +240,10 @@ class ElasticExportHelper
      * @param  {[type]} KeyValue  $settings
      * @param  {[type]} bool      $addReferrer    =             true  Choose if referrer id should be added as parameter.
      * @param  {[type]} bool      $useIntReferrer =             false Choos if referrer id should be used as integer.
+     * @param  bool $useHttps
      * @return {[type]}           Item url.
      */
-    public function getUrl(Record $item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false):string
+    public function getUrl(Record $item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false, bool $useHttps = true):string
 	{
         if($settings->get('itemUrl') == self::ITEM_URL_NO)
         {
@@ -241,7 +252,7 @@ class ElasticExportHelper
 
 		$urlParams = [];
 
-        $link = ''; // TODO UrlBuilder get url_content
+        $link = $this->urlBuilderRepository->getItemUrl($item->itemBase->id, $settings->get('plentyId'), $item->itemDescription->urlContent, $settings->get('lang') ? $settings->get('lang') : 'de');
 
 		if($addReferrer && $settings->get('referrerId'))
 		{
@@ -434,16 +445,15 @@ class ElasticExportHelper
      */
     public function getMainImage(Record $item, KeyValue $settings):string
     {
-        //TODO use URL builder for image path
         foreach($item->variationImageList as $image)
         {
             if($settings->get('imagePosition') == self::IMAGE_FIRST)
             {
-                return $image->path;
+                return $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), 'normal', $image->fileType, $image->type == 'external');
             }
             elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image->position == 0)
             {
-                return $image->path;
+                return $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), 'normal', $image->fileType, $image->type == 'external');
             }
         }
 
