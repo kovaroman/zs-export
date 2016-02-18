@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Belboon
+ * Class BelboonDE
  * @package ElasticExport\ResultFields
  */
-class Belboon extends ResultFields
+class BelboonDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -45,8 +45,11 @@ class Belboon extends ResultFields
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
                 'fields' => [
+										'description',
 										'keywords',
                     ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1',
+										'shortDescription',
+										'technicalData',
 										'urlContent',
                 ],
             ],

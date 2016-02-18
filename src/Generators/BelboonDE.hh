@@ -9,7 +9,7 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 
-class Belboon extends CSVGenerator
+class BelboonDE extends CSVGenerator
 {
     const string DELIMITER = ';';
 
@@ -21,15 +21,13 @@ class Belboon extends CSVGenerator
      */
     private ElasticExportHelper $elasticExportHelper;
 
-
-
   	/*
   	 * @var ArrayHelper
   	 */
   	private ArrayHelper $arrayHelper;
 
 	  /**
-     * Belboon constructor.
+     * BelboonDE constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
@@ -83,7 +81,7 @@ class Belboon extends CSVGenerator
           'Price'                       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
           'Currency'                    => $item->variationRetailPrice->currency,
           'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
-          'Image_Small_URL'             => '', // TODO small image url
+          'Image_Small_URL'             => '', // TODO preview image
           'Image_Small_WIDTH'           => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
           'Image_Small_HEIGHT'          => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
           'Image_Large_URL'             => $this->elasticExportHelper->getMainImage($item, $settings),

@@ -5,7 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class Belboon extends Filters
+class BelboonDE extends Filters
 {
     /*
 	 * @var ArrayHelper
@@ -13,7 +13,7 @@ class Belboon extends Filters
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Belboon constructor.
+     * BelboonDE constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
