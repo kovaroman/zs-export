@@ -1,6 +1,7 @@
 <?hh // strict
 namespace ElasticExport\Helper;
 
+use Plenty\Modules\Category\Contracts\CategoryBranchMarketplaceRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
@@ -61,24 +62,31 @@ class ElasticExportHelper
     private CharacterItemNameRepositoryContract $characterItemNameRepository;
 
     /**
+     * CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
+     */
+    private CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository;
+
+    /**
      * UrlBuilderRepositoryContract $urlBuilderRepository
      */
     private UrlBuilderRepositoryContract $urlBuilderRepository;
 
     /**
      * ElasticExportHelper constructor.
+     *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param UnitLangRepositoryContract $unitLangRepository
      * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
      * @param CharacterItemNameRepositoryContract $characterItemNameRepository
+     * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      */
-    public function __construct(
-        CategoryBranchRepositoryContract $categoryBranchRepository,
-        UnitLangRepositoryContract $unitLangRepository,
-        AttributeValueLangRepositoryContract $attributeValueLangRepository,
-        CharacterItemNameRepositoryContract $characterItemNameRepository,
-        UrlBuilderRepositoryContract $urlBuilderRepository
+    public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
+                                UnitLangRepositoryContract $unitLangRepository,
+                                AttributeValueLangRepositoryContract $attributeValueLangRepository,
+                                CharacterItemNameRepositoryContract $characterItemNameRepository,
+                                CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
+                                UrlBuilderRepositoryContract $urlBuilderRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -88,6 +96,8 @@ class ElasticExportHelper
         $this->attributeValueLangRepository = $attributeValueLangRepository;
 
         $this->characterItemNameRepository = $characterItemNameRepository;
+
+        $this->categoryBranchMarketplaceRepository = $categoryBranchMarketplaceRepository;
 
         $this->urlBuilderRepository = $urlBuilderRepository;
     }
