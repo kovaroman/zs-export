@@ -9,12 +9,12 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
  * Class PreisRoboterDE
  * @package ElasticExport\ResultFields
  */
-class PreisRoboter extends ResultFields
+class PreisRoboterDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
 	 */
-private ArrayHelper $arrayHelper;
+     private ArrayHelper $arrayHelper;
 
     /**
      * Billiger constructor.
