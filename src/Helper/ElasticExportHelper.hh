@@ -12,8 +12,8 @@ use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
 use Plenty\Modules\Character\Contracts\CharacterItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
-
-
+use Plenty\Modules\Category\Contracts\CategoryRepository;
+use Plenty\Modules\Category\Models\CategoryTemplateHelper;
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -67,6 +67,11 @@ class ElasticExportHelper
     private CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository;
 
     /**
+     * CategoryRepository $categoryRepository
+     */
+    private CategoryRepository $categoryRepository;
+
+    /**
      * UrlBuilderRepositoryContract $urlBuilderRepository
      */
     private UrlBuilderRepositoryContract $urlBuilderRepository;
@@ -80,13 +85,15 @@ class ElasticExportHelper
      * @param CharacterItemNameRepositoryContract $characterItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
+     * @param CategoryRepository $categoryRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
                                 AttributeValueLangRepositoryContract $attributeValueLangRepository,
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
-                                UrlBuilderRepositoryContract $urlBuilderRepository
+                                UrlBuilderRepositoryContract $urlBuilderRepository,
+                                CategoryRepository $categoryRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -100,6 +107,8 @@ class ElasticExportHelper
         $this->categoryBranchMarketplaceRepository = $categoryBranchMarketplaceRepository;
 
         $this->urlBuilderRepository = $urlBuilderRepository;
+
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -304,6 +313,51 @@ class ElasticExportHelper
 		return '';
 	}
 
+    public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
+    {
+        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
+
+        $category = null;
+        
+        if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch->branch))
+        {
+            switch($categoryLevel)
+            {
+                case 1:
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category1_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    break;
+
+                case 2:
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category2_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    break;
+
+                case 3:
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category3_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    break;
+
+                case 4:
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category4_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    break;
+
+                case 5:
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category5_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    break;
+
+                case 6:
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category6_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    break;
+
+            }
+        }
+
+        if($category instanceof CategoryTemplateHelper)
+        {
+            return (string) $category->name;
+        }
+
+        return '';
+    }
+
     /**
      * Get shipping cost.
      * @param  Record   $item
@@ -330,6 +384,12 @@ class ElasticExportHelper
         return 1.2;
     }
 
+    /**
+     * Get price.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return float
+     */
     public function getPrice(Record $item, KeyValue $settings):float
     {
         if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
