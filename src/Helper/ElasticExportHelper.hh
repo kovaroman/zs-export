@@ -296,9 +296,9 @@ class ElasticExportHelper
 	{
         $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
 
-        if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch->branch))
+        if(!is_null($categoryBranch) && is_array($categoryBranch->branchName) && count($categoryBranch->branchName))
 		{
-			return implode($separator, $categoryBranch->branch);
+			return implode($separator, $categoryBranch->branchName);
 		}
 
 		return '';
