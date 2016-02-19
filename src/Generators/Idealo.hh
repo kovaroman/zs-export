@@ -74,6 +74,10 @@ class Idealo extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+
+				$price = $this->elasticExportHelper->getPrice($item, $settings) <= 0 ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
+				$rrp = $item->variationRecommendedRetailPrice->price <= $price ? 0 : $item->variationRecommendedRetailPrice->price;
+
 				$data = [
 					'article_id' 		=> $item->variationBase->id,
 					'deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
@@ -87,20 +91,20 @@ class Idealo extends CSVGenerator
 					'ean'	 			=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'isbn' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
 					'fedas' 			=> $item->itemBase->fedas,
-					'warranty' 			=> '', // TODO warranty
-					'price' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
-					'price_old' 		=> '', // TODO get UVP price,
+					'warranty' 			=> '',
+					'price' 			=> number_format($price, 2, '.', ''),
+					'price_old' 		=> number_format($rrp, 2, '.', ''),
 					'weight' 			=> $item->variationBase->weightG,
-					'category1' 		=> '', // TODO category1
-					'category2' 		=> '', // TODO category2
-					'category3' 		=> '', // TODO category3
-					'category4' 		=> '', // TODO category4
-					'category5' 		=> '', // TODO category5
-					'category6' 		=> '', // TODO category6
-					'category_concat' => $this->elasticExportHelper->getCategory($item, $settings),
-					'image_url_preview' => $this->elasticExportHelper->getImages($item, $settings, ';', 'preview'),
-					'image_url' => $this->elasticExportHelper->getImages($item, $settings, ';'),
-					'base_price' => $this->elasticExportHelper->getBasePrice($item, $settings),
+					'category1' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 1),
+					'category2' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 2),
+					'category3' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 3),
+					'category4' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 4),
+					'category5' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
+					'category6' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
+					'category_concat' 	=> $this->elasticExportHelper->getCategory($item, $settings),
+					'image_url_preview' => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
+					'image_url' 		=> $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
+					'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 					// TODO free_text_field?
 				];
 

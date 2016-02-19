@@ -318,7 +318,7 @@ class ElasticExportHelper
         $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
 
         $category = null;
-        
+
         if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch->branch))
         {
             switch($categoryLevel)
@@ -533,8 +533,28 @@ class ElasticExportHelper
         return '';
     }
 
-    public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = ''):string
+    /**
+     * Get images.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator  = ','
+     * @param  string   $imageType  = 'normal'
+     * @return string
+     */
+    public function getImageList(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
     {
+        $imageUrlList = [];
+
+        foreach($item->variationImageList as $image)
+        {
+            $imageUrlList[] = $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
+        }
+
+        if(count($imageUrlList))
+        {
+            return implode($separator, $imageUrlList);
+        }
+
         return '';
     }
 
