@@ -85,8 +85,8 @@ class BelboonDE extends CSVGenerator
           'Image_Small_WIDTH'           => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
           'Image_Small_HEIGHT'          => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
           'Image_Large_URL'             => $this->elasticExportHelper->getMainImage($item, $settings),
-          'Image_Large_WIDTH'           => $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
-          'Image_Large_HEIGHT'          => $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
+          'Image_Large_WIDTH'           => '', // TODO large image size
+          'Image_Large_HEIGHT'          => '', // TODO large image size
           'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item, $settings),
           'Keywords'                    => $item->itemDescription->keywords,
           'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
@@ -107,15 +107,11 @@ class BelboonDE extends CSVGenerator
    *
    * @param string $filename
    * @param string $type
-   *
-   * @return int
    */
   private function getImageSize(string $filename, string $type):int
   {
     $imageInformation = array();
-    $imageInformation[0] = $imageInformation[1] = 2;
-
-
+    $imageInformation[0] = $imageInformation[1] = '';
 
     switch ($type)
     {
