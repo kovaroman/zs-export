@@ -71,32 +71,38 @@ class BelboonDE extends CSVGenerator
         'Unit_Price',
 			]);
 
+      $previousItemId = 0;
+
 			foreach($resultData as $item)
 			{
-				$data = [
-          'Merchant_ProductNumber'      => $item->variationBase->id,
-          'EAN_Code'                    => $item->variationBarcode->code,
-          'Product_Title'               => $this->elasticExportHelper->getName($item, $settings, 256),
-          'Brand'                       => $item->itemBase->producer,
-          'Price'                       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
-          'Currency'                    => $item->variationRetailPrice->currency,
-          'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
-          'Image_Small_URL'             => '', // TODO preview image
-          'Image_Small_WIDTH'           => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
-          'Image_Small_HEIGHT'          => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
-          'Image_Large_URL'             => $this->elasticExportHelper->getMainImage($item, $settings),
-          'Image_Large_WIDTH'           => '', // TODO large image size
-          'Image_Large_HEIGHT'          => '', // TODO large image size
-          'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item, $settings),
-          'Keywords'                    => $item->itemDescription->keywords,
-          'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
-          'Product_Description_Long'    => $this->elasticExportHelper->getDescription($item, $settings, 256),
-          'Shipping'                    => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-          'Availability'                => $this->elasticExportHelper->getAvailability($item, $settings),
-          'Unit_Price'                  => $this->elasticExportHelper->getBasePrice($item, $settings),
-				];
+        if($previousItemId != $item->itemBase->id)
+        {
+          $data = [
+            'Merchant_ProductNumber'      => $item->variationBase->id,
+            'EAN_Code'                    => $item->variationBarcode->code,
+            'Product_Title'               => $this->elasticExportHelper->getName($item, $settings, 256),
+            'Brand'                       => $item->itemBase->producer,
+            'Price'                       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+            'Currency'                    => $item->variationRetailPrice->currency,
+            'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
+            'Image_Small_URL'             => '', // TODO preview image
+            'Image_Small_WIDTH'           => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
+            'Image_Small_HEIGHT'          => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
+            'Image_Large_URL'             => $this->elasticExportHelper->getMainImage($item, $settings),
+            'Image_Large_WIDTH'           => '', // TODO large image size
+            'Image_Large_HEIGHT'          => '', // TODO large image size
+            'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item, $settings),
+            'Keywords'                    => $item->itemDescription->keywords,
+            'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
+            'Product_Description_Long'    => $this->elasticExportHelper->getDescription($item, $settings, 256),
+            'Shipping'                    => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+            'Availability'                => $this->elasticExportHelper->getAvailability($item, $settings),
+            'Unit_Price'                  => $this->elasticExportHelper->getBasePrice($item, $settings),
+          ];
 
-				$this->addCSVContent(array_values($data));
+          $this->addCSVContent(array_values($data));
+          $previousItemId = $item->itemBase->id;
+        }
 			}
 		}
 	}
