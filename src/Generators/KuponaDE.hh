@@ -70,7 +70,7 @@ private ArrayHelper $arrayHelper;
 			foreach($resultData as $item)
 			{
 				$data = [
-                    'prod_number'           => $item->variationBase->id,
+                    'prod_number'           => $item->itemBase->id,
                     'prod_name'             => $this->elasticExportHelper->getName($item, $settings),
                     'prod_price'            => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
                     'prod_price_old'        => '',
