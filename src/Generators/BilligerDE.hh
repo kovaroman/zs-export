@@ -68,7 +68,7 @@ class BilligerDE extends CSVGenerator
 					'price' 	=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'brand' 	=> $item->itemBase->producer,
-					'ean' 		=> $item->variationBarcode->code,
+					'ean' 		=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'desc' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),
 	                'shop_cat' 	=> $this->elasticExportHelper->getCategory($item, $settings),
 					'image'		=> $this->elasticExportHelper->getMainImage($item, $settings),

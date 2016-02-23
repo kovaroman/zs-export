@@ -61,7 +61,7 @@ class GuenstigerDE extends CSVGenerator
 					'bezeichnung'      => $this->elasticExportHelper->getName($item, $settings, 256),
 					'preis' 	       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'deeplink' 		   => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'ean' 		       => $item->variationBarcode->code,
+					'ean' 		       => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'beschreibung' 	   => $this->elasticExportHelper->getDescription($item, $settings, 256),
 					'bilderlink'	   => $this->elasticExportHelper->getMainImage($item, $settings),
 					'lieferzeiten' 	   => $this->elasticExportHelper->getAvailability($item, $settings),
