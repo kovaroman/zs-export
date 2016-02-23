@@ -26,7 +26,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 			'ShoppingCOM',
             'BasicPriceSearchEngine',
             'KelkooBasic',
-            'KelkooPremium'
+            'KelkooPremium',
+            'KuponaDE'
 		];
 
 		foreach ($formats as $format)
