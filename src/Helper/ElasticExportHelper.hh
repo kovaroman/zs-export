@@ -131,7 +131,7 @@ class ElasticExportHelper
      * @param  int $defaultNameLength
      * @return string
      */
-    public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 240):string
+    public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 0):string
 	{
 		switch($settings->get('nameId'))
 		{
@@ -150,6 +150,11 @@ class ElasticExportHelper
 		}
 
         $nameLength = $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength;
+
+        if($nameLength <= 0)
+        {
+            return $name;
+        }
 
         return substr($name, 0, $nameLength);
     }
@@ -602,7 +607,7 @@ class ElasticExportHelper
     public function getCharacterMarketComponentList(Record $item, KeyValue $settings, ?int $componentId = null):array<int, ItemCharacter>
     {
         $characterList = $item->itemCharacterList;
-        
+
         $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($settings->get('referrerId'), !is_null($componentId) ? $componentId : null);
 
         $characterMarketComponentList = [];
