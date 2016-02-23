@@ -14,6 +14,10 @@ use Plenty\Modules\Character\Contracts\CharacterItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepository;
 use Plenty\Modules\Category\Models\CategoryTemplateHelper;
+use Plenty\Modules\Character\Contracts\CharacterMarketComponentRepositoryContract;
+use Plenty\Modules\Character\Models\CharacterMarketComponent;
+use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
+
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -77,6 +81,11 @@ class ElasticExportHelper
     private UrlBuilderRepositoryContract $urlBuilderRepository;
 
     /**
+     * CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;s
+     */
+    private CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -93,7 +102,8 @@ class ElasticExportHelper
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
-                                CategoryRepository $categoryRepository
+                                CategoryRepository $categoryRepository,
+                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -109,6 +119,8 @@ class ElasticExportHelper
         $this->urlBuilderRepository = $urlBuilderRepository;
 
         $this->categoryRepository = $categoryRepository;
+
+        $this->characterMarketComponentRepository = $characterMarketComponentRepository;
     }
 
     /**
@@ -578,6 +590,35 @@ class ElasticExportHelper
         }
 
         return '';
+    }
+
+    /**
+     * Get the character market component list.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  ?int     $componentId  = null
+     * @return array<int, ItemCharacter
+     */
+    public function getCharacterMarketComponentList(Record $item, KeyValue $settings, ?int $componentId = null):array<int, ItemCharacter>
+    {
+        $characterList = $item->itemCharacterList;
+        
+        $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($settings->get('referrerId'), !is_null($componentId) ? $componentId : null);
+
+        $characterMarketComponentList = [];
+
+        foreach ($characterList as $character)
+		{
+            foreach($characterMarketComponents as $characterMarketComponent)
+            {
+                if($characterMarketComponent instanceof CharacterMarketComponent && $characterMarketComponent->character_item_id == $character->characterId)
+                {
+                    $characterMarketComponentList[] = $character;
+                }
+            }
+		}
+
+		return $characterMarketComponentList;
     }
 
     /**
