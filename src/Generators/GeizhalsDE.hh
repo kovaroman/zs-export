@@ -69,7 +69,7 @@ class GeizhalsDE extends CSVGenerator
 				$data = [
 					'Hersteller' 		=> $item->itemBase->producer,
 					'Produktcode' 		=> $item->itemBase->id,
-					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings, 256) . (strlen($variationName) ? ' ' . $variationName : ''),
+					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'Deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'Vorkasse' 			=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->elasticExportHelper->getPaymentExtraCharge($item, $settings, 0), 2, '.', ''),

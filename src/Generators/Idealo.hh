@@ -75,14 +75,15 @@ class Idealo extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-
 				$price = $this->elasticExportHelper->getPrice($item, $settings) <= 0 ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
 				$rrp = $item->variationRecommendedRetailPrice->price <= $price ? 0 : $item->variationRecommendedRetailPrice->price;
+
+				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
 
 				$data = [
 					'article_id' 		=> $item->variationBase->id,
 					'deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'name' 				=> $this->elasticExportHelper->getName($item, $settings),
+					'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'short_description' => $this->elasticExportHelper->getPreviewText($item, $settings),
 					'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 					'article_no' 		=> $item->variationBase->customNumber,
@@ -139,4 +140,6 @@ class Idealo extends CSVGenerator
 
 		return implode(' ', $freeText);
 	}
+
+    private function getName()
 }
