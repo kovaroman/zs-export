@@ -29,6 +29,11 @@ class Idealo extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        if($settings->get('variations') == 'mainVariations')
+        {
+            $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
+        }        
+
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
@@ -106,6 +111,15 @@ class Idealo extends ResultFields
                     'manually',
                 ],
             ],
+
+            'itemCharacterList' => [
+                 'itemCharacterId',
+                 'characterId',
+                 'characterValue',
+                 'characterValueType',
+            ],
+
+
         ];
     }
 }

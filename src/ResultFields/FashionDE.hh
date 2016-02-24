@@ -1,4 +1,4 @@
-<?hh //strict
+<?hh // strict
 namespace ElasticExport\ResultFields;
 
 use Plenty\Modules\DataExchange\Contracts\ResultFields;
@@ -6,15 +6,15 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class BelboonDE
+ * Class FashionDE
  * @package ElasticExport\ResultFields
  */
-class BelboonDE extends ResultFields
+class FashionDE extends ResultFields
 {
     /*
-	 * @var ArrayHelper
-	 */
-	private ArrayHelper $arrayHelper;
+     * @var ArrayHelper
+     */
+    private ArrayHelper $arrayHelper;
 
     /**
      * Billiger constructor.
@@ -22,25 +22,19 @@ class BelboonDE extends ResultFields
      */
     public function __construct(ArrayHelper $arrayHelper)
     {
-		$this->arrayHelper = $arrayHelper;
+        $this->arrayHelper = $arrayHelper;
     }
 
-    /**
-     * Generate result fields.
-     * @param  array<FormatSetting> $formatSettings = []
-     * @return array
-     */
     public function generateResultFields(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-				if($settings->get('variations') == 'mainVariations')
+        if($settings->get('variations') == 'mainVariations')
         {
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
         }
 
         $itemDescriptionFields = ['urlContent'];
-				$itemDescriptionFields[] = 'keywords',
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
         if($settings->get('descriptionType') == 'itemShortDescription')
@@ -74,23 +68,33 @@ class BelboonDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => '2',
                 ],
                 'fields' => [
-                    'imageId',
                     'type',
-                    'fileType',
                     'path',
                     'position',
-                    'cleanImageName',
                 ]
+            ],
 
+            'variationRecommendedRetailPrice' => [
+                'price', //[float]
             ],
 
             'variationBase' => [
                 'availability',
-								'id',
+                'attributeValueSetId',
                 'model',
+                'limitOrderByStockSelect',
+                'unitId',
+                'content',
+            ],
+
+            'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
             ],
 
             'variationRetailPrice' => [
@@ -99,22 +103,28 @@ class BelboonDE extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
-                    'categoryId'
+                    'categoryId',
+                    'plentyId',
+                    'manually',
                 ],
             ],
 
-            'variationBarcode' => [
-                'params' => [
-                    'barcodeType' => 'EAN_13',
-                ],
-                'fields' => [
-                    'code',
-                    'barcodeId',
-                ]
+            'itemCharacterList' => [
+                 'itemCharacterId',
+                 'characterId',
+                 'characterValue',
+                 'characterValueType',
             ],
+
+            'variationAttributeValueList' => [
+				'attributeId',
+				'attributeValueId',
+			],
+
+
         ];
     }
 }

@@ -7,6 +7,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
+use Plenty\Modules\Helper\Models\KeyValue;
 
 /**
  * Class Idealo
@@ -74,14 +75,15 @@ class Idealo extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-
 				$price = $this->elasticExportHelper->getPrice($item, $settings) <= 0 ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
 				$rrp = $item->variationRecommendedRetailPrice->price <= $price ? 0 : $item->variationRecommendedRetailPrice->price;
+
+				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
 
 				$data = [
 					'article_id' 		=> $item->variationBase->id,
 					'deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'name' 				=> $this->elasticExportHelper->getName($item, $settings),
+					'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'short_description' => $this->elasticExportHelper->getPreviewText($item, $settings),
 					'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 					'article_no' 		=> $item->variationBase->customNumber,
@@ -105,11 +107,37 @@ class Idealo extends CSVGenerator
 					'image_url_preview' => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
 					'image_url' 		=> $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
 					'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
-					// TODO free_text_field?
+					'free_text_field'   => $this->getFreeText($item, $settings),
 				];
 
 				$this->addCSVContent(array_values($data));
 			}
 		}
     }
+
+	/**
+	 * Get free text.
+	 * @param  Record   $item
+	 * @param  KeyValue $settings
+	 * @return {string
+	 */
+	private function getFreeText(Record $item, KeyValue $settings):string
+	{
+		$characterMarketComponentList = $this->elasticExportHelper->getCharacterMarketComponentList($item, $settings, 1);
+
+		$freeText = [];
+
+		if(count($characterMarketComponentList))
+		{
+			foreach($characterMarketComponentList as $itemCharacter)
+			{
+				if($itemCharacter->characterValueType != 'file' && $itemCharacter->characterValueType != 'empty')
+				{
+					$freeText[] = (string) $itemCharacter->characterValue;
+				}
+			}
+		}
+
+		return implode(' ', $freeText);
+	}    
 }

@@ -14,6 +14,10 @@ use Plenty\Modules\Character\Contracts\CharacterItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepository;
 use Plenty\Modules\Category\Models\CategoryTemplateHelper;
+use Plenty\Modules\Character\Contracts\CharacterMarketComponentRepositoryContract;
+use Plenty\Modules\Character\Models\CharacterMarketComponent;
+use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
+
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -77,6 +81,11 @@ class ElasticExportHelper
     private UrlBuilderRepositoryContract $urlBuilderRepository;
 
     /**
+     * CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;s
+     */
+    private CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -93,7 +102,8 @@ class ElasticExportHelper
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
-                                CategoryRepository $categoryRepository
+                                CategoryRepository $categoryRepository,
+                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -109,6 +119,8 @@ class ElasticExportHelper
         $this->urlBuilderRepository = $urlBuilderRepository;
 
         $this->categoryRepository = $categoryRepository;
+
+        $this->characterMarketComponentRepository = $characterMarketComponentRepository;
     }
 
     /**
@@ -119,7 +131,7 @@ class ElasticExportHelper
      * @param  int $defaultNameLength
      * @return string
      */
-    public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 240):string
+    public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 0):string
 	{
 		switch($settings->get('nameId'))
 		{
@@ -138,6 +150,11 @@ class ElasticExportHelper
 		}
 
         $nameLength = $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength;
+
+        if($nameLength <= 0)
+        {
+            return $name;
+        }
 
         return substr($name, 0, $nameLength);
     }
@@ -464,12 +481,21 @@ class ElasticExportHelper
      * @param  bool     $compact           =             false
      * @param  bool     $dotPrice          =             false
      * @param  string   $currency          =             ''
+     * @param  float    $price             =             0.0
      * @return string
      */
-    public function getBasePrice(Record $item, KeyValue $settings, string $separator = '/', bool $compact = false, bool $dotPrice = false, string $currency = ''):string
+    public function getBasePrice(
+        Record $item,
+        KeyValue $settings,
+        string $separator = '/',
+        bool $compact = false,
+        bool $dotPrice = false,
+        string $currency = '',
+        float $price = 0.0
+    ):string
 	{
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
-		$price = (float) $item->variationRetailPrice->price;
+		$price = $price > 0 ? $price : (float) $item->variationRetailPrice->price;
         $lot = (int) $item->variationBase->content;
         $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
@@ -581,6 +607,35 @@ class ElasticExportHelper
     }
 
     /**
+     * Get the character market component list.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  ?int     $componentId  = null
+     * @return array<int, ItemCharacter
+     */
+    public function getCharacterMarketComponentList(Record $item, KeyValue $settings, ?int $componentId = null):array<int, ItemCharacter>
+    {
+        $characterList = $item->itemCharacterList;
+
+        $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($settings->get('referrerId'), !is_null($componentId) ? $componentId : null);
+
+        $characterMarketComponentList = [];
+
+        foreach ($characterList as $character)
+		{
+            foreach($characterMarketComponents as $characterMarketComponent)
+            {
+                if($characterMarketComponent instanceof CharacterMarketComponent && $characterMarketComponent->character_item_id == $character->characterId)
+                {
+                    $characterMarketComponentList[] = $character;
+                }
+            }
+		}
+
+		return $characterMarketComponentList;
+    }
+
+    /**
      * Get barcode by a given type.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -649,7 +704,7 @@ class ElasticExportHelper
      * Get default currency from configuration.
      * @return string
      */
-    private function getDefaultCurrency():string
+    public function getDefaultCurrency():string
     {
         $config = []; // TODO load config
 
