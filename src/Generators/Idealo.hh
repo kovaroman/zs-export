@@ -139,7 +139,5 @@ class Idealo extends CSVGenerator
 		}
 
 		return implode(' ', $freeText);
-	}
-
-    private function getName()
+	}    
 }

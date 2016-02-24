@@ -481,12 +481,21 @@ class ElasticExportHelper
      * @param  bool     $compact           =             false
      * @param  bool     $dotPrice          =             false
      * @param  string   $currency          =             ''
+     * @param  float    $price             =             0.0
      * @return string
      */
-    public function getBasePrice(Record $item, KeyValue $settings, string $separator = '/', bool $compact = false, bool $dotPrice = false, string $currency = ''):string
+    public function getBasePrice(
+        Record $item,
+        KeyValue $settings,
+        string $separator = '/',
+        bool $compact = false,
+        bool $dotPrice = false,
+        string $currency = '',
+        float $price = 0.0
+    ):string
 	{
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
-		$price = (float) $item->variationRetailPrice->price;
+		$price = $price > 0 ? $price : (float) $item->variationRetailPrice->price;
         $lot = (int) $item->variationBase->content;
         $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
@@ -695,7 +704,7 @@ class ElasticExportHelper
      * Get default currency from configuration.
      * @return string
      */
-    private function getDefaultCurrency():string
+    public function getDefaultCurrency():string
     {
         $config = []; // TODO load config
 
