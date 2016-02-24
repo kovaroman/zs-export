@@ -56,8 +56,7 @@ class EcondaDE extends CSVGenerator
                     'EAN',
                     'Brand',
                     'ProductCategory',
-                    'Grundpreis',
-                    'EcondaDE'
+                    'Grundpreis'
 
 			]);
 
