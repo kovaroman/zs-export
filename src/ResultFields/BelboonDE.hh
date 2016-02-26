@@ -40,7 +40,7 @@ class BelboonDE extends ResultFields
         }
 
         $itemDescriptionFields = ['urlContent'];
-				$itemDescriptionFields[] = 'keywords',
+		$itemDescriptionFields[] = 'keywords';
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
         if($settings->get('descriptionType') == 'itemShortDescription')
