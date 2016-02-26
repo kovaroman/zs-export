@@ -88,9 +88,7 @@ private ArrayHelper $arrayHelper;
                     'ean_code'              => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings),
-                    // Additional field that will be filled only for the PLENTY_ID 5208 == gamesload
-                    'platform'              => $settings->get('plentyId') == 5208 ? $item->itemBase->free1 : '',
-
+                    'platform'              => '',
                     'grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings),
 
 				];
