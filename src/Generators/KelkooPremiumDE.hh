@@ -62,7 +62,7 @@ private ArrayHelper $arrayHelper;
 			foreach($resultData as $item)
 			{
 				$data = [
-                    'category'      => $this->elasticExportHelper->getCategory($item, $settings),
+                    'category'      => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'marke'         => $item->itemBase->producer,
                     'title' 		=> $this->elasticExportHelper->getName($item, $settings),
                     'description'   => $this->elasticExportHelper->getDescription($item, $settings, 256),

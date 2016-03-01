@@ -130,7 +130,7 @@ class FashionDE extends CSVGenerator
 			'art_nr' 			=> $item->itemBase->id,
 			'art_name' 			=> $this->elasticExportHelper->getName($item, $settings),
 			'art_kurztext' 		=> $this->elasticExportHelper->getDescription($item, $settings, 3000),
-			'art_kategorie' 	=> $this->elasticExportHelper->getCategory($item, $settings),
+			'art_kategorie' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 			'art_url' 			=> $this->elasticExportHelper->getUrl($item, $settings),
 			'art_img_url' 		=> $this->elasticExportHelper->getMainImage($item, $settings),
 			'waehrung' 			=> $this->elasticExportHelper->getDefaultCurrency(),

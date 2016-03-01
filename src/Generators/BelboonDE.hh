@@ -87,7 +87,7 @@ class BelboonDE extends CSVGenerator
             'Image_Large_URL'             => $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
             'Image_Large_WIDTH'           => '', // TODO large image size
             'Image_Large_HEIGHT'          => '', // TODO large image size
-            'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item, $settings),
+            'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
             'Keywords'                    => $item->itemDescription->keywords,
             'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
             'Product_Description_Long'    => $this->elasticExportHelper->getDescription($item, $settings, 256),

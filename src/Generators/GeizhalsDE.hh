@@ -77,7 +77,7 @@ class GeizhalsDE extends CSVGenerator
 					'Verfügbarkeit' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 					'Herstellercode' 	=> $item->variationBase->model,
 					'EAN' 				=> $item->variationBarcode->code,
-					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item, $settings),
+					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 

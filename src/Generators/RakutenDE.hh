@@ -230,7 +230,7 @@ class RakutenDE extends CSVGenerator
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
-			'kategorien'				=> $this->elasticExportHelper->getCategory($item, $settings),
+			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings),
 			'tradoria_kategorie'		=> '',
 			'sichtbar'					=> 1,

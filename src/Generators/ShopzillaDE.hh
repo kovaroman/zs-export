@@ -64,7 +64,7 @@ class ShopzillaDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$data = [
-					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item, $settings),
+					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Hersteller' 		=> $item->itemBase->producer,
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings, 256),
 					'Beschreibung' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),

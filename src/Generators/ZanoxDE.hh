@@ -70,7 +70,7 @@ private ArrayHelper $arrayHelper;
                     'prod_name'             => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings))),
                     'prod_price'            => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
                     'currency_symbol'       => $item->variationRetailPrice->currency,
-                    'category'              => $this->elasticExportHelper->getCategory($item, $settings),
+                    'category'              => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'prod_description'      => strip_tags(html_entity_decode($this->elasticExportHelper->getPreviewText($item, $settings, 256))),
                     'prod_description_long' => strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings, 256))),
                     'img_small'             => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),

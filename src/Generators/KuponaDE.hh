@@ -76,7 +76,7 @@ private ArrayHelper $arrayHelper;
                     'prod_price_old'        => '',
                     'currency_symbol'       => $item->variationRetailPrice->currency,
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-                    'category'              => $this->elasticExportHelper->getCategory($item, $settings),
+                    'category'              => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'category_url'          => '',
                     'valid_from_date'       => '',
                     'valid_to_date'         => '',

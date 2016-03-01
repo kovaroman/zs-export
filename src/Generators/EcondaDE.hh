@@ -82,7 +82,7 @@ class EcondaDE extends CSVGenerator
                     'Stock'             => $item->variationStock->stockNet,
                     'EAN'               => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'Brand'             => $item->itemBase->producer,
-                    'ProductCategory'   => $this->elasticExportHelper->getCategory($item, $settings),
+                    'ProductCategory'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'Grundpreis'        => $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 

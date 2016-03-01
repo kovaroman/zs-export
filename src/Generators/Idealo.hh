@@ -103,7 +103,7 @@ class Idealo extends CSVGenerator
 					'category4' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 4),
 					'category5' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
 					'category6' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
-					'category_concat' 	=> $this->elasticExportHelper->getCategory($item, $settings),
+					'category_concat' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'image_url_preview' => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
 					'image_url' 		=> $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
 					'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),

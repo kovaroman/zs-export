@@ -166,7 +166,7 @@ class MyBestBrandsDE extends CSVGenerator
 
 		$data = [
 			'ProductID' 			=> $item->itemBase->id,
-			'ProductCategory' 		=> str_replace(array('&', '/'), array('und', ' '), $this->elasticExportHelper->getCategory($item, $settings)),
+			'ProductCategory' 		=> str_replace(array('&', '/'), array('und', ' '), $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'))),
 			'Deeplink' 				=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 			'ProductName'			=> $productName,
 			'ImageUrl' 				=> $this->elasticExportHelper->getMainImage($item, $settings),

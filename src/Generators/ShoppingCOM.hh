@@ -71,7 +71,7 @@ class ShoppingCOM extends CSVGenerator
 					'Preis' 				=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
 					'Produkt-URL' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 	                'Produktbild-URL' 		=> $this->elasticExportHelper->getMainImage($item, $settings),
-					'Kategorie'				=> $this->elasticExportHelper->getCategory($item, $settings),
+					'Kategorie'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Verfügbar' 			=> 'Ja',
 					'Verfügbarkeitdetails' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 	                'Versand: Landtarif' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),

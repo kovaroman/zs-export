@@ -325,15 +325,16 @@ class ElasticExportHelper
 	}
 
     /**
-     * Get category.
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @param  string   $separator
+     * Get category branch for a custom category id.
+     * @param  int $categoryId
+     * @param  string $lang
+     * @param  int $plentyId
+     * @param  string $separator = ' > '
      * @return string
      */
-    public function getCategory(Record $item, KeyValue $settings, string $separator = ' > '):string
+    public function getCategory(int $categoryId, string $lang, int $plentyId, string $separator = ' > '):string
 	{
-        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
+        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($categoryId, $lang, $plentyId);
 
         if(!is_null($categoryBranch) && is_array($categoryBranch->branchName) && count($categoryBranch->branchName))
 		{
@@ -341,7 +342,7 @@ class ElasticExportHelper
 		}
 
 		return '';
-	}
+	}    
 
     public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
     {
