@@ -30,7 +30,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'KuponaDE',
             'FashionDE',
             'EcondaDE',
-            'Twenga'
+            'Twenga',
+            'MyBestBrandsDE',
 		];
 
 		foreach ($formats as $format)

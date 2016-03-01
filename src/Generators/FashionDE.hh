@@ -73,8 +73,6 @@ class FashionDE extends CSVGenerator
 
 			]);
 
-			$previousItemId = 0;
-
 			$rows = [];
 
 			foreach($resultData as $item)

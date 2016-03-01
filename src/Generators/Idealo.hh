@@ -123,17 +123,18 @@ class Idealo extends CSVGenerator
 	 */
 	private function getFreeText(Record $item, KeyValue $settings):string
 	{
-		$characterMarketComponentList = $this->elasticExportHelper->getCharacterMarketComponentList($item, $settings, 1);
+
+		$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings, 1);
 
 		$freeText = [];
 
 		if(count($characterMarketComponentList))
 		{
-			foreach($characterMarketComponentList as $itemCharacter)
+			foreach($characterMarketComponentList as $data)
 			{
-				if($itemCharacter->characterValueType != 'file' && $itemCharacter->characterValueType != 'empty')
+				if((string) $data['characterValueType'] != 'file' && (string) $data['characterValueType'] != 'empty')
 				{
-					$freeText[] = (string) $itemCharacter->characterValue;
+					$freeText[] = (string) $data['characterValue'];
 				}
 			}
 		}

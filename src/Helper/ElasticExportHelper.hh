@@ -149,14 +149,25 @@ class ElasticExportHelper
                 break;
 		}
 
-        $nameLength = $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength;
+        return $this->cleanName($name, $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength);        
+    }
 
-        if($nameLength <= 0)
+    /**
+     * Clean name to a defined length. If maxLength is 0 than named is returned intact.
+     * @param  string name
+     * @param  int maxLength
+     * @return string
+     */
+    public function cleanName(string $name, int $maxLength = 0):string
+    {
+        $name = html_entity_decode($name);
+        
+        if($maxLength <= 0)
         {
             return $name;
         }
 
-        return substr($name, 0, $nameLength);
+        return substr($name, 0, $maxLength);   
     }
 
     /**
@@ -244,6 +255,8 @@ class ElasticExportHelper
         {
             $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
         }
+
+        $description = html_entity_decode($description);
 
         if($descriptionLength <= 0)
         {
@@ -607,32 +620,41 @@ class ElasticExportHelper
     }
 
     /**
-     * Get the character market component list.
+     * Get item characters that match referrer from settings and a given component id.
      * @param  Record   $item
      * @param  KeyValue $settings
      * @param  ?int     $componentId  = null
-     * @return array<int, ItemCharacter
+     * @return array<int, mixed>
      */
-    public function getCharacterMarketComponentList(Record $item, KeyValue $settings, ?int $componentId = null):array<int, ItemCharacter>
+    public function getItemCharactersByComponent(Record $item, KeyValue $settings, ?int $componentId = null):Vector<array<string,mixed>>
     {
         $characterList = $item->itemCharacterList;
 
         $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($settings->get('referrerId'), !is_null($componentId) ? $componentId : null);
 
-        $characterMarketComponentList = [];
+        $list = Vector{};
 
-        foreach ($characterList as $character)
+        foreach($characterList as $character)
 		{
             foreach($characterMarketComponents as $characterMarketComponent)
             {
                 if($characterMarketComponent instanceof CharacterMarketComponent && $characterMarketComponent->character_item_id == $character->characterId)
                 {
-                    $characterMarketComponentList[] = $character;
+                    $list[] = [
+                        'itemCharacterId' => $character->itemCharacterId,
+                        'characterId' => $character->characterId,
+                        'characterValue' => $character->characterValue,
+                        'characterValueType' => $character->characterValueType,
+                        'characterItemId' => $characterMarketComponent->character_item_id,
+                        'componentId' => $characterMarketComponent->component_id,
+                        'referrerId' => $characterMarketComponent->market_reference,
+                        'externalComponent' => $characterMarketComponent->external_component,
+					];
                 }
             }
 		}
 
-		return $characterMarketComponentList;
+		return $list;
     }
 
     /**
