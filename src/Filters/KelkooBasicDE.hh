@@ -5,7 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class Twenga extends Filters
+class KelkooBasicDE extends Filters
 {
     /*
 	 * @var ArrayHelper
@@ -13,7 +13,7 @@ class Twenga extends Filters
 private ArrayHelper $arrayHelper;
 
     /**
-     * Twenga constructor.
+     * KelkooBasicDE constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)

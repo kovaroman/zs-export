@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class KelkooBasic
+ * Class KelkooBasicDE
  * @package ElasticExport\ResultFields
  */
-class KelkooBasic extends ResultFields
+class KelkooBasicDE extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class KelkooBasic extends ResultFields
 private ArrayHelper $arrayHelper;
 
     /**
-     * KelkooBasic constructor.
+     * KelkooBasicDE constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)

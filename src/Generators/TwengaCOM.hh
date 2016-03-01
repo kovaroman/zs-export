@@ -9,7 +9,7 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
 
-class Twenga extends CSVGenerator
+class TwengaCOM extends CSVGenerator
 {
     /*
      * @var ElasticExportHelper
@@ -22,7 +22,7 @@ private ElasticExportHelper $elasticExportHelper;
 private ArrayHelper $arrayHelper;
 
     /**
-     * Twenga constructor.
+     * TwengaCOM constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
