@@ -550,6 +550,37 @@ class ElasticExportHelper
 		}
 	}
 
+	/**
+	 * Get base price.
+	 *
+	 * @param  Record   $item
+	 * @param  KeyValue $settings
+	 * @return Map
+	 */
+	public function getBasePriceList(Record $item, KeyValue $settings):Map<string,mixed>
+	{
+		$price = (float) $item->variationRetailPrice->price;
+		$lot = (int) $item->variationBase->content;
+		$unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+		if($unitLang instanceof UnitLang)
+		{
+			$unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
+			$unitName = $unitLang->plenty_unit_lang_name;
+		}
+		else
+		{
+			$unitShortcut = '';
+			$unitName = '';
+		}
+
+		$basePriceDetails = $this->getBasePriceDetails($lot, $price, $unitShortcut);
+
+		$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
+
+		return Map{'lot' => (int)$basePriceDetails['lot'], 'price' => (float)$basePriceDetails['price'], 'unit' => (string)$unitName};
+	}
+
     /**
      * Get main image.
      * @param  Record   $item
