@@ -64,7 +64,12 @@ class GoogleShopping extends ResultFields
 				'params' => [
 					'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
 				],
-				'fields' => $itemDescriptionFields,
+				'fields' => [
+					'urlContent',
+					'shortDescription',
+					'description',
+					'technicalData',
+				],
 			],
 
 
@@ -89,6 +94,7 @@ class GoogleShopping extends ResultFields
 				'limitOrderByStockSelect',
 				'unitId',
 				'content',
+				'weightG',
 			],
 
 			'variationRetailPrice' => [

@@ -109,6 +109,8 @@ class GoogleShopping extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
+
 				$data = [
 					'id' 						=> $item->variationBase->id,
 					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 150),
@@ -125,20 +127,20 @@ class GoogleShopping extends CSVGenerator
 					'ean'						=> $item->variationBarcode->code,
 					'isbn'						=> $item->variationBarcode->code,
 					'mpn'						=> $item->variationBase->model,
-					'color'						=> '',
-					'size'						=> '',
+					'color'						=> $variationName,
+					'size'						=> $variationName,
 					'material'					=> '',
 					'pattern'					=> '',
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-					'shipping_weight'			=> '',
+					'shipping_weight'			=> $item->variationBase->weightG.' g',
 					'gender'					=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_GENDER),
 					'age_group'					=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
 					'excluded_destination'		=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
-					'identifier_exists'			=> '',
-					'unit_pricing_measure'		=> '',
-					'unit_pricing_base_measure'	=> '',
+					'identifier_exists'			=> $this->getIdentifierExists($item),
+					'unit_pricing_measure'		=> $this->getUnitPricingMeasure($item, $settings),
+					'unit_pricing_base_measure'	=> $this->getUnitPricingBaseMeasure($item, $settings),
 					'energy_efficiency_class'	=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
 					'size_system'				=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
 					'size_type'					=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),
@@ -182,6 +184,62 @@ class GoogleShopping extends CSVGenerator
 		}
 	}
 
+	/**
+	 * Calculate and get unit price
+	 * @param Record $item
+	 * @return string
+	 */
+	private function getIdentifierExists(Record $item):string
+	{
+		$count = 0;
+		if (strlen($item->variationBase->model) > 0)
+		{
+			$count++;
+		}
+
+		if (strlen($item->variationBarcode->code) > 0)
+		{
+			$count++;
+		}
+
+		if (strlen($item->itemBase->producer) > 0)
+		{
+			$count++;
+		}
+
+		if ($count >= 2)
+		{
+			return 'true';
+		}
+		else
+		{
+			return 'false';
+		}
+	}
+
+	/**
+	 * Calculate and get unit price
+	 * @param Record $item
+	 * @param KeyValue $settings
+	 * @return string
+	 */
+	private function getUnitPricingBaseMeasure(Record $item, KeyValue $settings):string
+	{
+		$basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+		return (string)$basePriceList['lot'].' '.(string)$basePriceList['unit'];
+	}
+
+	/**
+	 * Calculate and get unit price
+	 * @param Record $item
+	 * @param KeyValue $settings
+	 * @return string
+	 */
+	private function getUnitPricingMeasure(Record $item, KeyValue $settings):string
+	{
+		$basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+		return (string)number_format($item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
+	}
 
 	/**
 	 * Check if gender is valid.
@@ -278,11 +336,6 @@ class GoogleShopping extends CSVGenerator
 		if (strlen($description) <= 0)
 		{
 			$description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
-		}
-
-		if (strlen($description) <= 0)
-		{
-			$description = '';
 		}
 
 		return $description;
