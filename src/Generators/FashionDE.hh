@@ -163,7 +163,6 @@ class FashionDE extends CSVGenerator
 
 			if($attributeValueLang instanceof AttributeValueLang)
 			{
-				$amazonVariation = $attributeValueLang->attributeValue->attribute->amazon_variation == 'Color';
 				if($attributeValueLang->attributeValue->attribute->amazon_variation)
 				{
 					$variationAttributes[$attributeValueLang->attributeValue->attribute->amazon_variation][] = $attributeValueLang->name;
