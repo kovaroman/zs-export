@@ -65,6 +65,8 @@ private ArrayHelper $arrayHelper;
 
 			foreach($resultData as $item)
 			{
+                $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+
 				$data = [
                     'prod_number'           => $item->itemBase->id,
                     'prod_name'             => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings))),
@@ -81,8 +83,8 @@ private ArrayHelper $arrayHelper;
                     'prod_ean'              => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'shipping_costs'        => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
                     'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings),
-                    'base_price_amount'     => '',
-                    'base_price_unit'       => ''
+                    'base_price_amount'     => $basePriceList['lot'],
+                    'base_price_unit'       => $basePriceList['unit']
 
 				];
 

@@ -80,6 +80,8 @@ class BasicPriceSearchEngine extends CSVGenerator
 			{
                 $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
 
+                $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+
 				$data = [
 					'article_id'            => $item->itemBase->id,
                     'deeplink'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
@@ -93,7 +95,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'ean'                   => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'isbn'                  => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
                     'fedas'                 => $item->itemBase->fedas,
-                    'unit'                  => '',
+                    'unit'                  => $basePriceList['unit'],
                     'price'                 => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
                     'price_old'             => $rrp,
                     'weight'                => $item->variationBase->weightG,
@@ -108,8 +110,8 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'image_url'             => $this->elasticExportHelper->getMainImage($item, $settings),
                     'shipment_and_handling' => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'unit_price'            => $this->elasticExportHelper->getBasePrice($item, $settings),
-                    'unit_price_value'      => '',
-                    'unit_price_lot'        => ''
+                    'unit_price_value'      => $basePriceList['price'],
+                    'unit_price_lot'        => $basePriceList['lot']
 				];
 
 				$this->addCSVContent(array_values($data));
