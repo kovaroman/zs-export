@@ -73,6 +73,8 @@ private ArrayHelper $arrayHelper;
 
 			foreach($resultData as $item)
 			{
+                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+
 				$data = [
                     'product_url'       => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'designation'       => $this->elasticExportHelper->getName($item, $settings),
@@ -80,7 +82,7 @@ private ArrayHelper $arrayHelper;
                     'category'          => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
                     'description'       => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'regular_price'     => '', //TODO UVP
+                    'regular_price'     => $rrp,
                     'shipping_cost'     => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
                     'merchant_id'       => $item->variationBase->customNumber,
                     'manufacturer_id'   => $item->variationBase->model,

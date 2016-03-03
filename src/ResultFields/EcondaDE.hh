@@ -91,6 +91,10 @@ private ArrayHelper $arrayHelper;
                 'price',
             ],
 
+            'variationRecommendedRetailPrice' => [
+                'price',
+            ],
+
             'variationStandardCategory' => [
                 'params' => [
                     'plentyId' => $settings->get('plentyId'),

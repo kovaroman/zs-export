@@ -86,6 +86,10 @@ private ArrayHelper $arrayHelper;
                 'unitPriceNet',
             ],
 
+            'variationRecommendedRetailPrice' => [
+                'price',
+            ],
+
             'variationStandardCategory' => [
                 'params' => [
                     'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
