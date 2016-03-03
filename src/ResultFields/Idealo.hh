@@ -32,7 +32,7 @@ class Idealo extends ResultFields
         if($settings->get('variations') == 'mainVariations')
         {
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
-        }        
+        }
 
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';

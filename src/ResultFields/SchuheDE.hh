@@ -32,7 +32,7 @@ class SchuheDE extends ResultFields
         if($settings->get('variations') == 'mainVariations')
         {
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
-        }        
+        }
 
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
@@ -76,11 +76,21 @@ class SchuheDE extends ResultFields
                 ]
             ],
 
-            'variationRecommendedRetailPrice' => [
-                'price', //[float]
+            'variationCategoryList' => [
+              'categoryId',
             ],
 
+            'variationRecommendedRetailPrice' => [
+                'price',
+            ],
+
+            'variationAttributeValueList' => [
+				'attributeId',
+				'attributeValueId',
+			],
+
             'variationBase' => [
+                'id',
                 'availability',
                 'attributeValueSetId',
                 'model',
@@ -88,6 +98,25 @@ class SchuheDE extends ResultFields
                 'unitId',
                 'customNumber',
                 'content',
+            ],
+
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual',
+                ],
+                'fields' => [
+                    'stockNet',
+                ]
+            ],
+
+            'variationBarcode' => [
+                'params' => [
+                    'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
+                ],
+                'fields' => [
+                    'code',
+                    'barcodeId',
+                ]
             ],
 
             'variationBarcodeList' => [
