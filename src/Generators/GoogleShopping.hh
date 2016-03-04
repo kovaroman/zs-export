@@ -9,54 +9,63 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Unit\Models\UnitLang;
 use Plenty\Modules\Helper\Models\KeyValue;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+
 
 class GoogleShopping extends CSVGenerator
 {
-	const string CHARACTER_TYPE_GENDER						= 'gender';
-	const string CHARACTER_TYPE_AGE_GROUP					= 'age_group';
-	const string CHARACTER_TYPE_SIZE_TYPE					= 'size_type';
-	const string CHARACTER_TYPE_SIZE_SYSTEM					= 'size_system';
-	const string CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS		= 'energy_efficiency_class';
-	const string CHARACTER_TYPE_EXCLUDED_DESTINATION		= 'excluded_destination';
-	const string CHARACTER_TYPE_ADWORDS_REDIRECT			= 'adwords_redirect';
-	const string CHARACTER_TYPE_MOBILE_LINK					= 'mobile_link';
-	const string CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE	= 'sale_price_effective_date';
-	const string CHARACTER_TYPE_CUSTOM_LABEL_0				= 'custom_label_0';
-	const string CHARACTER_TYPE_CUSTOM_LABEL_1				= 'custom_label_1';
-	const string CHARACTER_TYPE_CUSTOM_LABEL_2				= 'custom_label_2';
-	const string CHARACTER_TYPE_CUSTOM_LABEL_3				= 'custom_label_3';
-	const string CHARACTER_TYPE_CUSTOM_LABEL_4				= 'custom_label_4';
-	const string CHARACTER_TYPE_DESCRIPTION					= 'description';
-	const string CHARACTER_TYPE_COLOR						= 'color';
-	const string CHARACTER_TYPE_SIZE						= 'size';
-	const string CHARACTER_TYPE_PATTERN						= 'pattern';
-	const string CHARACTER_TYPE_MATERIAL					= 'material';
+    const string CHARACTER_TYPE_GENDER						= 'gender';
+    const string CHARACTER_TYPE_AGE_GROUP					= 'age_group';
+    const string CHARACTER_TYPE_SIZE_TYPE					= 'size_type';
+    const string CHARACTER_TYPE_SIZE_SYSTEM					= 'size_system';
+    const string CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS		= 'energy_efficiency_class';
+    const string CHARACTER_TYPE_EXCLUDED_DESTINATION		= 'excluded_destination';
+    const string CHARACTER_TYPE_ADWORDS_REDIRECT			= 'adwords_redirect';
+    const string CHARACTER_TYPE_MOBILE_LINK					= 'mobile_link';
+    const string CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE	= 'sale_price_effective_date';
+    const string CHARACTER_TYPE_CUSTOM_LABEL_0				= 'custom_label_0';
+    const string CHARACTER_TYPE_CUSTOM_LABEL_1				= 'custom_label_1';
+    const string CHARACTER_TYPE_CUSTOM_LABEL_2				= 'custom_label_2';
+    const string CHARACTER_TYPE_CUSTOM_LABEL_3				= 'custom_label_3';
+    const string CHARACTER_TYPE_CUSTOM_LABEL_4				= 'custom_label_4';
+    const string CHARACTER_TYPE_DESCRIPTION					= 'description';
+    const string CHARACTER_TYPE_COLOR						= 'color';
+    const string CHARACTER_TYPE_SIZE						= 'size';
+    const string CHARACTER_TYPE_PATTERN						= 'pattern';
+    const string CHARACTER_TYPE_MATERIAL					= 'material';
 
-	/*
-	 * @var ElasticExportHelper
-	 */
-	private ElasticExportHelper $elasticExportHelper;
+        /*
+         * @var ElasticExportHelper
+         */
+    private ElasticExportHelper $elasticExportHelper;
 
-	/*
-	 * @var ArrayHelper
-	 */
-	private ArrayHelper $arrayHelper;
+        /*
+         * @var ArrayHelper
+         */
+    private ArrayHelper $arrayHelper;
 
-	/**
-	 * GoogleShopping constructor.
-	 * @param ElasticExportHelper $elasticExportHelper
-	 * @param ArrayHelper $arrayHelper
-	 */
-	public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper)
-	{
-		$this->elasticExportHelper = $elasticExportHelper;
-		$this->arrayHelper = $arrayHelper;
-	}
+        /**
+         * AttributeValueLangRepositoryContract $attributeValueLangRepository
+         */
+    private AttributeValueLangRepositoryContract $attributeValueLangRepository;
 
-	/**
-	 * @param mixed $resultData
-	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+        /**
+         * GoogleShopping constructor.
+         * @param ElasticExportHelper $elasticExportHelper
+         * @param ArrayHelper $arrayHelper
+         */
+    public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper, AttributeValueLangRepositoryContract $attributeValueLangRepository)
+    {
+        $this->elasticExportHelper = $elasticExportHelper;
+        $this->arrayHelper = $arrayHelper;
+        $this->attributeValueLangRepository = $attributeValueLangRepository;
+    }
+
+    /**
+     * @param mixed $resultData
+     */
+    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -107,9 +116,11 @@ class GoogleShopping extends CSVGenerator
 				'custom_label_4',
 			]);
 
+            $rows = [];
+
 			foreach($resultData as $item)
 			{
-				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
+                $variationAttributes = $this->getVariationAttributes($item, $settings);
 
 				$data = [
 					'id' 						=> $item->variationBase->id,
@@ -127,10 +138,10 @@ class GoogleShopping extends CSVGenerator
 					'ean'						=> $item->variationBarcode->code,
 					'isbn'						=> $item->variationBarcode->code,
 					'mpn'						=> $item->variationBase->model,
-					'color'						=> $variationName,
-					'size'						=> $variationName,
-					'material'					=> '',
-					'pattern'					=> '',
+					'color'						=> $variationAttributes['color'],
+					'size'						=> $variationAttributes['size'],
+					'material'					=> $variationAttributes['material'],
+					'pattern'					=> $variationAttributes['pattern'],
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
@@ -156,188 +167,214 @@ class GoogleShopping extends CSVGenerator
 
 				$this->addCSVContent(array_values($data));
 			}
-		}
-	}
+        }
+    }
 
-	/**
-	 * Check if condition is valid.
-	 * @param int $condition
-	 * @return string
-	 */
-	private function getCondition(int $conditionId):string
-	{
-		$conditionList = [
-			0 => 'new',
-			1 => 'used',
-			2 => 'new',
-			3 => 'new',
-			4 => 'refurbished',
-		];
+    /**
+     * Check if condition is valid.
+     * @param int $condition
+     * @return string
+     */
+    private function getCondition(int $conditionId):string
+    {
+        $conditionList = [
+            0 => 'new',
+            1 => 'used',
+            2 => 'new',
+            3 => 'new',
+            4 => 'refurbished',
+        ];
 
-		if (array_key_exists($conditionId, $conditionList))
-		{
-			return $conditionList[$conditionId];
-		}
-		else
-		{
-			return '';
-		}
-	}
+        if (array_key_exists($conditionId, $conditionList))
+        {
+            return $conditionList[$conditionId];
+        }
+        else
+        {
+            return '';
+        }
+    }
 
-	/**
-	 * Calculate and get unit price
-	 * @param Record $item
-	 * @return string
-	 */
-	private function getIdentifierExists(Record $item):string
-	{
-		$count = 0;
-		if (strlen($item->variationBase->model) > 0)
-		{
-			$count++;
-		}
+    /**
+     * Calculate and get unit price
+     * @param Record $item
+     * @return string
+     */
+    private function getIdentifierExists(Record $item):string
+    {
+        $count = 0;
+        if (strlen($item->variationBase->model) > 0)
+        {
+            $count++;
+        }
 
-		if (strlen($item->variationBarcode->code) > 0)
-		{
-			$count++;
-		}
+        if (strlen($item->variationBarcode->code) > 0)
+        {
+            $count++;
+        }
 
-		if (strlen($item->itemBase->producer) > 0)
-		{
-			$count++;
-		}
+        if (strlen($item->itemBase->producer) > 0)
+        {
+            $count++;
+        }
 
-		if ($count >= 2)
-		{
-			return 'true';
-		}
-		else
-		{
-			return 'false';
-		}
-	}
+        if ($count >= 2)
+        {
+            return 'true';
+        }
+        else
+        {
+            return 'false';
+        }
+    }
 
-	/**
-	 * Calculate and get unit price
-	 * @param Record $item
-	 * @param KeyValue $settings
-	 * @return string
-	 */
-	private function getUnitPricingBaseMeasure(Record $item, KeyValue $settings):string
-	{
-		$basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-		return (string)$basePriceList['lot'].' '.(string)$basePriceList['unit'];
-	}
+    /**
+     * Calculate and get unit price
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    private function getUnitPricingBaseMeasure(Record $item, KeyValue $settings):string
+    {
+        $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+        return (string)$basePriceList['lot'].' '.(string)$basePriceList['unit'];
+    }
 
-	/**
-	 * Calculate and get unit price
-	 * @param Record $item
-	 * @param KeyValue $settings
-	 * @return string
-	 */
-	private function getUnitPricingMeasure(Record $item, KeyValue $settings):string
-	{
-		$basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-		return (string)number_format($item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
-	}
+    /**
+     * Calculate and get unit price
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    private function getUnitPricingMeasure(Record $item, KeyValue $settings):string
+    {
+        $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+        return (string)number_format($item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
+    }
 
-	/**
-	 * Check if gender is valid.
-	 * @param Record $item
-	 * @param KeyValue $settings
-	 * @param string $type
-	 * @return string
-	 */
-	private function getCharacterValue(Record $item, KeyValue $settings, string $type):string
-	{
-		$characterValue = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, $type);
+    /**
+     * Check if gender is valid.
+     * @param Record $item
+     * @param KeyValue $settings
+     * @param string $type
+     * @return string
+     */
+    private function getCharacterValue(Record $item, KeyValue $settings, string $type):string
+    {
+        $characterValue = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, $type);
 
-		switch($type)
-		{
-			case self::CHARACTER_TYPE_GENDER:
-				$allowedList = [
-					'male',
-					'female',
-					'unisex',
-				];
-				break;
+        switch($type)
+        {
+            case self::CHARACTER_TYPE_GENDER:
+                $allowedList = [
+                    'male',
+                    'female',
+                    'unisex',
+                ];
+                break;
 
-			case self::CHARACTER_TYPE_AGE_GROUP:
-				$allowedList = [
-					'newborn',
-					'infant',
-					'toddler',
-					'adult',
-					'kids',
-				];
-				break;
+            case self::CHARACTER_TYPE_AGE_GROUP:
+                $allowedList = [
+                    'newborn',
+                    'infant',
+                    'toddler',
+                    'adult',
+                    'kids',
+                ];
+                break;
 
-			case self::CHARACTER_TYPE_SIZE_TYPE:
-				$allowedList = [
-					'regular',
-					'petite',
-					'plus',
-					'maternity',
-				];
-				break;
+            case self::CHARACTER_TYPE_SIZE_TYPE:
+                $allowedList = [
+                    'regular',
+                    'petite',
+                    'plus',
+                    'maternity',
+                ];
+                break;
 
-			case self::CHARACTER_TYPE_SIZE_SYSTEM:
-				$allowedList = [
-					'US',
-					'UK',
-					'EU',
-					'DE',
-					'FR',
-					'JP',
-					'CN',
-					'IT',
-					'BR',
-					'MEX',
-					'AU',
-				];
-				break;
+            case self::CHARACTER_TYPE_SIZE_SYSTEM:
+                $allowedList = [
+                    'US',
+                    'UK',
+                    'EU',
+                    'DE',
+                    'FR',
+                    'JP',
+                    'CN',
+                    'IT',
+                    'BR',
+                    'MEX',
+                    'AU',
+                ];
+                break;
 
-			case self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS:
-				$allowedList = [
-					'G',
-					'F',
-					'E',
-					'D',
-					'C',
-					'B',
-					'A',
-					'A+',
-					'A++',
-					'A+++',
-				];
-				break;
-		}
+            case self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS:
+                $allowedList = [
+                    'G',
+                    'F',
+                    'E',
+                    'D',
+                    'C',
+                    'B',
+                    'A',
+                    'A+',
+                    'A++',
+                    'A+++',
+                ];
+                break;
+        }
 
-		if (in_array($characterValue, $allowedList))
-		{
-			return $characterValue;
-		}
-		else
-		{
-			return '';
-		}
-	}
+        if (in_array($characterValue, $allowedList))
+        {
+            return $characterValue;
+        }
+        else
+        {
+            return '';
+        }
+    }
 
-	/**
-	 * Get item description.
-	 * @param Record $item
-	 * @param KeyValue $settings
-	 * @return string
-	 */
-	private function getDescription(Record $item, KeyValue $settings):string
-	{
-		$description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_DESCRIPTION);
+    /**
+     * Get item description.
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    private function getDescription(Record $item, KeyValue $settings):string
+    {
+        $description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_DESCRIPTION);
 
-		if (strlen($description) <= 0)
-		{
-			$description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
-		}
+        if (strlen($description) <= 0)
+        {
+            $description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
+        }
 
-		return $description;
-	}
+        return $description;
+    }
+
+    /**
+     * Get variation attributes.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return array<string,string>
+     */
+    private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+            {
+                $variationAttributes = [];
+
+                foreach($item->variationAttributeValueList as $variationAttribute)
+                {
+                    $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
+
+                    if($attributeValueLang instanceof AttributeValueLang)
+                    {
+                        if($attributeValueLang->attributeValue->attribute->googleproducts_variation)
+                        {
+                            $variationAttributes[$attributeValueLang->attributeValue->attribute->googleproducts_variation][] = $attributeValueLang->name;
+                        }
+                    }
+                }
+
+                return $variationAttributes;
+            }
 }
