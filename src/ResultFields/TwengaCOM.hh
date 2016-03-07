@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Twenga
+ * Class TwengaCOM
  * @package ElasticExport\ResultFields
  */
-class Twenga extends ResultFields
+class TwengaCOM extends ResultFields
 {
     /*
 	 * @var ArrayHelper
