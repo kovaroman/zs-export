@@ -29,11 +29,12 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'KelkooPremiumDE',
             'KuponaDE',
             'FashionDE',
-            'EcondaDE',            
+            'EcondaDE',
             'MyBestBrandsDE',
             'TwengaCOM',
             'ZanoxDE',
             'SchuheDE',
+			'ShippingProfiles',
             'Shopping24DE'
 		];
 
