@@ -7,6 +7,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
+use Plenty\Modules\Helper\Models\KeyValue;
 
 
 class KuponaDE extends CSVGenerator
@@ -84,9 +85,9 @@ private ArrayHelper $arrayHelper;
                     'valid_to_date'         => '',
                     'prod_description'      => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
                     'prod_description_long' => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'img_small'             => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
-                    'img_medium'            => $this->elasticExportHelper->getImageList($item, $settings, ';', 'middle'),
-                    'img_large'             => $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
+                    'img_small'             => $this->getImages($item, $settings, ';', 'preview'),
+                    'img_medium'            => $this->getImages($item, $settings, ';', 'middle'),
+                    'img_large'             => $this->getImages($item, $settings, ';', 'normal'),
                     'ean_code'              => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings),
@@ -98,5 +99,25 @@ private ArrayHelper $arrayHelper;
 				$this->addCSVContent(array_values($data));
 			}
         }
+    }
+
+    /**
+     * Get images.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator  = ','
+     * @param  string   $imageType  = 'normal'
+     * @return string
+     */
+    public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
+    {
+        $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
+
+        if(count($list))
+        {
+            return implode($separator, $list);
+        }
+
+        return '';
     }
 }

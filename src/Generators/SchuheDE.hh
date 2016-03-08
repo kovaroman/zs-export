@@ -147,7 +147,7 @@ class SchuheDE extends CSVGenerator
 					'Herstellerartikelnummer'		=> $item->variationBase->model,
 					'Artikelname'					=> $itemName,
 					'Artikelbeschreibung'			=> $this->elasticExportHelper->getDescription($item, $settings, 256),
-					'Bild' . '(er)'					=> $this->elasticExportHelper->getImageList($item, $settings, ';'),
+					'Bild' . '(er)'					=> $this->getImages($item, $settings, ';'),
 					'360 Grad'						=> $this->getProperty($item, $settings, '360_view_url'),
 					'Bestand'						=> $this->getStock($item, $settings),
 					'Farbe'							=> $this->getProperty($item, $settings, 'color'),
@@ -402,4 +402,24 @@ class SchuheDE extends CSVGenerator
 
 		return implode(';', $list);
 	}
+
+	/**
+     * Get images.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator  = ','
+     * @param  string   $imageType  = 'normal'
+     * @return string
+     */
+    public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
+    {
+        $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
+
+        if(count($list))
+        {
+            return implode($separator, $list);
+        }
+
+        return '';
+    }
 }

@@ -149,7 +149,7 @@ class ElasticExportHelper
                 break;
 		}
 
-        return $this->cleanName($name, $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength);        
+        return $this->cleanName($name, $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength);
     }
 
     /**
@@ -161,13 +161,13 @@ class ElasticExportHelper
     public function cleanName(string $name, int $maxLength = 0):string
     {
         $name = html_entity_decode($name);
-        
+
         if($maxLength <= 0)
         {
             return $name;
         }
 
-        return substr($name, 0, $maxLength);   
+        return substr($name, 0, $maxLength);
     }
 
     /**
@@ -342,7 +342,7 @@ class ElasticExportHelper
 		}
 
 		return '';
-	}    
+	}
 
     public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
     {
@@ -605,28 +605,22 @@ class ElasticExportHelper
     }
 
     /**
-     * Get images.
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @param  string   $separator  = ','
-     * @param  string   $imageType  = 'normal'
-     * @return string
+     * Get list of images for current item.
+     * @param Record $item
+     * @param KeyValue $settings
+     * @param string $imageType = 'normal'
+     * @return array<mixed>
      */
-    public function getImageList(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
+    public function getImageList(Record $item, KeyValue $settings, string $imageType = 'normal'):array<string>
     {
-        $imageUrlList = [];
+        $list = [];
 
         foreach($item->variationImageList as $image)
         {
-            $imageUrlList[] = $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
+            $list[] = $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
         }
 
-        if(count($imageUrlList))
-        {
-            return implode($separator, $imageUrlList);
-        }
-
-        return '';
+        return $list;
     }
 
     /**

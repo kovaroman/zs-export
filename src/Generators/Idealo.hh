@@ -104,8 +104,8 @@ class Idealo extends CSVGenerator
 					'category5' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
 					'category6' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
 					'category_concat' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-					'image_url_preview' => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
-					'image_url' 		=> $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
+					'image_url_preview' => $this->getImages($item, $settings, ';', 'preview'),
+					'image_url' 		=> $this->getImages($item, $settings, ';', 'normal'),
 					'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 					'free_text_field'   => $this->getFreeText($item, $settings),
 				];
@@ -140,5 +140,25 @@ class Idealo extends CSVGenerator
 		}
 
 		return implode(' ', $freeText);
-	}    
+	}
+
+	/**
+     * Get images.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator  = ','
+     * @param  string   $imageType  = 'normal'
+     * @return string
+     */
+    public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
+    {
+        $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
+
+        if(count($list))
+        {
+            return implode($separator, $list);
+        }
+
+        return '';
+    }
 }

@@ -278,9 +278,9 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function getImageByNumber(Record $item, KeyValue $settings, int $number):string
 	{
-		$imageString = $this->elasticExportHelper->getImageList($item, $settings);
-		$imageList = explode(',', $imageString);
-		if (is_array($imageList) && count($imageList) > 0 && array_key_exists($number, $imageList))
+		$imageList = $this->elasticExportHelper->getImageList($item, $settings);
+
+		if(count($imageList) > 0 && array_key_exists($number, $imageList))
 		{
 			return $imageList[$number];
 		}
@@ -289,5 +289,4 @@ class RakutenDE extends CSVGenerator
 			return '';
 		}
 	}
-
 }

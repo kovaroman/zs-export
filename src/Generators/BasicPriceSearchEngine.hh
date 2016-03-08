@@ -7,6 +7,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
+use Plenty\Modules\Helper\Models\KeyValue;
 
 
 class BasicPriceSearchEngine extends CSVGenerator
@@ -106,7 +107,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'category5'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
                     'category6'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
                     'category_concat'       => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-                    'image_url_preview'     => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
+                    'image_url_preview'     => $this->getImages($item, $settings, ';', 'preview'),
                     'image_url'             => $this->elasticExportHelper->getMainImage($item, $settings),
                     'shipment_and_handling' => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'unit_price'            => $this->elasticExportHelper->getBasePrice($item, $settings),
@@ -118,4 +119,24 @@ class BasicPriceSearchEngine extends CSVGenerator
 			}
         }
     }
+
+    /**
+     * Get images.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $separator  = ','
+     * @param  string   $imageType  = 'normal'
+     * @return string
+     */
+     public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
+     {
+         $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
+
+         if(count($list))
+         {
+             return implode($separator, $list);
+         }
+
+         return '';
+     }
 }

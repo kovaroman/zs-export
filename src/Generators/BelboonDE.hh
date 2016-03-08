@@ -8,6 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
+use Plenty\Modules\Helper\Models\KeyValue;
 
 class BelboonDE extends CSVGenerator
 {
@@ -81,10 +82,10 @@ class BelboonDE extends CSVGenerator
             'Price'                       => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
             'Currency'                    => $item->variationRetailPrice->currency,
             'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
-            'Image_Small_URL'             => $this->elasticExportHelper->getImageList($item, $settings, ';', 'preview'),
+            'Image_Small_URL'             => $this->getImages($item, $settings, ';', 'preview'),
             'Image_Small_WIDTH'           => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_WIDTH),
             'Image_Small_HEIGHT'          => '', // TODO $this->getImageSize($this->elasticExportHelper->getMainImage($item, $settings), self::IMAGE_SIZE_HEIGHT),
-            'Image_Large_URL'             => $this->elasticExportHelper->getImageList($item, $settings, ';', 'normal'),
+            'Image_Large_URL'             => $this->getImages($item, $settings, ';', 'normal'),
             'Image_Large_WIDTH'           => '', // TODO large image size
             'Image_Large_HEIGHT'          => '', // TODO large image size
             'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
@@ -110,17 +111,37 @@ class BelboonDE extends CSVGenerator
    */
   private function getImageSize(string $filename, string $type):int
   {
-    $imageInformation = array();
-    $imageInformation[0] = $imageInformation[1] = '';
+     $imageInformation = array();
+     $imageInformation[0] = $imageInformation[1] = '';
 
-    switch ($type)
-    {
-      case self::IMAGE_SIZE_WIDTH:
-        return (int)$imageInformation[0];
-        break;
-      case self::IMAGE_SIZE_HEIGHT:
-        return (int)$imageInformation[1];
-        break;
+     switch ($type)
+     {
+        case self::IMAGE_SIZE_WIDTH:
+            return (int)$imageInformation[0];
+
+         case self::IMAGE_SIZE_HEIGHT:
+            return (int)$imageInformation[1];
+
     }
+  }
+
+  /**
+    * Get images.
+    * @param  Record   $item
+    * @param  KeyValue $settings
+    * @param  string   $separator  = ','
+    * @param  string   $imageType  = 'normal'
+    * @return string
+    */
+  public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
+  {
+      $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
+
+      if(count($list))
+      {
+           return implode($separator, $list);
+      }
+
+      return '';
   }
 }
