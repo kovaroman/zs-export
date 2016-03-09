@@ -20,6 +20,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 			'GoogleShopping',
 			'GuenstigerDE',
 			'Idealo',
+			'KaufluxDE',
 			'PreisRoboterDE',
 			'RakutenDE',
 			'ShopzillaDE',

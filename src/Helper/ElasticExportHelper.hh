@@ -703,6 +703,20 @@ class ElasticExportHelper
         return '';
     }
 
+    /**
+     * Get VAT
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    public function getVat(Record $item, KeyValue $settings):string
+    {
+        $vatId = $item->variationBase->vatId;
+
+        // TODO read vat configuration
+
+        return '';
+    }
 
     /**
      * Get base price details.
