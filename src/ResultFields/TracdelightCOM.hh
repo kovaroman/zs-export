@@ -5,19 +5,19 @@ use Plenty\Modules\DataExchange\Contracts\ResultFields;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-/**
- * Class TracdelightCOM
- * @package ElasticExport\ResultFields
- */
-class TracdelightCOM extends ResultFields
-{
-    /*
-     * @var ArrayHelper
+    /**
+     * Class TracdelightCOM
+     * @package ElasticExport\ResultFields
      */
-private ArrayHelper $arrayHelper;
+    class TracdelightCOM extends ResultFields
+    {
+        /*
+         * @var ArrayHelper
+         */
+    private ArrayHelper $arrayHelper;
 
     /**
-     * Shopping24DE constructor.
+     * TracdelightCOM constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
