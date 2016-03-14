@@ -140,7 +140,7 @@ class GoogleShopping extends CSVGenerator
 
 				$data = [
 					'id' 						=> $item->variationBase->id,
-					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 400),
+					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 256),
 					'description'				=> $this->getDescription($item, $settings),
 					'google_product_category'	=> '',
 					'product_type'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),

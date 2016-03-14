@@ -14,6 +14,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 	public function exports(ExportPresetContainer $container):void
 	{
 		$formats = [
+			'BeezUp',
 			'BelboonDE',
 			'BilligerDE',
 			'GeizhalsDE',
