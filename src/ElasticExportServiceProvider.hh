@@ -36,7 +36,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'ZanoxDE',
             'SchuheDE',
 			'ShippingProfiles',
-            'Shopping24DE'
+            'Shopping24DE',
+            'TracdelightCOM'
 		];
 
 		foreach ($formats as $format)
