@@ -34,7 +34,6 @@ class GoogleShopping extends ResultFields
 	{
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-
 		$itemDescriptionFields = ['urlContent'];
 		$itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
@@ -64,12 +63,7 @@ class GoogleShopping extends ResultFields
 				'params' => [
 					'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
 				],
-				'fields' => [
-					'urlContent',
-					'shortDescription',
-					'description',
-					'technicalData',
-				],
+				'fields' => $itemDescriptionFields,
 			],
 
 

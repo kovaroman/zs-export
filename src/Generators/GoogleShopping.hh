@@ -11,6 +11,8 @@ use Plenty\Modules\Unit\Models\UnitLang;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Character\Models\CharacterSelection;
 
 
 class GoogleShopping extends CSVGenerator
@@ -50,16 +52,30 @@ class GoogleShopping extends CSVGenerator
          */
     private AttributeValueLangRepositoryContract $attributeValueLangRepository;
 
-        /**
+    /**
+     * CharacterSelectionRepositoryContract $characterSelectionRepository
+     */
+    private CharacterSelectionRepositoryContract $characterSelectionRepository;
+
+    /**
+     * @var array<int,mixed>
+     */
+    private array<int,array<string,string>>$itemPropertyCache = [];
+
+    /**
          * GoogleShopping constructor.
          * @param ElasticExportHelper $elasticExportHelper
          * @param ArrayHelper $arrayHelper
          */
-    public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper, AttributeValueLangRepositoryContract $attributeValueLangRepository)
+    public function __construct(
+        ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper,
+        AttributeValueLangRepositoryContract $attributeValueLangRepository,
+        CharacterSelectionRepositoryContract $characterSelectionRepository)
     {
         $this->elasticExportHelper = $elasticExportHelper;
         $this->arrayHelper = $arrayHelper;
         $this->attributeValueLangRepository = $attributeValueLangRepository;
+        $this->characterSelectionRepository = $characterSelectionRepository;
     }
 
     /**
@@ -124,7 +140,7 @@ class GoogleShopping extends CSVGenerator
 
 				$data = [
 					'id' 						=> $item->variationBase->id,
-					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 150),
+					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 400),
 					'description'				=> $this->getDescription($item, $settings),
 					'google_product_category'	=> '',
 					'product_type'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
@@ -145,29 +161,160 @@ class GoogleShopping extends CSVGenerator
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
-					'gender'					=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_GENDER),
-					'age_group'					=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
-					'excluded_destination'		=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
-					'adwords_redirect'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
+					'gender'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_GENDER),
+					'age_group'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
+					'excluded_destination'		=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
+					'adwords_redirect'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item),
 					'unit_pricing_measure'		=> $this->getUnitPricingMeasure($item, $settings),
 					'unit_pricing_base_measure'	=> $this->getUnitPricingBaseMeasure($item, $settings),
-					'energy_efficiency_class'	=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
-					'size_system'				=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
-					'size_type'					=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),
-					'mobile_link'				=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_MOBILE_LINK),
-					'sale_price_effective_date'	=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE),
+					'energy_efficiency_class'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
+					'size_system'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
+					'size_type'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),
+					'mobile_link'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_MOBILE_LINK),
+					'sale_price_effective_date'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE),
 					'adult'						=> '',
-					'custom_label_0'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_0),
-					'custom_label_1'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_1),
-					'custom_label_2'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_2),
-					'custom_label_3'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_3),
-					'custom_label_4'			=> $this->getCharacterValue($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_4),
+					'custom_label_0'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_0),
+					'custom_label_1'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_1),
+					'custom_label_2'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_2),
+					'custom_label_3'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_3),
+					'custom_label_4'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_4),
 				];
 
 				$this->addCSVContent(array_values($data));
 			}
         }
+    }
+
+    /**
+     * Get property.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string   $property
+     * @return string
+     */
+    private function getProperty(Record $item, KeyValue $settings, string $property):string
+    {
+        $variationAttributes = $this->getVariationAttributes($item, $settings);
+
+        if(array_key_exists($property, $variationAttributes))
+        {
+            return $variationAttributes[$property];
+        }
+
+        $itemPropertyList = $this->getItemPropertyList($item, $settings);
+
+        switch ($property)
+        {
+            case self::CHARACTER_TYPE_GENDER:
+                $allowedList = [
+                    'male',
+                    'female',
+                    'unisex',
+                ];
+                break;
+
+            case self::CHARACTER_TYPE_AGE_GROUP:
+                $allowedList = [
+                    'newborn',
+                    'infant',
+                    'toddler',
+                    'adult',
+                    'kids',
+                ];
+                break;
+
+            case self::CHARACTER_TYPE_SIZE_TYPE:
+                $allowedList = [
+                    'regular',
+                    'petite',
+                    'plus',
+                    'maternity',
+                ];
+                break;
+
+            case self::CHARACTER_TYPE_SIZE_SYSTEM:
+                $allowedList = [
+                    'US',
+                    'UK',
+                    'EU',
+                    'DE',
+                    'FR',
+                    'JP',
+                    'CN',
+                    'IT',
+                    'BR',
+                    'MEX',
+                    'AU',
+                ];
+                break;
+
+            case self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS:
+                $allowedList = [
+                    'G',
+                    'F',
+                    'E',
+                    'D',
+                    'C',
+                    'B',
+                    'A',
+                    'A+',
+                    'A++',
+                    'A+++',
+                ];
+                break;
+        }
+
+        if(array_key_exists($property, $itemPropertyList) && in_array($itemPropertyList[$property], $allowedList))
+        {
+            return $itemPropertyList[$property];
+        }
+
+        return '';
+    }
+
+
+    /**
+     * Get item properties.
+     * @param 	Record $item
+     * @param  KeyValue $settings
+     * @return array<string,string>
+     */
+    private function getItemPropertyList(Record $item, KeyValue $settings):array<string,string>
+	{
+        if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
+        {
+            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings);
+
+            $list = [];
+
+            if(count($characterMarketComponentList))
+            {
+                foreach($characterMarketComponentList as $data)
+                {
+                    if((string) $data['characterValueType'] != 'file' && (string) $data['characterValueType'] != 'empty' && (string) $data['externalComponent'] != "0")
+                    {
+                        if((string) $data['characterValueType'] == 'selection')
+                        {
+                            $characterSelection = $this->characterSelectionRepository->findCharacterSelection((int) $data['characterValue']);
+                            if($characterSelection instanceof CharacterSelection)
+                            {
+                                $list[(string) $data['externalComponent']] = (string) $characterSelection->name;
+                            }
+                        }
+                        else
+                        {
+                            $list[(string) $data['externalComponent']] = (string) $data['characterValue'];
+                        }
+
+                    }
+                }
+            }
+
+            $this->itemPropertyCache[$item->itemBase->id] = $list;
+        }
+
+        return $this->itemPropertyCache[$item->itemBase->id];
     }
 
     /**
@@ -252,87 +399,87 @@ class GoogleShopping extends CSVGenerator
         return (string)number_format($item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
     }
 
-    /**
-     * Check if gender is valid.
-     * @param Record $item
-     * @param KeyValue $settings
-     * @param string $type
-     * @return string
-     */
-    private function getCharacterValue(Record $item, KeyValue $settings, string $type):string
-    {
-        $characterValue = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, $type);
-
-        switch($type)
-        {
-            case self::CHARACTER_TYPE_GENDER:
-                $allowedList = [
-                    'male',
-                    'female',
-                    'unisex',
-                ];
-                break;
-
-            case self::CHARACTER_TYPE_AGE_GROUP:
-                $allowedList = [
-                    'newborn',
-                    'infant',
-                    'toddler',
-                    'adult',
-                    'kids',
-                ];
-                break;
-
-            case self::CHARACTER_TYPE_SIZE_TYPE:
-                $allowedList = [
-                    'regular',
-                    'petite',
-                    'plus',
-                    'maternity',
-                ];
-                break;
-
-            case self::CHARACTER_TYPE_SIZE_SYSTEM:
-                $allowedList = [
-                    'US',
-                    'UK',
-                    'EU',
-                    'DE',
-                    'FR',
-                    'JP',
-                    'CN',
-                    'IT',
-                    'BR',
-                    'MEX',
-                    'AU',
-                ];
-                break;
-
-            case self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS:
-                $allowedList = [
-                    'G',
-                    'F',
-                    'E',
-                    'D',
-                    'C',
-                    'B',
-                    'A',
-                    'A+',
-                    'A++',
-                    'A+++',
-                ];
-                break;
-        }
-
-        if (in_array($characterValue, $allowedList))
-        {
-            return $characterValue;
-        }
-        else
-        {
-            return '';
-        }
-    }
+//    /**
+//     * Check if gender is valid.
+//     * @param Record $item
+//     * @param KeyValue $settings
+//     * @param string $type
+//     * @return string
+//     */
+//    private function getCharacterValue(Record $item, KeyValue $settings, string $type):string
+//    {
+//        $characterValue = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, $type);
+//
+//        switch ($type)
+//        {
+//            case self::CHARACTER_TYPE_GENDER:
+//                $allowedList = [
+//                    'male',
+//                    'female',
+//                    'unisex',
+//                ];
+//                break;
+//
+//            case self::CHARACTER_TYPE_AGE_GROUP:
+//                $allowedList = [
+//                    'newborn',
+//                    'infant',
+//                    'toddler',
+//                    'adult',
+//                    'kids',
+//                ];
+//                break;
+//
+//            case self::CHARACTER_TYPE_SIZE_TYPE:
+//                $allowedList = [
+//                    'regular',
+//                    'petite',
+//                    'plus',
+//                    'maternity',
+//                ];
+//                break;
+//
+//            case self::CHARACTER_TYPE_SIZE_SYSTEM:
+//                $allowedList = [
+//                    'US',
+//                    'UK',
+//                    'EU',
+//                    'DE',
+//                    'FR',
+//                    'JP',
+//                    'CN',
+//                    'IT',
+//                    'BR',
+//                    'MEX',
+//                    'AU',
+//                ];
+//                break;
+//
+//            case self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS:
+//                $allowedList = [
+//                    'G',
+//                    'F',
+//                    'E',
+//                    'D',
+//                    'C',
+//                    'B',
+//                    'A',
+//                    'A+',
+//                    'A++',
+//                    'A+++',
+//                ];
+//                break;
+//        }
+//
+//        if (in_array($characterValue, $allowedList))
+//        {
+//            return $characterValue;
+//        }
+//        else
+//        {
+//            return '';
+//        }
+//    }
 
     /**
      * Get item description.
@@ -359,22 +506,22 @@ class GoogleShopping extends CSVGenerator
      * @return array<string,string>
      */
     private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+    {
+        $variationAttributes = [];
+
+        foreach($item->variationAttributeValueList as $variationAttribute)
+        {
+            $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
+
+            if($attributeValueLang instanceof AttributeValueLang)
             {
-                $variationAttributes = [];
-
-                foreach($item->variationAttributeValueList as $variationAttribute)
+                if($attributeValueLang->attributeValue->attribute->googleproducts_variation)
                 {
-                    $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
-
-                    if($attributeValueLang instanceof AttributeValueLang)
-                    {
-                        if($attributeValueLang->attributeValue->attribute->googleproducts_variation)
-                        {
-                            $variationAttributes[$attributeValueLang->attributeValue->attribute->googleproducts_variation][] = $attributeValueLang->name;
-                        }
-                    }
+                    $variationAttributes[$attributeValueLang->attributeValue->attribute->googleproducts_variation][] = $attributeValueLang->name;
                 }
-
-                return $variationAttributes;
             }
+        }
+
+        return $variationAttributes;
+    }
 }
