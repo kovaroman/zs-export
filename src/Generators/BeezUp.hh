@@ -133,7 +133,7 @@ class BeezUp extends CSVGenerator
                     'Lieferkosten'          =>  number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'Auf Lager'             =>  $item->variationStock->stockNet > 0 ? 'Y' : 'N',
                     'Lagerbestand'          =>  $item->variationStock->stockNet,
-                    'Lieferfrist'           =>  $item->variationBase->availability,
+                    'Lieferfrist'           =>  $this->elasticExportHelper->getAvailability($item, $settings, false),
                     'Kategorie 1'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 1),
                     'Kategorie 2'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 2),
                     'Kategorie 3'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 3),

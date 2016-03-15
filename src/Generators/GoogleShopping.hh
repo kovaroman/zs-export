@@ -63,6 +63,16 @@ class GoogleShopping extends CSVGenerator
     private array<int,array<string,string>>$itemPropertyCache = [];
 
     /**
+     * @var ImmMap<int,string>
+     */
+    private ImmMap<int,string> $itemAvailability = ImmMap{
+                                                        0 => 'in stock',
+                                                        1 => 'in stock',
+                                                        2 => 'out of stock',
+                                                        3 => 'preorder'
+                                                    };
+
+    /**
          * GoogleShopping constructor.
          * @param ElasticExportHelper $elasticExportHelper
          * @param ArrayHelper $arrayHelper
@@ -147,7 +157,7 @@ class GoogleShopping extends CSVGenerator
 					'link'						=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'condition'					=> $this->getCondition($item->itemBase->condition),
-					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings),
+					'availability'				=> $this->itemAvailability->get((int)$this->elasticExportHelper->getAvailability($item, $settings, false)),
 					'price'						=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'sale_price'				=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'brand'						=> $item->itemBase->producer,

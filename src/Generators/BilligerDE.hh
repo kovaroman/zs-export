@@ -72,7 +72,7 @@ class BilligerDE extends CSVGenerator
 					'desc' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 	                'shop_cat' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'image'		=> $this->elasticExportHelper->getMainImage($item, $settings),
-					'dlv_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
+					'dlv_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'dlv_cost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
 	                'ppu' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 	                'mpnr' 		=> $item->variationBase->model,

@@ -93,7 +93,7 @@ class BelboonDE extends CSVGenerator
             'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
             'Product_Description_Long'    => $this->elasticExportHelper->getDescription($item, $settings, 256),
             'Shipping'                    => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-            'Availability'                => $this->elasticExportHelper->getAvailability($item, $settings),
+            'Availability'                => $this->elasticExportHelper->getAvailability($item, $settings, false),
             'Unit_Price'                  => $this->elasticExportHelper->getBasePrice($item, $settings),
         ];
 
