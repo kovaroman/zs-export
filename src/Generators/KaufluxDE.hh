@@ -47,7 +47,7 @@ class KaufluxDE extends CSVGenerator
 	private array<int> $addedItems = [];
 
 	/**
-	 * @var ImmMap<int,string>	
+	 * @var ImmMap<int,string>
 	 */
 	private ImmMap<int,string> $flags = ImmMap{
 		0 => '',
@@ -128,7 +128,7 @@ class KaufluxDE extends CSVGenerator
 					'BestandAbsolut' 	=> '', // TODO get from config
 					'Liefertyp' 		=> 'V',
 					'VersandKlasse' 	=> '', // TODO get from config
-					'Lieferzeit' 		=> (int) $this->elasticExportHelper->getAvailability($item, $settings),
+					'Lieferzeit' 		=> (int) $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'Umtausch' 			=> '', // TODO get from config
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . ' ' . $item->variationBase->variationName,
 					'KurzText' 			=> $this->elasticExportHelper->getPreviewText($item, $settings),

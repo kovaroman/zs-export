@@ -68,7 +68,7 @@ private ArrayHelper $arrayHelper;
                     'price' 	    => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
                     'offerid'       => $item->variationBase->id,
                     'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),
-                    'availability'  => $this->elasticExportHelper->getAvailability($item, $settings),
+                    'availability'  => $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'deliverycost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'deliveryTime' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
                     'unitaryPrice'  => $this->elasticExportHelper->getBasePrice($item, $settings),

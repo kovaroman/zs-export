@@ -117,7 +117,7 @@ class TracdelightCOM extends CSVGenerator
                     'Grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings), // only mandatory for cosmetics
                     // Optional fields
                     'Streichpreis'          => $rrp,
-                    'Lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings),
+                    'Lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings, false),
                     'Produktstamm-ID'       => $item->itemBase->id,
                     'EAN'                   => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'Bild2-URL'             => $this->getImageByNumber($item, $settings, 2),
