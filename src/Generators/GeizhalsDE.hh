@@ -3,10 +3,12 @@ namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
+use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
+use Plenty\Modules\PaymentMethod\Models\PaymentMethod;
 
 class GeizhalsDE extends CSVGenerator
 {
@@ -72,8 +74,8 @@ class GeizhalsDE extends CSVGenerator
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
 					'Deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'Vorkasse' 			=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->elasticExportHelper->getPaymentExtraCharge($item, $settings, 0), 2, '.', ''),
-					'Nachnahme' 		=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->elasticExportHelper->getPaymentExtraCharge($item, $settings, 1), 2, '.', ''),
+					'Vorkasse' 			=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->getPaymentShippingExtraCharge($item, $settings, 0), 2, '.', ''),
+					'Nachnahme' 		=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', ''),
 					'Verfügbarkeit' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 					'Herstellercode' 	=> $item->variationBase->model,
 					'EAN' 				=> $item->variationBarcode->code,
@@ -100,4 +102,33 @@ class GeizhalsDE extends CSVGenerator
 
 		return true;
 	}
+
+	/**
+     * Get payement extra charge.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  int      $paymentMethodId
+     * @return float
+     */
+    private function getPaymentShippingExtraCharge(Record $item, KeyValue $settings, int $paymentMethodId):float
+    {
+        $paymentMethods = $this->elasticExportHelper->getPaymentMethods($settings);
+
+        if(count($paymentMethods) > 0)
+		{
+            if(array_key_exists($paymentMethodId, $paymentMethods) && $paymentMethods[$paymentMethodId] instanceof PaymentMethod)
+            {
+                if($paymentMethods[$paymentMethodId]->feeForeignPercentageWebstore)
+                {
+                    return ((float) $paymentMethods[$paymentMethodId]->feeForeignPercentageWebstore / 100) * $this->elasticExportHelper->getPrice($item, $settings);
+                }
+                else
+                {
+                    return (float) $paymentMethods[$paymentMethodId]->feeForeignFlatRateWebstore;
+                }
+            }
+		}
+
+        return 0.0;
+    }
 }

@@ -17,6 +17,14 @@ use Plenty\Modules\Category\Models\CategoryTemplateHelper;
 use Plenty\Modules\Character\Contracts\CharacterMarketComponentRepositoryContract;
 use Plenty\Modules\Character\Models\CharacterMarketComponent;
 use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
+use Plenty\Modules\Shipping\DefaultShipping\Contracts\DefaultShippingRepositoryContract;
+use Plenty\Modules\Shipping\DefaultShipping\Models\DefaultShipping;
+use Plenty\Modules\PaymentMethod\Contracts\PaymentMethodRepositoryContract;
+use Plenty\Modules\PaymentMethod\Models\PaymentMethod;
+use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostRepositoryContract;
+use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
+use Plenty\Modules\Item\Availability\Models\Availability;
+use Plenty\Modules\Item\Availability\Models\AvailabilityLang;
 
 /**
  * Class ElasticExportHelper
@@ -71,19 +79,39 @@ class ElasticExportHelper
     private CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository;
 
     /**
-     * CategoryRepository $categoryRepository
-     */
-    private CategoryRepository $categoryRepository;
-
-    /**
      * UrlBuilderRepositoryContract $urlBuilderRepository
      */
     private UrlBuilderRepositoryContract $urlBuilderRepository;
 
     /**
+     * CategoryRepository $categoryRepository
+     */
+    private CategoryRepository $categoryRepository;
+
+    /**
      * CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;s
      */
     private CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;
+
+    /**
+     * @var DefaultShippingRepositoryContract $defaultShippingRepository
+     */
+    private DefaultShippingRepositoryContract $defaultShippingRepository;
+
+    /**
+     * @var PaymentMethodRepositoryContract $paymentMethodRepository
+     */
+    private PaymentMethodRepositoryContract $paymentMethodRepository;
+
+    /**
+     * @var DefaultShippingCostRepositoryContract $defaultShippingCostRepository
+     */
+    private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;
+
+    /**
+     * @var AvailabilityRepositoryContract $availabilityRepository
+     */
+    private AvailabilityRepositoryContract $availabilityRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -95,6 +123,10 @@ class ElasticExportHelper
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      * @param CategoryRepository $categoryRepository
+     * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
+     * @param DefaultShippingRepositoryContract $defaultShippingRepository
+     * @param PaymentMethodRepositoryContract $paymentMethodRepository
+     * @param AvailabilityRepositoryContract $availabilityRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
@@ -103,7 +135,11 @@ class ElasticExportHelper
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
                                 CategoryRepository $categoryRepository,
-                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
+                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,
+                                DefaultShippingRepositoryContract $defaultShippingRepository,
+                        		PaymentMethodRepositoryContract $paymentMethodRepository,
+                                DefaultShippingCostRepositoryContract $defaultShippingCostRepository,
+                                AvailabilityRepositoryContract $availabilityRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -121,6 +157,14 @@ class ElasticExportHelper
         $this->categoryRepository = $categoryRepository;
 
         $this->characterMarketComponentRepository = $characterMarketComponentRepository;
+
+        $this->defaultShippingRepository = $defaultShippingRepository;
+
+		$this->paymentMethodRepository = $paymentMethodRepository;
+
+        $this->defaultShippingCostRepository = $defaultShippingCostRepository;
+
+        $this->availabilityRepository = $availabilityRepository;
     }
 
     /**
@@ -270,21 +314,54 @@ class ElasticExportHelper
 	 * Get variation availability days.
 	 * @param  Record   $item
 	 * @param  KeyValue $settings
-	 * @return int
+	 * @return mixed
 	 */
-	public function getAvailability(Record $item, KeyValue $settings):int
+	public function getAvailability(Record $item, KeyValue $settings, bool $returnAvailabilityName = true):mixed
 	{
-		if($settings->get('transferItemAvailability') == self::TRANSFER_ITEM_AVAILABILITY_YES)
+        if($settings->get('transferItemAvailability') == self::TRANSFER_ITEM_AVAILABILITY_YES)
 		{
             $availabilityIdString = 'itemAvailability' . $item->variationBase->availability;
 
 		    return $settings->get($availabilityIdString);
 		}
 
-		// TODO match variation avialibility Id with the system configuration
+        $availability = $this->availabilityRepository->find($item->variationBase->availability < 0 ? 10 : $item->variationBase->availability);
 
-		return 1;
+        if($availability instanceof Availability)
+        {
+            $name = $this->getAvailabilityName($availability, $settings->get('lang'));
+
+            if($returnAvailabilityName && strlen($name) > 0)
+            {
+                return $name;
+            }
+            elseif(!$returnAvailabilityName && $availability->averageDays > 0)
+            {
+                return (int) $availability->averageDays;
+            }
+        }
+
+		return '';
 	}
+
+    /**
+     * Get availability name for a vigen availability and lang.
+     * @param Availability $availability
+     * @param string $lang
+     * @return string
+     */
+    private function getAvailabilityName(Availability $availability, string $lang):string
+    {
+        foreach($availability->langs as $availabilityLang)
+        {
+            if($availabilityLang->lang == $lang)
+            {
+                return $availabilityLang->name;
+            }
+        }
+
+        return '';
+    }
 
     /**
      * Get the item URL.
@@ -399,20 +476,39 @@ class ElasticExportHelper
     {
         if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
         {
-            return $settings->get('shippingCostFlat');
+            return (float) $settings->get('shippingCostFlat');
         }
 
-        switch($settings->get('shippingCostConfiguration'))
+        $defaultShipping = $this->getDefaultShipping($settings);
+
+        if( $defaultShipping instanceof DefaultShipping &&
+            $defaultShipping->shippingDestinationId)
         {
-            case 1:
-                // TODO use new shipping cost helper
+            $paymentMethodId = $defaultShipping->paymentMethod2;
 
-            case 2:
-                // TODO use new shipping cost helper
+            // 0 - is always "payment in advance" so we use always the second and third payment methods from the default shipping
+            if($settings->get('shippingCostMethodOfPayment') == 2)
+            {
+                $paymentMethodId = $defaultShipping->paymentMethod3;
+            }
+
+            return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethodId);
         }
 
+        return (float) $item->itemBase->defaultShippingCost;
+    }
 
-        return 1.2;
+    /**
+     * Calculate default shipping cost.
+     * @param int $itemId
+     * @param int $shippingDestinationId
+     * @param float $referrerId
+     * @param int $paymentMethodId
+     * @return float
+     */
+    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):float
+    {
+        return $this->defaultShippingCostRepository->findShippingCost($itemId, $referrerId, $shippingDestinationId, $paymentMethodId);
     }
 
     /**
@@ -427,35 +523,6 @@ class ElasticExportHelper
         {
             return $item->variationRetailPrice->price;
         }
-
-        return 0.0;
-    }
-
-    /**
-     * Get payement extra charge.
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @param  int      $methodOfPaymentId
-     * @return float
-     */
-    public function getPaymentExtraCharge(Record $item, KeyValue $settings, int $methodOfPaymentId):float
-    {
-        $methodOfPaymentList = array(); // TODO call helper to get all method og payments
-
-        if(is_array($methodOfPaymentList) && count($methodOfPaymentList) > 0)
-		{
-            if(1==1) // TODO check if the given mathodOfPaymentId is valid $methodOfPaymentList[$methodOfPaymentId] instanceof PaymentMethodData)
-            {
-                if($methodOfPaymentList[$methodOfPaymentId]->getFeeForeignPercentageWebshop())
-                {
-                    return ((float) $methodOfPaymentList[$methodOfPaymentId]->getFeeForeignPercentageWebshop() / 100) * $this->getPrice($item, $settings);
-                }
-                else
-                {
-                    return (float) $methodOfPaymentList[$methodOfPaymentId]->getFeeForeignFlatRateWebshop();
-                }
-            }
-		}
 
         return 0.0;
     }
@@ -777,4 +844,40 @@ class ElasticExportHelper
 
         return 'EUR';
     }
+
+    /**
+     * Get list of payment methods.
+     * @param KeyValue $settings
+     * @return Map<int,PaymentMethod>
+     */
+    public function getPaymentMethods(KeyValue $settings):Map<int,PaymentMethod>
+    {
+        $paymentMethods = $this->paymentMethodRepository->getPaymentMethods($settings->get('destination'), $settings->get('plentyId'), $settings->get('lang'));
+
+        $list = Map{};
+
+        foreach($paymentMethods as $paymentMethod)
+        {
+            $list[$paymentMethod->id] = $paymentMethod;
+        }
+
+        return $list;
+    }
+
+    /**
+	 * Get the default shipping.
+	 * @param  KeyValue $settings
+	 * @return DefaultShipping|null
+	 */
+	public function getDefaultShipping(KeyValue $settings):mixed
+	{
+		$defaultShipping = $this->defaultShippingRepository->find($settings->get('shippingCostConfiguration'));
+
+		if($defaultShipping instanceof DefaultShipping)
+		{
+			return $defaultShipping;
+		}
+
+		return null;
+	}
 }
