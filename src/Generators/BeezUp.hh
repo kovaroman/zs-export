@@ -125,25 +125,25 @@ class BeezUp extends CSVGenerator
                     'Preis inkl. MwSt.'     =>  number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', '')  ,
                     'UVP inkl. MwSt.'       =>  number_format($rrp, 2, '.', ''),
                     'Produkt-URL'           =>  $this->elasticExportHelper->getUrl($item, $settings),
-                    'Bild-URL'              =>  '',
-                    'Bild-URL2'             =>  '',
-                    'Bild-URL3'             =>  '',
-                    'Bild-URL4'             =>  '',
-                    'Bild-URL5'             =>  '',
+                    'Bild-URL'              =>  $this->getImageByNumber($item, $settings, 1),
+                    'Bild-URL2'             =>  $this->getImageByNumber($item, $settings, 2),
+                    'Bild-URL3'             =>  $this->getImageByNumber($item, $settings, 3),
+                    'Bild-URL4'             =>  $this->getImageByNumber($item, $settings, 4),
+                    'Bild-URL5'             =>  $this->getImageByNumber($item, $settings, 5),
                     'Lieferkosten'          =>  number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-                    'Auf Lager'             =>  $item->variationBase->availability,     //TODO maybe use an other helper
+                    'Auf Lager'             =>  $item->variationStock->stockNet > 0 ? 'Y' : 'N',
                     'Lagerbestand'          =>  $item->variationStock->stockNet,
                     'Lieferfrist'           =>  $item->variationBase->availability,
-                    'Kategorie 1'           =>  '',
-                    'Kategorie 2'           =>  '',
-                    'Kategorie 3'           =>  '',
-                    'Kategorie 4'           =>  '',
-                    'Kategorie 5'           =>  '',
-                    'Kategorie 6'           =>  '',
+                    'Kategorie 1'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 1),
+                    'Kategorie 2'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 2),
+                    'Kategorie 3'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 3),
+                    'Kategorie 4'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 4),
+                    'Kategorie 5'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
+                    'Kategorie 6'           =>  $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
                     'Farbe'                 =>  $variationAttributes['Color'],
                     'Größe'                 =>  $variationAttributes['Size'],
                     'Gewicht'               =>  $item->variationBase->weightG,
-                    'Grundpreis'            =>  '', //TODO
+                    'Grundpreis'            =>  $this->elasticExportHelper->getBasePrice($item, $settings),
                     'ID'                    =>  '', //TODO
 				];
 
@@ -194,5 +194,25 @@ class BeezUp extends CSVGenerator
         }
 
         return $variationAttributes;
+    }
+
+        /**
+         * @param Record $item
+         * @param KeyValue $settings
+         * @param int $number
+         * @return string
+         */
+    private function getImageByNumber(Record $item, KeyValue $settings, int $number):string
+    {
+        $imageList = $this->elasticExportHelper->getImageList($item, $settings);
+
+        if(count($imageList) > 0 && array_key_exists($number, $imageList))
+        {
+            return $imageList[$number];
+        }
+        else
+        {
+            return '';
+        }
     }
 }
