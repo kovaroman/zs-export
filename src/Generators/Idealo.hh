@@ -63,7 +63,7 @@ class Idealo extends CSVGenerator
 			$this->addCSVContent($this->head($settings));
 
 			foreach($resultData as $item)
-			{				
+			{
 				$this->addCSVContent($this->row($item, $settings));
 			}
 		}
@@ -180,12 +180,7 @@ class Idealo extends CSVGenerator
 				{
 					$name = $this->getPaymentMethodName($paymentMethod, $settings->get('lang') ?: 'de');
 					$cost = $this->elasticExportHelper->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethod->id);
-
-					/* TODO check if we need to calculate additional costs
-					$cost = (float) $this->elasticExportHelper->getShippingCost($item, $settings) +
-							(float) $paymentMethod->feeDomesticPercentageWebstore/100*$price +
-							(float) $paymentMethod->feeForeignFlatRateWebstore; */
-
+					
 					$data[$name] = number_format($cost, 2, '.', '');
 				}
 			}
