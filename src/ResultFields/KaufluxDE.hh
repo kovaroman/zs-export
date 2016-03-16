@@ -112,6 +112,7 @@ class KaufluxDE extends ResultFields
 
             'variationRetailPrice' => [
                 'price',
+                'vatValue',
             ],
 
             'variationStandardCategory' => [
