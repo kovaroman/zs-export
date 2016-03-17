@@ -6,7 +6,7 @@ use Plenty\Modules\DataExchange\Contracts\ResultFields;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class Cdiscount extends ResultFields
+class CdiscountCOM extends ResultFields
 {
     /*
      * @var ArrayHelper
@@ -25,21 +25,14 @@ private ArrayHelper $arrayHelper;
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        $itemDescriptionFields = ['urlContent'];
+        $itemDescriptionFields = [
+            'urlContent',
+            'shortDescription',
+            'description',
+            'technicalData'
+        ];
+
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
-
-        if($settings->get('descriptionType') == 'itemShortDescription')
-        {
-            $itemDescriptionFields[] = 'shortDescription';
-        }
-
-        if ($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') {
-            $itemDescriptionFields[] = 'description';
-        }
-
-        if ($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') {
-            $itemDescriptionFields[] = 'technicalData';
-        }
 
         return
             [
@@ -91,6 +84,15 @@ private ArrayHelper $arrayHelper;
                     ],
                     'fields'    =>  [
                         'categoryId',
+                    ]
+                ],
+
+                'variationMarketStatus' => [
+                    'params' => [
+                        'marketId' => $settings->get('referrerId'),
+                    ],
+                    'fields' => [
+                        'sku'
                     ]
                 ]
             ];

@@ -14,9 +14,9 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
 use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
 use Plenty\Modules\Character\Models\CharacterSelection;
 
-class Cdiscount extends CSVGenerator
+class CdiscountCOM extends CSVGenerator
 {
-    const string CHARACTER_TYPE_DESCRIPTION					= 'description';
+    const string CHARACTER_TYPE_DESCRIPTION					=   'description';
     const string CHARACTER_TYPE_GENDER                      =   'gender';
     const string CHARACTER_TYPE_TYPE_OF_PUBLIC              =   'type_of_public';
     const string CHARACTER_TYPE_SPORTS                      =   'sports';
@@ -24,6 +24,8 @@ class Cdiscount extends CSVGenerator
     const string CHARACTER_TYPE_COMMENT                     =   'comment';
     const string CHARACTER_TYPE_MAIN_COLOR                  =   'main_color';
     const string CHARACTER_TYPE_MARKETING_DESCRIPTION       =   'marketing_description';
+    const string CHARACTER_TYPE_MARKETING_COLOR             =   'marketing_color';
+    const string CHARACTER_TYPE_SIZE                        =   'size';
     /*
      * @var ElasticExportHelper
      */
@@ -126,8 +128,34 @@ class Cdiscount extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
-                $color = $variationAttributes['color'];
-                $size = $variationAttributes['size'];
+
+                if(count($variationAttributes['color']) > 0)
+                {
+                    $color = $variationAttributes['color'];
+                }
+                elseif(strlen($this->getProperty($item, $settings, self::CHARACTER_TYPE_MARKETING_COLOR)))
+                {
+                    $color = $this->getProperty($item, $settings, self::CHARACTER_TYPE_MARKETING_COLOR);
+                }
+                else
+                {
+                    $color = '';
+                }
+
+                if(count($variationAttributes['size']) > 0)
+                {
+                    $size = $variationAttributes['size'];
+                }
+                elseif(strlen($this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE)))
+                {
+                    $size = $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE);
+                }
+                else
+                {
+                    $size = '';
+                }
+
+
                 $lengthCm = $item->variationBase->lengthMm / 10;
                 $widthCm = $item->variationBase->widthMm / 10;
                 $heightCm = $item->variationBase->heightMm / 10;
@@ -138,19 +166,19 @@ class Cdiscount extends CSVGenerator
                     'Sku parent'                            =>  $item->itemBase->id,
 
                     // Mandatory data
-                    'Your reference'                        =>  '',
+                    'Your reference'                        =>  $item->variationMarketStatus->sku,
                     'EAN'                                   =>  $item->variationBarcode->code,
                     'Brand'                                 =>  $item->itemBase->producer,
                     'Nature of product'                     =>  strlen($color) || strlen($size) ? 'variante' : 'standard',
                     'Category code'                         =>  $item->variationStandardCategory->categoryId,
-                    'Basket short wording'                  =>  '',
-                    'Basket long wording'                   =>  '',
+                    'Basket short wording'                  =>  $this->elasticExportHelper->getName($item, $settings, 256),
+                    'Basket long wording'                   =>  $item->itemDescription->shortDescription,
                     'Product description'                   =>  $this->getDescription($item, $settings),
                     'Picture 1 (jpeg)'                      =>  $this->getImageByNumber($item, $settings, 1),
 
                     // Required data for variations
-                    'Size'                                  =>  $color,
-                    'Marketing color'                       =>  $size,
+                    'Size'                                  =>  $size,
+                    'Marketing color'                       =>  $color,
 
                     // Optional data
                     'Marketing description'                 =>  $this->getProperty($item, $settings, self::CHARACTER_TYPE_MARKETING_DESCRIPTION),

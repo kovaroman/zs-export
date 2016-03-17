@@ -5,7 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-class Cdiscount extends Filters
+class CdiscountCOM extends Filters
 {
     /*
 	 * @var ArrayHelper
