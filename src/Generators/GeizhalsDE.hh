@@ -78,7 +78,7 @@ class GeizhalsDE extends CSVGenerator
 					'Nachnahme' 		=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', ''),
 					'Verfügbarkeit' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 					'Herstellercode' 	=> $item->variationBase->model,
-					'EAN' 				=> $item->variationBarcode->code,
+					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];

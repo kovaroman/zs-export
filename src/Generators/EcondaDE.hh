@@ -79,7 +79,7 @@ class EcondaDE extends CSVGenerator
                     'ProductURL'        => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'ImageURL'          => $this->elasticExportHelper->getMainImage($item, $settings),
                     'Price'             => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
-                    'MSRP'              => $rrp,
+                    'MSRP'              => number_format($rrp, 2, ',', ''),
                     'New'               => $itemCondition[(int)$item->itemBase->condition],
                     'Stock'             => $item->variationStock->stockNet,
                     'EAN'               => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),

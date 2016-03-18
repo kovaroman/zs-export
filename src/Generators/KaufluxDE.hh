@@ -130,11 +130,12 @@ class KaufluxDE extends CSVGenerator
 				{
 					continue;
 				}
+                $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
 
 				$data = [
 					'GroupID' 			=> $item->itemBase->id,
 					'BestellNr' 		=> $item->variationMarketStatus->sku,
-					'EAN' 				=> $item->variationBarcode->code,
+					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'Hersteller' 		=> $item->itemBase->producer,
 					'BestandModus' 		=> $this->config('stockCondition'),
 					'BestandAbsolut' 	=> $this->getStock($item, $settings),
@@ -161,8 +162,8 @@ class KaufluxDE extends CSVGenerator
 					'FreeVar1' 			=> $item->itemBase->free1,
 					'FreeVar2' 			=> $item->itemBase->free2,
 					'FreeVar3' 			=> $item->itemBase->free3,
-					'InhaltMenge' 		=> '',
-					'InhaltEinheit' 	=> '',
+					'InhaltMenge' 		=> $basePriceList['lot'],
+					'InhaltEinheit' 	=> $basePriceList['unit'],
 					'InhaltVergleich' 	=> '',
 					'HerstellerArtNr' 	=> $item->variationBase->model,
 				];

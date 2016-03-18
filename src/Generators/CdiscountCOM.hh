@@ -167,7 +167,7 @@ class CdiscountCOM extends CSVGenerator
 
                     // Mandatory data
                     'Your reference'                        =>  $item->variationMarketStatus->sku,
-                    'EAN'                                   =>  $item->variationBarcode->code,
+                    'EAN'                                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'Brand'                                 =>  $item->itemBase->producer,
                     'Nature of product'                     =>  strlen($color) || strlen($size) ? 'variante' : 'standard',
                     'Category code'                         =>  $item->variationStandardCategory->categoryId,

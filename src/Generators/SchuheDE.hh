@@ -141,6 +141,8 @@ class SchuheDE extends CSVGenerator
 				$rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
 				$price = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $this->elasticExportHelper->getPrice($item, $settings) : $item->variationRecommendedRetailPrice->price;
 
+                $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+
 				$data = [
 					'Identnummer'					=> $item->variationBase->id,
 					'Artikelnummer'					=> $item->variationBase->customNumber,
@@ -158,14 +160,14 @@ class SchuheDE extends CSVGenerator
 					'Größe'							=> $this->getProperty($item, $settings, 'size'),
 					'Marke'							=> $item->itemBase->producer,
 					'Saison'						=> $this->getProperty($item, $settings, 'season'),
-					'EAN'							=> $item->variationBarcode->code,
+					'EAN'							=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'Währung'						=> $settings->get('currency'),
 					'Versandkosten'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
 					'Info Versandkosten'			=> $this->getProperty($item, $settings, 'shipping_costs_info'),
 					'Preis' . ' (UVP)'				=> number_format($rrp, 2, '.', ''),
 					'reduzierter Preis'				=> number_format($price, 2, '.', ''),
-					'Grundpreis'					=> '', // TODO
-					'Grundpreis Einheit'			=> '', // TODO
+					'Grundpreis'					=> $this->elasticExportHelper->getBasePrice($item, $settings),
+					'Grundpreis Einheit'			=> $basePriceList['lot'].' '.$basePriceList['unit'],
 					'Kategorien'					=> $this->getCategories($item, $settings),
 					'Link'							=> $this->elasticExportHelper->getUrl($item, $settings),
 					'Anzahl Verkäufe'				=> $this->getProperty($item, $settings, 'sold_items'),
