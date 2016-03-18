@@ -163,7 +163,7 @@ class KaufluxDE extends CSVGenerator
 					'FreeVar2' 			=> $item->itemBase->free2,
 					'FreeVar3' 			=> $item->itemBase->free3,
 					'InhaltMenge' 		=> $basePriceList['lot'],
-					'InhaltEinheit' 	=> $basePriceList['unit'],
+					'InhaltEinheit' 	=> $basePriceList['unit'], //TODO use Kauflux measurements
 					'InhaltVergleich' 	=> '',
 					'HerstellerArtNr' 	=> $item->variationBase->model,
 				];
