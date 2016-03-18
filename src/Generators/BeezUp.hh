@@ -118,7 +118,7 @@ class BeezUp extends CSVGenerator
 					'Produkt ID'            =>  $item->itemBase->id,
                     'Artikel Nr'            =>  $item->variationBase->customNumber,
                     'MPN'                   =>  $item->variationBase->model,
-                    'EAN'                   =>  $item->variationBarcode->code,
+                    'EAN'                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
                     'Marke'                 =>  $item->itemBase->producer,
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
@@ -144,7 +144,7 @@ class BeezUp extends CSVGenerator
                     'Größe'                 =>  $variationAttributes['Size'],
                     'Gewicht'               =>  $item->variationBase->weightG,
                     'Grundpreis'            =>  $this->elasticExportHelper->getBasePrice($item, $settings),
-                    'ID'                    =>  '', //TODO
+                    'ID'                    =>  $item->itemBase->id,
 				];
 
 				$this->addCSVContent(array_values($data));
