@@ -167,7 +167,7 @@ class SchuheDE extends CSVGenerator
 					'Preis' . ' (UVP)'				=> number_format($rrp, 2, '.', ''),
 					'reduzierter Preis'				=> number_format($price, 2, '.', ''),
 					'Grundpreis'					=> $this->elasticExportHelper->getBasePrice($item, $settings),
-					'Grundpreis Einheit'			=> $basePriceList['lot'].' '.$basePriceList['unit'],
+					'Grundpreis Einheit'			=> $basePriceList['lot'],
 					'Kategorien'					=> $this->getCategories($item, $settings),
 					'Link'							=> $this->elasticExportHelper->getUrl($item, $settings),
 					'Anzahl Verkäufe'				=> $this->getProperty($item, $settings, 'sold_items'),
