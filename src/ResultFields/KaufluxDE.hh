@@ -90,6 +90,7 @@ class KaufluxDE extends ResultFields
                 'model',
                 'weightG',
                 'vatId',
+                'limitOrderByStockSelect',
             ],
 
             'variationBarcode' => [
@@ -156,6 +157,15 @@ class KaufluxDE extends ResultFields
                     'additionalInformation',
                 ],
             ],
+
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual',
+                ],
+                'fields' => [
+                    'stockNet',
+                ]
+            ]
         ];
     }
 }

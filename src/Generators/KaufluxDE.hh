@@ -10,6 +10,7 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
 use Plenty\Modules\Character\Models\CharacterSelection;
+use Plenty\Modules\Market\Kauflux\Contracts\KaufluxRepositoryContract;
 
 /**
  * Class KaufluxDE
@@ -35,6 +36,11 @@ class KaufluxDE extends CSVGenerator
 	 * CharacterSelectionRepositoryContract $characterSelectionRepository
 	 */
 	private CharacterSelectionRepositoryContract $characterSelectionRepository;
+
+	/**
+	 * KaufluxRepositoryContract $kaufluxRepository
+	 */
+	private KaufluxRepositoryContract $kaufluxRepository;
 
 	/**
 	 * @var array<int,mixed>
@@ -64,13 +70,14 @@ class KaufluxDE extends CSVGenerator
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		CharacterSelectionRepositoryContract $characterSelectionRepository
-
+		CharacterSelectionRepositoryContract $characterSelectionRepository,
+		KaufluxRepositoryContract $kaufluxRepository
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
 		$this->characterSelectionRepository = $characterSelectionRepository;
+		$this->kaufluxRepository = $kaufluxRepository;
     }
 
     protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
@@ -119,17 +126,22 @@ class KaufluxDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+				if(!$this->valid($item, $settings))
+				{
+					continue;
+				}
+
 				$data = [
 					'GroupID' 			=> $item->itemBase->id,
 					'BestellNr' 		=> $item->variationMarketStatus->sku,
 					'EAN' 				=> $item->variationBarcode->code,
 					'Hersteller' 		=> $item->itemBase->producer,
-					'BestandModus' 		=> '', // TODO get from config
-					'BestandAbsolut' 	=> '', // TODO get from config
+					'BestandModus' 		=> $this->config('stockCondition'),
+					'BestandAbsolut' 	=> $this->getStock($item, $settings),
 					'Liefertyp' 		=> 'V',
-					'VersandKlasse' 	=> '', // TODO get from config
-					'Lieferzeit' 		=> (int) $this->elasticExportHelper->getAvailability($item, $settings, false),
-					'Umtausch' 			=> '', // TODO get from config
+					'VersandKlasse' 	=> $this->elasticExportHelper->getShippingCost($item, $settings),
+					'Lieferzeit' 		=> $this->elasticExportHelper->getAvailability($item, $settings, false),
+					'Umtausch' 			=> $this->config('returnDays'),
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . ' ' . $item->variationBase->variationName,
 					'KurzText' 			=> $this->elasticExportHelper->getPreviewText($item, $settings),
 					'DetailText' 		=> $this->elasticExportHelper->getDescription($item, $settings) . ' ' . $this->getPropertyDescription($item, $settings),
@@ -275,5 +287,63 @@ class KaufluxDE extends CSVGenerator
 		}
 
 		return self::STATUS_HIDDEN;
+	}
+
+	/**
+	 * Get stock.
+	 * @param Record $item
+	 * @param KeyValue $settings
+	 * @return int
+	 */
+	private function getStock(Record $item, KeyValue $settings):int
+	{
+		$stock = $item->variationStock->stockNet;
+
+		if ($item->variationBase->limitOrderByStockSelect == 0 || $this->config('stockCondition') == 'N')
+		{
+			$stock = 100;
+		}
+
+		return (int) $stock;
+	}
+
+	/**
+	 * Get kauflux configuration.
+	 * @param  string $key
+	 * @return string
+	 */
+	private function config(string $key):string
+	{
+		$config = $this->kaufluxRepository->getConfig();
+
+		if(array_key_exists($key, $config))
+		{
+			return (string) $config[$key];
+		}
+
+		return '';
+	}
+
+	/**
+	 * Check if stock available.
+	 * @param  Record $item
+	 * @param  KeyValue $settings
+	 * @return bool
+	 */
+	private function valid(Record $item, KeyValue $settings):bool
+	{
+		$stock = $item->variationStock->stockNet;
+
+		if ($item->variationBase->limitOrderByStockSelect == 0 || $this->config('stockCondition') == 'N')
+		{
+			$stock = 100;
+		}
+
+		if($this->config('stockCondition') != 'N' && $stock <= 0)
+		{
+			return false;
+		}
+
+		return true;
 	}
 }
