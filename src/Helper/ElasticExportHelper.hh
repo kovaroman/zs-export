@@ -466,6 +466,26 @@ class ElasticExportHelper
         return '';
     }
 
+	/**
+	 * Get category branch marketplace for a custom branch id.
+	 * @param  int $categoryhId
+	 * @param  int $plentyId
+	 * @param  float $marketplaceId
+	 * @param  string $marketplaceSubId
+	 * @return string
+	 */
+	public function getCategoryMarketplace(int $categoryhId, int $plentyId, float $marketplaceId, float $marketplaceSubId = 0.0):string
+	{
+		$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryhId, $plentyId, $marketplaceId, $marketplaceSubId);
+
+		if(strlen($categoryBranchMarketplace) > 0)
+		{
+			return $categoryBranchMarketplace;
+		}
+
+		return '';
+	}
+
     /**
      * Get shipping cost.
      * @param  Record   $item
