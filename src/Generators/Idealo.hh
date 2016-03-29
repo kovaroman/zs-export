@@ -9,7 +9,7 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
-use Plenty\Modules\PaymentMethod\Models\PaymentMethod;
+use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 
 /**
  * Class Idealo
