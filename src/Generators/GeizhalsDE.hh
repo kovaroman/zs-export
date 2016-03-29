@@ -8,7 +8,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
-use Plenty\Modules\PaymentMethod\Models\PaymentMethod;
+use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 
 class GeizhalsDE extends CSVGenerator
 {

@@ -7,7 +7,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
-use Plenty\Modules\Unit\Models\UnitLang;
+use Plenty\Modules\Item\Unit\Models\UnitLang;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
