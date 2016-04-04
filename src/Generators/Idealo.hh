@@ -180,7 +180,7 @@ class Idealo extends CSVGenerator
 				{
 					$name = $this->getPaymentMethodName($paymentMethod, $settings->get('lang') ?: 'de');
 					$cost = $this->elasticExportHelper->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethod->id);
-					
+
 					$data[$name] = number_format($cost, 2, '.', '');
 				}
 			}

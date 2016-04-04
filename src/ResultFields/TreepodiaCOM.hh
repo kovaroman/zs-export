@@ -6,23 +6,23 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class KelkooBasicDE
+ * Class TreepodiaCOM
  * @package ElasticExport\ResultFields
  */
-class KelkooBasicDE extends ResultFields
+class TreepodiaCOM extends ResultFields
 {
     /*
 	 * @var ArrayHelper
 	 */
-    private ArrayHelper $arrayHelper;
+	private ArrayHelper $arrayHelper;
 
     /**
-     * KelkooBasicDE constructor.
+     * Geizhals constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
     {
-        $this->arrayHelper = $arrayHelper;
+		$this->arrayHelper = $arrayHelper;
     }
 
     /**
@@ -34,7 +34,11 @@ class KelkooBasicDE extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        $itemDescriptionFields   = ['urlContent'];
+        $itemDescriptionFields = [
+            'urlContent',
+            'keywords',
+        ];
+
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
         if($settings->get('descriptionType') == 'itemShortDescription')
@@ -52,10 +56,14 @@ class KelkooBasicDE extends ResultFields
             $itemDescriptionFields[] = 'technicalData';
         }
 
-        return [
+        $fields = [
             'itemBase'=> [
-                'id',
-                'producer',
+                'id',                
+                'producerId',
+                'free1',
+                'free2',
+                'free3',
+                'free4',
             ],
 
             'itemDescription' => [
@@ -67,14 +75,13 @@ class KelkooBasicDE extends ResultFields
 
             'variationImageList' => [
                 'params' => [
-                    'type' => 'variation',
+                    'type' => 'variation',                    
                 ],
                 'fields' => [
                     'type',
                     'path',
                     'position',
                 ]
-
             ],
 
             'variationBase' => [
@@ -84,6 +91,15 @@ class KelkooBasicDE extends ResultFields
                 'limitOrderByStockSelect',
                 'unitId',
                 'content',
+            ],
+
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual',
+                ],
+                'fields' => [
+                    'stockNet'
+                ]
             ],
 
             'variationRetailPrice' => [
@@ -100,6 +116,10 @@ class KelkooBasicDE extends ResultFields
                     'manually',
                 ],
             ],
+            
+            'variationCategoryList' => [
+                'categoryId',                            
+            ],
 
             'variationBarcode' => [
                 'params' => [
@@ -110,6 +130,14 @@ class KelkooBasicDE extends ResultFields
                     'barcodeId',
                 ]
             ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId',
+            ],
         ];
+
+
+        return $fields;
     }
 }

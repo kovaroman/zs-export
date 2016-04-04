@@ -34,6 +34,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'FashionDE',
             'EcondaDE',
             'MyBestBrandsDE',
+            'TreepodiaCOM',
             'TwengaCOM',
             'ZanoxDE',
             'SchuheDE',
