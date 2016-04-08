@@ -72,7 +72,7 @@ class GeizhalsDE extends CSVGenerator
 					'Hersteller' 		=> $item->itemBase->producer,
 					'Produktcode' 		=> $item->itemBase->id,
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
-					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'Deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'Vorkasse' 			=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->getPaymentShippingExtraCharge($item, $settings, 0), 2, '.', ''),
 					'Nachnahme' 		=> number_format($this->elasticExportHelper->getShippingCost($item, $settings) + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', ''),
@@ -120,7 +120,7 @@ class GeizhalsDE extends CSVGenerator
             {
                 if($paymentMethods[$paymentMethodId]->feeForeignPercentageWebstore)
                 {
-                    return ((float) $paymentMethods[$paymentMethodId]->feeForeignPercentageWebstore / 100) * $this->elasticExportHelper->getPrice($item, $settings);
+                    return ((float) $paymentMethods[$paymentMethodId]->feeForeignPercentageWebstore / 100) * $this->elasticExportHelper->getPrice($item);
                 }
                 else
                 {

@@ -135,8 +135,8 @@ class Idealo extends CSVGenerator
 	 */
 	private function row(Record $item, KeyValue $settings):array<mixed>
 	{
-		$price = $this->elasticExportHelper->getPrice($item, $settings) <= 0 ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
-		$rrp = $item->variationRecommendedRetailPrice->price <= $price ? 0 : $item->variationRecommendedRetailPrice->price;
+		$price = $this->elasticExportHelper->getPrice($item) <= 0 ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
+		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) <= $price ? 0 : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 
 		$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
 

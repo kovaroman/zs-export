@@ -68,7 +68,7 @@ class ShoppingCOM extends CSVGenerator
 					'EAN' 					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'Produktname' 			=> $this->elasticExportHelper->getName($item, $settings),
 					'Produktbeschreibung' 	=> $this->elasticExportHelper->getDescription($item, $settings),
-					'Preis' 				=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
+					'Preis' 				=> number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
 					'Produkt-URL' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 	                'Produktbild-URL' 		=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'Kategorie'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),

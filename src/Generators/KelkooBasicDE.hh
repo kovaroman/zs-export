@@ -65,7 +65,7 @@ private ArrayHelper $arrayHelper;
                     'url' 		    => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'title' 		=> $this->elasticExportHelper->getName($item, $settings, 80),
                     'description'   => $this->elasticExportHelper->getDescription($item, $settings, 160),
-                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
+                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
                     'offerid'       => $item->variationBase->id,
                     'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),
                     'availability'  => $this->elasticExportHelper->getAvailability($item, $settings, false),

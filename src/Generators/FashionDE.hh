@@ -123,8 +123,8 @@ class FashionDE extends CSVGenerator
 	 */
 	private function getMain(Record $item, KeyValue $settings):array<string,mixed>
 	{
-		$price = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
-		$rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $this->elasticExportHelper->getPrice($item, $settings) : $item->variationRecommendedRetailPrice->price;
+		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
+		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 
 		$data = [
 			'art_nr' 			=> $item->itemBase->id,

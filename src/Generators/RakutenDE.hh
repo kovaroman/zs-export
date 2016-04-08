@@ -218,7 +218,7 @@ class RakutenDE extends CSVGenerator
 			'variantenwert'				=> '',
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> '',
-			'preis'						=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+			'preis'						=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 			'grundpreis_inhalt'			=> '',
 			'grundpreis_einheit'		=> '',
 			'reduzierter_preis'			=> '',

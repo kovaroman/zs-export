@@ -66,7 +66,7 @@ private ArrayHelper $arrayHelper;
                     'marke'         => $item->itemBase->producer,
                     'title' 		=> $this->elasticExportHelper->getName($item, $settings),
                     'description'   => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'deliverycost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'url' 		    => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),

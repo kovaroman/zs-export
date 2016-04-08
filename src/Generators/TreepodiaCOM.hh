@@ -104,7 +104,7 @@ class TreepodiaCOM extends XMLGenerator
 				$product->appendChild($this->createElement('sku', $item->itemBase->id));
 
 				// price
-				$product->appendChild($this->createElement('price', number_format($this->elasticExportHelper->getPrice($item, $settings), 2)));
+				$product->appendChild($this->createElement('price', number_format($this->elasticExportHelper->getPrice($item), 2)));
 
 				// name
 				$product->appendChild($this->createElement('name', $this->elasticExportHelper->getName($item, $settings)));
@@ -131,20 +131,20 @@ class TreepodiaCOM extends XMLGenerator
 				if((int) $item->itemBase->producerId > 0)
 				{
 					$producer = $this->getProducer($item->itemBase->producerId);
-					
+
 					if($producer instanceof Producer)
 					{
 						if(strlen($producer->external_name) > 0)
 						{
 							$product->appendChild($brandName = $this->createElement('brand-name'));
-							$brandName->appendChild($this->createCDATASection($producer->external_name));							
+							$brandName->appendChild($this->createCDATASection($producer->external_name));
 						}
 						elseif(strlen($producer->name) > 0)
 						{
 							$product->appendChild($brandName = $this->createElement('brand-name'));
 							$brandName->appendChild($this->createCDATASection($producer->name));
 						}
-						
+
 						if(strlen($producer->logo) > 0)
 						{
 							$product->appendChild($this->createElement('brand_logo', $producer->logo));

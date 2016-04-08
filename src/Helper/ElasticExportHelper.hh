@@ -49,6 +49,9 @@ class ElasticExportHelper
     const int TRANSFER_OFFER_PRICE_NO = 0;
     const int TRANSFER_OFFER_PRICE_YES = 1;
 
+    const int TRANSFER_RRP_YES = 1;
+    const int TRANSFER_RRP_NO = 0;
+
     const string BARCODE_EAN = 'EAN_13';
     const string BARCODE_ISBN = 'ISBN';
 
@@ -530,16 +533,42 @@ class ElasticExportHelper
     }
 
     /**
-     * Get price.
+     * returns the price of the given variation
      * @param  Record   $item
-     * @param  KeyValue $settings
      * @return float
      */
-    public function getPrice(Record $item, KeyValue $settings):float
+    public function getPrice(Record $item):float
+    {
+            return $item->variationRetailPrice->price;
+    }
+
+    /**
+     * returns the recommendedRetailPrice of the given variation if transferRrp is set
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return float
+     */
+    public function getRecommendedRetailPrice(Record $item, KeyValue $settings):float
+    {
+        if($settings->get('transferRrp') == self::TRANSFER_RRP_YES)
+        {
+            return $item->variationRecommendedRetailPrice->price;
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * returns the specialOfferPrice of the given variation if transferOfferPrice is set
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return float
+     */
+    public function getSpecialPrice(Record $item, KeyValue $settings):float
     {
         if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
         {
-            return $item->variationRetailPrice->price;
+            return $item->variationSpecialOfferRetailPrice->retailPrice;
         }
 
         return 0.0;
