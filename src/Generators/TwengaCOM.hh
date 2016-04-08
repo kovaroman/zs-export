@@ -73,12 +73,12 @@ private ArrayHelper $arrayHelper;
 
 			foreach($resultData as $item)
 			{
-                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
 				$data = [
                     'product_url'       => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'designation'       => $this->elasticExportHelper->getName($item, $settings),
-                    'price'             => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+                    'price'             => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'category'          => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
                     'description'       => $this->elasticExportHelper->getDescription($item, $settings, 256),

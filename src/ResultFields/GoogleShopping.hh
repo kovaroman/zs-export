@@ -91,6 +91,23 @@ class GoogleShopping extends ResultFields
 				'weightG',
 			],
 
+			'variationSpecialOfferRetailPrice' => array(
+					'retailPriceId', //[integer]
+					'retailPrice', //[float]
+					'retailPriceNet', //[float]
+					'basePrice', //[float]
+					'basePriceNet', //[float]
+					'unitPrice', //[float]
+					'unitPriceNet', //[float]
+					'orderParamsMarkup', //[float]
+					'orderParamsMarkupNet', //[float]
+					'vatId', //[integer]
+					'vatValue', //[float]
+					'currency', //[mixed]
+					'exchangeRatio', //[float]
+					'lastUpdateTimestamp' //[mixed]
+
+			),
 			'variationRetailPrice' => [
 				'price',
 			],

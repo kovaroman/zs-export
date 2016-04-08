@@ -71,7 +71,7 @@ private ArrayHelper $arrayHelper;
 				$data = [
                     'prod_number'           => $item->itemBase->id,
                     'prod_name'             => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings))),
-                    'prod_price'            => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+                    'prod_price'            => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'currency_symbol'       => $item->variationRetailPrice->currency,
                     'category'              => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'prod_description'      => strip_tags(html_entity_decode($this->elasticExportHelper->getPreviewText($item, $settings, 256))),

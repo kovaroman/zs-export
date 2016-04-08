@@ -69,7 +69,7 @@ class EcondaDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
 				$data = [
 
@@ -78,7 +78,7 @@ class EcondaDE extends CSVGenerator
                     'Description'       => $this->elasticExportHelper->getDescription($item, $settings),
                     'ProductURL'        => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'ImageURL'          => $this->elasticExportHelper->getMainImage($item, $settings),
-                    'Price'             => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
+                    'Price'             => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
                     'MSRP'              => number_format($rrp, 2, ',', ''),
                     'New'               => $itemCondition[(int)$item->itemBase->condition],
                     'Stock'             => $item->variationStock->stockNet,

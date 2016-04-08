@@ -79,7 +79,7 @@ class BasicPriceSearchEngine extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
 
@@ -97,7 +97,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'isbn'                  => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
                     'fedas'                 => $item->itemBase->fedas,
                     'unit'                  => $basePriceList['unit'],
-                    'price'                 => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+                    'price'                 => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'price_old'             => $rrp,
                     'weight'                => $item->variationBase->weightG,
                     'category1'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 1),

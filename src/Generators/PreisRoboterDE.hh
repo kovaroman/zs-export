@@ -71,7 +71,7 @@ class PreisRoboterDE extends CSVGenerator
 				$row = [
 					'art_number' 		    => $item->itemBase->id,
 					'art_name' 		        => $this->elasticExportHelper->getName($item, $settings, 256),
-					'art_price' 	        => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'art_price' 	        => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'art_url' 		        => $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'art_img_url' 	        => $this->elasticExportHelper->getMainImage($item, $settings),
 					'art_description' 	    => $this->elasticExportHelper->getDescription($item, $settings, 256),

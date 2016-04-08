@@ -138,8 +138,8 @@ class SchuheDE extends CSVGenerator
 				}
 
 				$itemName = strlen($this->elasticExportHelper->getName($item, $settings, 256)) <= 0 ? $item->variationBase->id : $this->elasticExportHelper->getName($item, $settings, 256);
-				$rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
-				$price = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $this->elasticExportHelper->getPrice($item, $settings) : $item->variationRecommendedRetailPrice->price;
+				$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
+				$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
 

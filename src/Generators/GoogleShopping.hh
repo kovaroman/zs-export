@@ -147,6 +147,12 @@ class GoogleShopping extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
+                $variationPrice = number_format($this->elasticExportHelper->getPrice($item), 2, '.', '');
+                $salePrice = number_format($this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
+                if($salePrice >= $variationPrice)
+                {
+                    $salePrice = '';
+                }
 
 				$data = [
 					'id' 						=> $item->variationBase->id,
@@ -158,8 +164,8 @@ class GoogleShopping extends CSVGenerator
 					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'condition'					=> $this->getCondition($item->itemBase->condition),
 					'availability'				=> $this->itemAvailability->get((int)$this->elasticExportHelper->getAvailability($item, $settings, false)),
-					'price'						=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
-					'sale_price'				=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'price'						=> $variationPrice,
+					'sale_price'				=> $salePrice,
 					'brand'						=> $item->itemBase->producer,
 					'ean'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'isbn'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
