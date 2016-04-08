@@ -533,7 +533,7 @@ class ElasticExportHelper
     }
 
     /**
-     * Get price.
+     * returns the price of the given variation
      * @param  Record   $item
      * @return float
      */
@@ -543,6 +543,7 @@ class ElasticExportHelper
     }
 
     /**
+     * returns the recommendedRetailPrice of the given variation if transferRrp is set
      * @param Record $item
      * @param KeyValue $settings
      * @return float
@@ -558,6 +559,7 @@ class ElasticExportHelper
     }
 
     /**
+     * returns the specialOfferPrice of the given variation if transferOfferPrice is set
      * @param Record $item
      * @param KeyValue $settings
      * @return float
