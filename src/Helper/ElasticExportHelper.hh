@@ -564,7 +564,7 @@ class ElasticExportHelper
      */
     public function getSpecialPrice(Record $item, KeyValue $settings):float
     {
-        if($settings->get('transferSpecialOfferRetailPrice') == self::TRANSFER_OFFER_PRICE_YES)
+        if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
         {
             return $item->variationSpecialOfferRetailPrice->retailPrice;
         }
