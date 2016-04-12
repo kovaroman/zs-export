@@ -81,12 +81,15 @@ class IdealoDE extends ResultFields
             ],
 
             'variationBase' => [
+                'id',
                 'availability',
                 'attributeValueSetId',
                 'model',
                 'limitOrderByStockSelect',
                 'unitId',
                 'content',
+                'customNumber',
+                'weightG',
             ],
 
             'variationBarcodeList' => [

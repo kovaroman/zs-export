@@ -58,7 +58,7 @@ class IdealoDE extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(" ");
+			$this->setDelimiter("	"); // tab not space!
 
 			$this->addCSVContent($this->head($settings));
 
@@ -98,6 +98,7 @@ class IdealoDE extends CSVGenerator
 			'image_url_preview',
 			'image_url',
 			'base_price',
+			'free_text_field',
 		];
 
 		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
