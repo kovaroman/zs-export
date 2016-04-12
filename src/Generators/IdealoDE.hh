@@ -12,10 +12,10 @@ use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 
 /**
- * Class Idealo
+ * Class IdealoDE
  * @package ElasticExport\Generators
  */
-class Idealo extends CSVGenerator
+class IdealoDE extends CSVGenerator
 {
 	const string DEFAULT_PAYMENT_METHOD = 'vorkasse';
 

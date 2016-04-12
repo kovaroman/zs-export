@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Idealo
+ * Class IdealoDE
  * @package ElasticExport\ResultFields
  */
-class Idealo extends ResultFields
+class IdealoDE extends ResultFields
 {
     /*
      * @var ArrayHelper
