@@ -133,6 +133,14 @@ class GoogleShopping extends ResultFields
 				]
 			],
 
+			'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
+            ],
+
 			'variationAttributeValueList' => [
 				'attributeId',
 				'attributeValueId',

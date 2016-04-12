@@ -97,6 +97,14 @@ class GuenstigerDE extends ResultFields
                     'barcodeId',
                 ]
             ],
+
+            'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
+            ],
         ];
     }
 }
