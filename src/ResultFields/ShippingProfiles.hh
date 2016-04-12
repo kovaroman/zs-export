@@ -38,6 +38,12 @@ class ShippingProfiles extends ResultFields
             'itemBase'=> [
                 'id',
             ],
+            'itemShippingProfilesList' => [
+                'id',
+                'name',
+                'backendName',
+                'tags'
+            ],
         ];
     }
 }
