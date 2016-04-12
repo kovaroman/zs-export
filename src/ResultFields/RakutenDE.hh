@@ -34,6 +34,29 @@ class RakutenDE extends ResultFields
 	{
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        if($settings->get('variations') == 'mainVariations')
+        {
+            $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
+        }
+
+        $itemDescriptionFields = ['urlContent'];
+        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
+
+        if($settings->get('descriptionType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'shortDescription';
+        }
+
+        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
+
+        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'technicalData';
+        }
+
 		$fields = [
 			'itemBase'=> [
 				'id',
@@ -62,16 +85,11 @@ class RakutenDE extends ResultFields
 			],
 
 			'itemDescription' => [
-				'params' => [
-					'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
-				],
-				'fields' => [
-					'urlContent',
-					'shortDescription',
-					'description',
-					'technicalData',
-				],
-			],
+                'params' => [
+                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
+                ],
+                'fields' => $itemDescriptionFields,
+            ],
 
 			'variationImageList' => [
 				'params' => [
