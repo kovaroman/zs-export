@@ -72,7 +72,7 @@ private ArrayHelper $arrayHelper;
 					'deliverycost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'deliveryTime' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
                     'unitaryPrice'  => $this->elasticExportHelper->getBasePrice($item, $settings),
-                    'ean'           => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'ean'           => $item->variationBarcode->code,
                     'ecotax'        => ''
 				];
 

@@ -108,6 +108,14 @@ private ArrayHelper $arrayHelper;
                     'barcodeId',
                 ]
             ],
+            
+            'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
+            ],
 
         ];
     }

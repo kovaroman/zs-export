@@ -81,7 +81,7 @@ private ArrayHelper $arrayHelper;
                     'img_large'             => $this->getImages($item, $settings, ';', 'normal'),
                     'manufacturer'          => $item->itemBase->producer,
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-                    'prod_ean'              => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'prod_ean'              => $item->variationBarcode->code,
                     'shipping_costs'        => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
                     'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings),
                     'base_price_amount'     => $basePriceList['lot'],

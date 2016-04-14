@@ -118,7 +118,7 @@ class BeezUp extends CSVGenerator
 					'Produkt ID'            =>  $item->itemBase->id,
                     'Artikel Nr'            =>  $item->variationBase->customNumber,
                     'MPN'                   =>  $item->variationBase->model,
-                    'EAN'                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'EAN'                   =>  $item->variationBarcode->code,
                     'Marke'                 =>  $item->itemBase->producer,
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),

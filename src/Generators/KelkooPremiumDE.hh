@@ -73,7 +73,7 @@ private ArrayHelper $arrayHelper;
                     'availability'  => $this->elasticExportHelper->getAvailability($item, $settings),
                     'offerid'       => $item->variationBase->id,
                     'unitaryPrice'  => $this->elasticExportHelper->getBasePrice($item, $settings),
-                    'ean'           => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'ean'           => $item->variationBarcode->code,
 				];
 
 				$this->addCSVContent(array_values($data));

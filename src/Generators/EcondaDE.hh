@@ -82,7 +82,7 @@ class EcondaDE extends CSVGenerator
                     'MSRP'              => number_format($rrp, 2, ',', ''),
                     'New'               => $itemCondition[(int)$item->itemBase->condition],
                     'Stock'             => $item->variationStock->stockNet,
-                    'EAN'               => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'EAN'               => $item->variationBarcode->code,
                     'Brand'             => $item->itemBase->producer,
                     'ProductCategory'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'Grundpreis'        => $this->elasticExportHelper->getBasePrice($item, $settings),

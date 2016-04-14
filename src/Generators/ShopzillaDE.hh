@@ -77,7 +77,7 @@ class ShopzillaDE extends CSVGenerator
 					'Versandkosten' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
 					'Gebot' 			=> '',
 					'Werbetext' 		=> '2',
-					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+					'EAN' 				=> $item->variationBarcode->code,
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];

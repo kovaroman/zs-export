@@ -90,6 +90,15 @@ class BeezUp extends ResultFields
                 ]
             ],
 
+            'variationStandardCategory' => [
+                'params' => [
+                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                ],
+                'fields' => [
+                    'categoryId'
+                ],
+            ],
+
             'variationStock' => [
                 'params' => [
                     'type' => 'virtual',

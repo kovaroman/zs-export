@@ -76,7 +76,7 @@ class BelboonDE extends CSVGenerator
 			{
         $data = [
             'Merchant_ProductNumber'      => $item->variationBase->id,
-            'EAN_Code'                    => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+            'EAN_Code'                    => $item->variationBarcode->code,
             'Product_Title'               => $this->elasticExportHelper->getName($item, $settings, 256),
             'Brand'                       => $item->itemBase->producer,
             'Price'                       => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),

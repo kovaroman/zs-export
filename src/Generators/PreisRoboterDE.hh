@@ -77,7 +77,7 @@ class PreisRoboterDE extends CSVGenerator
 					'art_description' 	    => $this->elasticExportHelper->getDescription($item, $settings, 256),
 					'art_versandkosten'     => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
 	                'art_lieferzeit' 	    => $this->elasticExportHelper->getAvailability($item, $settings),
-					'art_ean_code'		    => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+					'art_ean_code'		    => $item->variationBarcode->code,
 					'art_pzn' 	            => '',
 					'art_producer' 	        => $item->itemBase->producer,
 	                'art_producer_number'   => $item->variationBase->model,
