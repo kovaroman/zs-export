@@ -68,6 +68,7 @@ class KelkooBasicDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 6,
                 ],
                 'fields' => [
                     'type',
