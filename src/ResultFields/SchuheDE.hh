@@ -68,7 +68,7 @@ class SchuheDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 141,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                 ],
                 'fields' => [
                     'type',

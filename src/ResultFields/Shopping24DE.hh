@@ -68,7 +68,7 @@ private ArrayHelper $arrayHelper;
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 146,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                 ],
                 'fields' => [
                     'type',
