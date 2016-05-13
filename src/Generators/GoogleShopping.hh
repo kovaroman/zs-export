@@ -97,7 +97,7 @@ class GoogleShopping extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(" ");
+			$this->setDelimiter("	"); // this is tab character!
 
 			$this->addCSVContent([
 				'id',
