@@ -248,10 +248,6 @@ class RakutenDE extends CSVGenerator
 			$stock = 0;
 		}
 
-		$attributeValue = '';
-		$attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
-		$attributeValue = str_replace(', ', '|', $attributeValue);
-
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '#'.$item->itemBase->id,
@@ -261,7 +257,7 @@ class RakutenDE extends CSVGenerator
 			'hersteller'				=> $item->itemBase->producer,
 			'beschreibung'				=> '',
 			'variante'					=> '',
-			'variantenwert'				=> $attributeValue,
+			'variantenwert'				=> $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|'),
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),

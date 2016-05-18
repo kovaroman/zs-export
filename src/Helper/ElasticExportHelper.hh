@@ -616,9 +616,10 @@ class ElasticExportHelper
      * Get the attribute value set short frontend name. Ex. blue, XL
      * @param  Record   $item
      * @param  KeyValue $settings
+     * @param  string $delimiter
      * @return string
      */
-    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings):string
+    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', '):string
     {
         $values = [];
 
@@ -636,7 +637,7 @@ class ElasticExportHelper
             }
         }
 
-        return implode(', ', $values);
+        return implode($delimiter, $values);
     }
 
     /**
