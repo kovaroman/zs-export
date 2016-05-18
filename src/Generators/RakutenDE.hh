@@ -140,10 +140,10 @@ class RakutenDE extends CSVGenerator
 			'variante_zu_id'			=> '',
 			'artikelnummer'				=> '',
 			'produkt_bestellbar'		=> '',
-			'produktname'				=> '',
-			'hersteller'				=> $item->itemBase->producer,
+			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
+			'hersteller'				=> '',
 			'beschreibung'				=> $this->elasticExportHelper->getDescription($item, $settings, 5000),
-			'variante'					=> '',
+			'variante'					=> $this->elasticExportHelper->getAttributeName($item, $settings),
 			'variantenwert'				=> '',
 			'isbn_ean'					=> '',
 			'lagerbestand'				=> '',
@@ -159,31 +159,31 @@ class RakutenDE extends CSVGenerator
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
-			'kategorien'				=> '',
+			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 			'lieferzeit'				=> '',
-			'tradoria_kategorie'		=> '',
-			'sichtbar'					=> '',
-			'free_var_1'				=> '',
-			'free_var_2'				=> '',
-			'free_var_3'				=> '',
-			'free_var_4'				=> '',
-			'free_var_5'				=> '',
-			'free_var_6'				=> '',
-			'free_var_7'				=> '',
-			'free_var_8'				=> '',
-			'free_var_9'				=> '',
-			'free_var_10'				=> '',
-			'free_var_11'				=> '',
-			'free_var_12'				=> '',
-			'free_var_13'				=> '',
-			'free_var_14'				=> '',
-			'free_var_15'				=> '',
-			'free_var_16'				=> '',
-			'free_var_17'				=> '',
-			'free_var_18'				=> '',
-			'free_var_19'				=> '',
-			'free_var_20'				=> '',
-			'MPN'						=> '',
+			'tradoria_kategorie'		=> $item->variationStandardCategory->categoryId,
+			'sichtbar'					=> 1,
+			'free_var_1'				=> $item->itemBase->free1,
+			'free_var_2'				=> $item->itemBase->free2,
+			'free_var_3'				=> $item->itemBase->free3,
+			'free_var_4'				=> $item->itemBase->free4,
+			'free_var_5'				=> $item->itemBase->free5,
+			'free_var_6'				=> $item->itemBase->free6,
+			'free_var_7'				=> $item->itemBase->free7,
+			'free_var_8'				=> $item->itemBase->free8,
+			'free_var_9'				=> $item->itemBase->free9,
+			'free_var_10'				=> $item->itemBase->free10,
+			'free_var_11'				=> $item->itemBase->free11,
+			'free_var_12'				=> $item->itemBase->free12,
+			'free_var_13'				=> $item->itemBase->free13,
+			'free_var_14'				=> $item->itemBase->free14,
+			'free_var_15'				=> $item->itemBase->free15,
+			'free_var_16'				=> $item->itemBase->free16,
+			'free_var_17'				=> $item->itemBase->free17,
+			'free_var_18'				=> $item->itemBase->free18,
+			'free_var_19'				=> $item->itemBase->free19,
+			'free_var_20'				=> $item->itemBase->free20,
+			'MPN'						=> $item->variationBase->model,
 			'bild6'						=> $this->getImageByNumber($item, $settings, 6),
 			'bild7'						=> $this->getImageByNumber($item, $settings, 7),
 			'bild8'						=> $this->getImageByNumber($item, $settings, 8),
@@ -206,18 +206,64 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function buildChildRow(Record $item, KeyValue $settings):void
 	{
+		if($item->variationBase->limitOrderByStockSelect == 2)
+		{
+			$variationAvailable = 1;
+			$stock = 999;
+		}
+		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
+		{
+			$variationAvailable = 1;
+			if($item->variationStock->stockNet > 999)
+			{
+				$stock = 999;
+			}
+			else
+			{
+				$stock = $item->variationStock->stockNet;
+			}
+		}
+		elseif($item->variationBase->limitOrderByStockSelect == 0)
+		{
+			$variationAvailable = 1;
+			if($item->variationStock->stockNet > 999)
+			{
+				$stock = 999;
+			}
+			else
+			{
+				if($item->variationStock->stockNet > 0)
+				{
+					$stock = $item->variationStock->stockNet;
+				}
+				else
+				{
+					$stock = 0;
+				}
+			}
+		}
+		else
+		{
+			$variationAvailable = 0;
+			$stock = 0;
+		}
+
+		$attributeValue = '';
+		$attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
+		$attributeValue = str_replace(', ', '|', $attributeValue);
+
 		$data = [
-			'id'						=> $item->itemBase->id,
-			'variante_zu_id'			=> $item->variationBase->id,
-			'artikelnummer'				=> $item->variationBase->customNumber,
-			'produkt_bestellbar'		=> '',
-			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
+			'id'						=> '',
+			'variante_zu_id'			=> '#'.$item->itemBase->id,
+			'artikelnummer'				=> $item->variationMarketStatus->sku,
+			'produkt_bestellbar'		=> $variationAvailable,
+			'produktname'				=> '',
 			'hersteller'				=> $item->itemBase->producer,
 			'beschreibung'				=> '',
 			'variante'					=> '',
-			'variantenwert'				=> '',
+			'variantenwert'				=> $attributeValue,
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
-			'lagerbestand'				=> '',
+			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 			'grundpreis_inhalt'			=> '',
 			'grundpreis_einheit'		=> '',
@@ -230,7 +276,7 @@ class RakutenDE extends CSVGenerator
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
-			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+			'kategorien'				=> '',
 			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 			'tradoria_kategorie'		=> '',
 			'sichtbar'					=> 1,
@@ -260,7 +306,7 @@ class RakutenDE extends CSVGenerator
 			'bild8'						=> $this->getImageByNumber($item, $settings, 8),
 			'bild9'						=> $this->getImageByNumber($item, $settings, 9),
 			'bild10'					=> $this->getImageByNumber($item, $settings, 10),
-			'technical_data'			=> $item->itemDescription->technicalData,
+			'technical_data'			=> '',
 			'energie_klassen_gruppe'	=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_GROUP),
 			'energie_klasse'			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS),
 			'energie_klasse_bis'		=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_UNTIL),

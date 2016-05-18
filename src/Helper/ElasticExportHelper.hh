@@ -10,6 +10,8 @@ use Plenty\Modules\Item\Unit\Contracts\UnitLangRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitLang;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeLangRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeLang;
 use Plenty\Modules\Item\Character\Contracts\CharacterItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepository;
@@ -71,6 +73,11 @@ class ElasticExportHelper
     private AttributeValueLangRepositoryContract $attributeValueLangRepository;
 
     /**
+     * AttributeLangRepositoryContract $attributeLangRepository
+     */
+    private AttributeLangRepositoryContract $attributeLangRepository;
+
+    /**
      * CharacterItemNameRepositoryContract $characterItemNameRepository
      */
     private CharacterItemNameRepositoryContract $characterItemNameRepository;
@@ -116,6 +123,7 @@ class ElasticExportHelper
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param UnitLangRepositoryContract $unitLangRepository
      * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
+     * @param AttributeLangRepositoryContract $attributeLangRepository
      * @param CharacterItemNameRepositoryContract $characterItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
@@ -127,6 +135,7 @@ class ElasticExportHelper
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
                                 AttributeValueLangRepositoryContract $attributeValueLangRepository,
+                                AttributeLangRepositoryContract $attributeLangRepository,
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
@@ -142,6 +151,8 @@ class ElasticExportHelper
         $this->unitLangRepository = $unitLangRepository;
 
         $this->attributeValueLangRepository = $attributeValueLangRepository;
+
+        $this->attributeLangRepository = $attributeLangRepository;
 
         $this->characterItemNameRepository = $characterItemNameRepository;
 
@@ -572,6 +583,33 @@ class ElasticExportHelper
         }
 
         return 0.0;
+    }
+
+    /**
+     * Get the attributeNames
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return string
+     */
+    public function getAttributeName(Record $item, KeyValue $settings):string
+    {
+        $values = [];
+
+        if($item->variationBase->attributeValueSetId)
+        {
+            foreach($item->variationAttributeValueList as $attribute)
+            {
+                $attributeLang = $this->attributeLangRepository->findAttributeName($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                if($attributeLang instanceof AttributeLang)
+                {
+                    $values[] = $attributeLang->name;
+                }
+
+            }
+        }
+
+        return implode('|', $values);
     }
 
     /**
