@@ -62,15 +62,18 @@ class GoogleShopping extends CSVGenerator
      */
     private array<int,array<string,string>>$itemPropertyCache = [];
 
-    /**
-     * @var ImmMap<int,string>
-     */
-    private ImmMap<int,string> $itemAvailability = ImmMap{
-                                                        0 => 'in stock',
-                                                        1 => 'in stock',
-                                                        2 => 'out of stock',
-                                                        3 => 'preorder'
-                                                    };
+	private ImmMap<int,string> $allowedUnit = ImmMap{
+												'mg'  => 'mg',
+												'g'   => 'g',
+												'kg'  => 'kg',
+												'ml'  => 'ml',
+												'cl'  => 'cl',
+												'l'   => 'l',
+												'cbm' => 'cbm',
+												'cm'  => 'cm',
+												'm'   => 'm',
+												'qm'  => 'sqm'
+											};
 
     /**
          * GoogleShopping constructor.
@@ -149,7 +152,7 @@ class GoogleShopping extends CSVGenerator
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
                 $variationPrice = number_format($this->elasticExportHelper->getPrice($item), 2, '.', '');
                 $salePrice = number_format($this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
-                if($salePrice >= $variationPrice)
+                if($salePrice >= $variationPrice || $salePrice <= 0.00)
                 {
                     $salePrice = '';
                 }
@@ -163,7 +166,7 @@ class GoogleShopping extends CSVGenerator
 					'link'						=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'condition'					=> $this->getCondition($item->itemBase->condition),
-					'availability'				=> $this->itemAvailability->get((int)$this->elasticExportHelper->getAvailability($item, $settings, false)),
+					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'price'						=> $variationPrice,
 					'sale_price'				=> $salePrice,
 					'brand'						=> $item->itemBase->producer,
@@ -182,8 +185,8 @@ class GoogleShopping extends CSVGenerator
 					'excluded_destination'		=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item),
-					'unit_pricing_measure'		=> $this->getUnitPricingMeasure($item, $settings),
-					'unit_pricing_base_measure'	=> $this->getUnitPricingBaseMeasure($item, $settings),
+					'unit_pricing_measure'		=> '', // $this->getUnitPricingMeasure($item, $settings),
+					'unit_pricing_base_measure'	=> '', // $this->getUnitPricingBaseMeasure($item, $settings),
 					'energy_efficiency_class'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
 					'size_system'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
 					'size_type'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),
