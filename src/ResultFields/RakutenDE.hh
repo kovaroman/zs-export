@@ -140,10 +140,28 @@ class RakutenDE extends ResultFields
 				]
 			],
 
+			'variationMarketStatus' => [
+				'params' => [
+					'marketId' => $settings->get('referrerId')
+				],
+				'fields' => [
+					'sku'
+				]
+			],
+
+			'variationStock' => [
+				'params' => [
+					'type' => 'virtual'
+				],
+				'fields' => [
+					'stockNet'
+				]
+			],
+
 			'variationAttributeValueList' => [
 				'attributeId',
-				'attributeValueId',
-			],
+				'attributeValueId'
+			]
 		];
 
 
