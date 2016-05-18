@@ -62,19 +62,6 @@ class GoogleShopping extends CSVGenerator
      */
     private array<int,array<string,string>>$itemPropertyCache = [];
 
-	private ImmMap<int,string> $allowedUnit = ImmMap{
-												'mg'  => 'mg',
-												'g'   => 'g',
-												'kg'  => 'kg',
-												'ml'  => 'ml',
-												'cl'  => 'cl',
-												'l'   => 'l',
-												'cbm' => 'cbm',
-												'cm'  => 'cm',
-												'm'   => 'm',
-												'qm'  => 'sqm'
-											};
-
     /**
          * GoogleShopping constructor.
          * @param ElasticExportHelper $elasticExportHelper
