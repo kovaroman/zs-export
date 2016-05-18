@@ -165,7 +165,7 @@ class GoogleShopping extends CSVGenerator
 					'material'					=> $variationAttributes['material'],
 					'pattern'					=> $variationAttributes['pattern'],
 					'item_group_id'				=> $item->itemBase->id,
-					'shipping'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+					'shipping'					=> strtoupper($settings->get('destination')).':::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
 					'gender'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_GENDER),
 					'age_group'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
