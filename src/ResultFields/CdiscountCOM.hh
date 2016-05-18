@@ -95,7 +95,12 @@ private ArrayHelper $arrayHelper;
                     'fields' => [
                         'sku'
                     ]
-                ]
+                ],
+
+                'variationAttributeValueList' => [
+				    'attributeId',
+				    'attributeValueId'
+			    ],
             ];
     }
 }
