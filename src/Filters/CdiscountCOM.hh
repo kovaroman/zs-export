@@ -30,6 +30,10 @@ class CdiscountCOM extends Filters
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        return [];
+		$searchFilter = [
+			'variationBase.isActive?' => [],
+		];
+
+		return $searchFilter;
     }
 }

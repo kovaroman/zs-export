@@ -13,7 +13,10 @@ class SchuheDE extends Filters
 
     public function generateFilters(array<FormatSetting> $formatSettings = []):array<string, mixed>
     {
-        //code here
-        return [];
+		$searchFilter = [
+			'variationBase.isActive?' => [],
+		];
+
+		return $searchFilter;
     }
 }

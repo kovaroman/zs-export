@@ -30,6 +30,10 @@ private ArrayHelper $arrayHelper;
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        return [];
+		$searchFilter = [
+			'variationBase.isActive?' => [],
+		];
+
+		return $searchFilter;
     }
 }
