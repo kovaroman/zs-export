@@ -107,6 +107,11 @@ class BeezUp extends ResultFields
                 'fields' => [
                     'stockNet',
                 ]
+            ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId'
             ]
 
         ];
