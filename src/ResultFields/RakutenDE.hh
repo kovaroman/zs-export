@@ -115,9 +115,13 @@ class RakutenDE extends ResultFields
 				'vatId',
 			],
 
-			'variationRetailPrice' => [
+			'variationRecommendedRetailPrice' => [
 				'price',
 			],
+
+            'variationRetailPrice' => [
+                'price',
+            ],
 
 			'variationStandardCategory' => [
 				'params' => [
