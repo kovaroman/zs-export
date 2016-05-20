@@ -114,10 +114,15 @@ class RakutenDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
-				if ($previousItemId != $currentItemId)
+				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1 && $item->itemBase->hasAttribute == true)
 				{
-					$this->buildParentRow($item, $settings);
+					$this->buildParentWithChildrenRow($item, $settings);
 					$this->buildChildRow($item, $settings);
+					$previousItemId = $currentItemId;
+				}
+				elseif($previousItemId != $currentItemId && $item->itemBase->variationCount == 1 && $item->itemBase->hasAttribute == false)
+				{
+					$this->buildParentWithoutChildrenRow($item, $settings);
 					$previousItemId = $currentItemId;
 				}
 				else
@@ -133,7 +138,124 @@ class RakutenDE extends CSVGenerator
 	 * @param KeyValue $settings
 	 * @return void
 	 */
-	private function buildParentRow(Record $item, KeyValue $settings):void
+	private function buildParentWithoutChildrenRow(Record $item, KeyValue $settings):void
+	{
+		if($item->variationBase->limitOrderByStockSelect == 2)
+		{
+			$variationAvailable = 1;
+			$stock = 999;
+		}
+		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
+		{
+			$variationAvailable = 1;
+			if($item->variationStock->stockNet > 999)
+			{
+				$stock = 999;
+			}
+			else
+			{
+				$stock = $item->variationStock->stockNet;
+			}
+		}
+		elseif($item->variationBase->limitOrderByStockSelect == 0)
+		{
+			$variationAvailable = 1;
+			if($item->variationStock->stockNet > 999)
+			{
+				$stock = 999;
+			}
+			else
+			{
+				if($item->variationStock->stockNet > 0)
+				{
+					$stock = $item->variationStock->stockNet;
+				}
+				else
+				{
+					$stock = 0;
+				}
+			}
+		}
+		else
+		{
+			$variationAvailable = 0;
+			$stock = 0;
+		}
+
+		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
+		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
+		$price = $price > 0 ? $price : '';
+
+		$data = [
+			'id'						=> '',
+			'variante_zu_id'			=> '',
+			'artikelnummer'				=> strlen($item->variationMarketStatus->sku) > 0 ? $item->variationMarketStatus->sku : $item->variationBase->id,
+			'produkt_bestellbar'		=> $variationAvailable,
+			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
+			'hersteller'				=> $item->itemBase->producer,
+			'beschreibung'				=> $this->elasticExportHelper->getDescription($item, $settings, 5000),
+			'variante'					=> $this->elasticExportHelper->getAttributeName($item, $settings),
+			'variantenwert'				=> '',
+			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+			'lagerbestand'				=> $stock,
+			'preis'						=> number_format($rrp, 2, '.', ''),
+			'grundpreis_inhalt'			=> '',
+			'grundpreis_einheit'		=> '',
+			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
+			'bezug_reduzierter_preis'	=> 'UVP',
+			'mwst_klasse'				=> '', //todo muss gemapped werden
+			'bestandsverwaltung_aktiv'	=> '', //todo ka was da gesetzt werden muss :)
+			'bild1'						=> $this->getImageByNumber($item, $settings, 1),
+			'bild2'						=> $this->getImageByNumber($item, $settings, 2),
+			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
+			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
+			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
+			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+			'lieferzeit'				=> '',
+			'tradoria_kategorie'		=> $item->variationStandardCategory->categoryId, //todo bitte gucken ob das die richtige ist
+			'sichtbar'					=> 1,
+			'free_var_1'				=> $item->itemBase->free1,
+			'free_var_2'				=> $item->itemBase->free2,
+			'free_var_3'				=> $item->itemBase->free3,
+			'free_var_4'				=> $item->itemBase->free4,
+			'free_var_5'				=> $item->itemBase->free5,
+			'free_var_6'				=> $item->itemBase->free6,
+			'free_var_7'				=> $item->itemBase->free7,
+			'free_var_8'				=> $item->itemBase->free8,
+			'free_var_9'				=> $item->itemBase->free9,
+			'free_var_10'				=> $item->itemBase->free10,
+			'free_var_11'				=> $item->itemBase->free11,
+			'free_var_12'				=> $item->itemBase->free12,
+			'free_var_13'				=> $item->itemBase->free13,
+			'free_var_14'				=> $item->itemBase->free14,
+			'free_var_15'				=> $item->itemBase->free15,
+			'free_var_16'				=> $item->itemBase->free16,
+			'free_var_17'				=> $item->itemBase->free17,
+			'free_var_18'				=> $item->itemBase->free18,
+			'free_var_19'				=> $item->itemBase->free19,
+			'free_var_20'				=> $item->itemBase->free20,
+			'MPN'						=> $item->variationBase->model,
+			'bild6'						=> $this->getImageByNumber($item, $settings, 6),
+			'bild7'						=> $this->getImageByNumber($item, $settings, 7),
+			'bild8'						=> $this->getImageByNumber($item, $settings, 8),
+			'bild9'						=> $this->getImageByNumber($item, $settings, 9),
+			'bild10'					=> $this->getImageByNumber($item, $settings, 10),
+			'technical_data'			=> $item->itemDescription->technicalData,
+			'energie_klassen_gruppe'	=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_GROUP),
+			'energie_klasse'			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS),
+			'energie_klasse_bis'		=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_UNTIL),
+			'energie_klassen_bild'		=> '',
+		];
+
+		$this->addCSVContent(array_values($data));
+	}
+
+	/**
+	 * @param Record $item
+	 * @param KeyValue $settings
+	 * @return void
+	 */
+	private function buildParentWithChildrenRow(Record $item, KeyValue $settings):void
 	{
 		$data = [
 			'id'						=> '#'.$item->itemBase->id,
@@ -160,7 +282,7 @@ class RakutenDE extends CSVGenerator
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
 			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-			'lieferzeit'				=> '',
+			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 			'tradoria_kategorie'		=> $item->variationStandardCategory->categoryId,
 			'sichtbar'					=> 1,
 			'free_var_1'				=> $item->itemBase->free1,
