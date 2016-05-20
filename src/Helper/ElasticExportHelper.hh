@@ -939,20 +939,13 @@ class ElasticExportHelper
 
     /**
      * @param KeyValue $settings
-     * @param int $value
+     * @param string $isoCodeType
      * @return string
      */
-    public function getCountry(KeyValue $settings, int $value = 2):string
+    public function getCountry(KeyValue $settings, string $isoCodeType):string
     {
-        $country = $this->countryRepository->findIsoCode($settings->get('destination'));
-        if($value == 2)
-        {
-            $countryName = $country->iso_code_2;
-        }
-        else
-        {
-            $countryName = $country->iso_code_3;
-        }
-        return $countryName;
+        $country = $this->countryRepository->findIsoCode($settings->get('destination'), $isoCodeType);
+
+        return $country;
     }
 }
