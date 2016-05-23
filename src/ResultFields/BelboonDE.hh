@@ -34,9 +34,30 @@ class BelboonDE extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-		if($settings->get('variations') == 'mainVariations')
+        $itemDescriptionFields = [
+            'keywords',
+            ($settings->get('nameId') ? 'name' . $settings->get('nameId') : 'name1'),
+            'urlContent',
+        ];
+
+        if($settings->get('descriptionType') == 'itemShortDescription'
+            || $settings->get('previewTextType') == 'itemShortDescription')
         {
-            $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
+            $itemDescriptionFields[] = 'shortDescription';
+        }
+
+        if($settings->get('descriptionType') == 'itemDescription'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
+
+        if($settings->get('descriptionType') == 'technicalData'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'technicalData';
         }
 
 		return [
@@ -49,14 +70,7 @@ class BelboonDE extends ResultFields
                 'params' => [
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' => [
-                    'description',
-                    'keywords',
-                    ($settings->get('nameId') ? 'name' . $settings->get('nameId') : 'name1'),
-                    'shortDescription',
-                    'technicalData',
-                    'urlContent',
-        		]
+                'fields' => $itemDescriptionFields,
             ],
 
             'variationImageList' => [
