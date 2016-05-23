@@ -74,6 +74,9 @@ class BelboonDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+				$previewImageInformation = $this->getImageInformation($item, $settings, 'preview');
+				$largeImageInformation = $this->getImageInformation($item, $settings, 'normal');
+
 		        $data = [
 		            'Merchant_ProductNumber'      => $item->itemBase->id,
 		            'EAN_Code'                    => $item->variationBarcode->code,
@@ -82,12 +85,12 @@ class BelboonDE extends CSVGenerator
 		            'Price'                       => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 		            'Currency'                    => $item->variationRetailPrice->currency,
 		            'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
-		            'Image_Small_URL'             => $this->getImage($item, $settings, 'preview'),
-		            'Image_Small_WIDTH'           => $this->getImageSize($this->getImage($item, $settings, 'preview'), self::IMAGE_SIZE_WIDTH),
-		            'Image_Small_HEIGHT'          => $this->getImageSize($this->getImage($item, $settings, 'preview'), self::IMAGE_SIZE_HEIGHT),
-		            'Image_Large_URL'             => $this->getImage($item, $settings, 'normal'),
-		            'Image_Large_WIDTH'           => $this->getImageSize($this->getImage($item, $settings, 'normal'), self::IMAGE_SIZE_WIDTH),
-		            'Image_Large_HEIGHT'          => $this->getImageSize($this->getImage($item, $settings, 'normal'), self::IMAGE_SIZE_HEIGHT),
+		            'Image_Small_URL'             => $previewImageInformation['url'],
+		            'Image_Small_WIDTH'           => $previewImageInformation['width'],
+		            'Image_Small_HEIGHT'          => $previewImageInformation['height'],
+		            'Image_Large_URL'             => $largeImageInformation['url'],
+		            'Image_Large_WIDTH'           => $largeImageInformation['width'],
+		            'Image_Large_HEIGHT'          => $largeImageInformation['height'],
 		            'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 		            'Keywords'                    => $item->itemDescription->keywords,
 		            'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
@@ -102,29 +105,28 @@ class BelboonDE extends CSVGenerator
 		}
 	}
 
-	private function getImageSize(string $filename, string $type):int
+	private function getImageInformation(Record $item, KeyValue $settings, string $imageType):array<string, mixed>
 	{
-		$imageInformation = getimagesize($filename);
+		$imageList = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
 
-		switch($type)
+		if(count($imageList) > 0)
 		{
-			case self::IMAGE_SIZE_WIDTH:
-				return (int)$imageInformation[0];
-
-			case self::IMAGE_SIZE_HEIGHT:
-				return (int)$imageInformation[1];
+			$result = getimagesize($imageList[0]);
+			$imageInformation = [
+				'url' => $imageList[0],
+				'width' => (int)$result[0],
+				'height' => (int)$result[1],
+			];
 		}
-	}
-
-	public function getImage(Record $item, KeyValue $settings, string $imageType = 'normal'):string
-	{
-		$list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
-
-		if(count($list) > 0)
+		else
 		{
-			return $list[0];
+			$imageInformation = [
+				'url' => '',
+				'width' => '',
+				'height' => '',
+			];
 		}
 
-		return '';
+		return $imageInformation;
 	}
 }
