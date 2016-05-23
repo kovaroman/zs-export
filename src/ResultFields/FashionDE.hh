@@ -37,17 +37,24 @@ class FashionDE extends ResultFields
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
-        if($settings->get('descriptionType') == 'itemShortDescription')
+        if($settings->get('descriptionType') == 'itemShortDescription'
+            || $settings->get('previewTextType') == 'itemShortDescription')
         {
             $itemDescriptionFields[] = 'shortDescription';
         }
 
-        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        if($settings->get('descriptionType') == 'itemDescription'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemDescription'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'description';
         }
 
-        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        if($settings->get('descriptionType') == 'technicalData'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'technicalData'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'technicalData';
         }

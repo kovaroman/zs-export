@@ -48,14 +48,16 @@ class BelboonDE extends ResultFields
 
         if($settings->get('descriptionType') == 'itemDescription'
             || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
-            || $settings->get('previewTextType') == 'itemShortDescription')
+            || $settings->get('previewTextType') == 'itemDescription'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'description';
         }
 
         if($settings->get('descriptionType') == 'technicalData'
             || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
-            || $settings->get('previewTextType') == 'itemShortDescription')
+            || $settings->get('previewTextType') == 'technicalData'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'technicalData';
         }
