@@ -712,18 +712,18 @@ class ElasticExportHelper
 	 */
 	public function getBasePriceList(Record $item, KeyValue $settings):Map<string,mixed>
 	{
-		$price = (float) $item->variationRetailPrice->price;
-		$lot = (int) $item->variationBase->content;
-		$unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+		$price = (float)$item->variationRetailPrice->price;
+		$lot = (int)$item->variationBase->content;
+		$unitLang = $this->unitLangRepository->findUnit((int)$item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
 		if($unitLang instanceof UnitLang)
 		{
-			$unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
+            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
 			$unitName = $unitLang->plenty_unit_lang_name;
 		}
 		else
 		{
-			$unitShortcut = '';
+            $unitShortcut = '';
 			$unitName = '';
 		}
 
@@ -731,7 +731,7 @@ class ElasticExportHelper
 
 		$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
 
-		return Map{'lot' => (int)$basePriceDetails['lot'], 'price' => (float)$basePriceDetails['price'], 'unit' => (string)$unitName};
+        return Map{'lot' => (int)$basePriceDetails['lot'], 'price' => (float)$basePriceDetails['price'], 'unit' => (string)$unitName};
 	}
 
     /**
