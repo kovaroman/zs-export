@@ -143,11 +143,13 @@ class RakutenDE extends CSVGenerator
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{
 			$variationAvailable = 1;
+			$inventoryManagementActive = 0;
 			$stock = 999;
 		}
 		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
 		{
 			$variationAvailable = 1;
+			$inventoryManagementActive = 1;
 			if($item->variationStock->stockNet > 999)
 			{
 				$stock = 999;
@@ -160,6 +162,7 @@ class RakutenDE extends CSVGenerator
 		elseif($item->variationBase->limitOrderByStockSelect == 0)
 		{
 			$variationAvailable = 1;
+			$inventoryManagementActive = 0;
 			if($item->variationStock->stockNet > 999)
 			{
 				$stock = 999;
@@ -179,7 +182,31 @@ class RakutenDE extends CSVGenerator
 		else
 		{
 			$variationAvailable = 0;
+			$inventoryManagementActive = 1;
 			$stock = 0;
+		}
+
+		$vat = $item->variationBase->vatId;
+		if($vat == '19')
+		{
+			$vat = 1;
+		}
+		else if($vat == '10,7')
+		{
+			$vat = 4;
+		}
+		else if($vat == '7')
+		{
+			$vat = 2;
+		}
+		else if($vat == '0')
+		{
+			$vat = 3;
+		}
+		else
+		{
+			//bei anderen Steuers�tzen immer 19% nehmen
+			$vat = 1;
 		}
 
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
@@ -203,16 +230,16 @@ class RakutenDE extends CSVGenerator
 			'grundpreis_einheit'		=> '',
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
-			'mwst_klasse'				=> '', //todo muss gemapped werden
-			'bestandsverwaltung_aktiv'	=> '', //todo ka was da gesetzt werden muss :)
+			'mwst_klasse'				=> $vat,
+			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
 			'bild1'						=> $this->getImageByNumber($item, $settings, 1),
 			'bild2'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
-			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),	//todo kategorie name
 			'lieferzeit'				=> '',
-			'tradoria_kategorie'		=> $item->variationStandardCategory->categoryId, //todo bitte gucken ob das die richtige ist
+			'tradoria_kategorie'		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')), //todo das ist die tradoria kategorie id
 			'sichtbar'					=> 1,
 			'free_var_1'				=> $item->itemBase->free1,
 			'free_var_2'				=> $item->itemBase->free2,
@@ -331,11 +358,13 @@ class RakutenDE extends CSVGenerator
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{
 			$variationAvailable = 1;
+			$inventoryManagementActive = 0;
 			$stock = 999;
 		}
 		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
 		{
 			$variationAvailable = 1;
+			$inventoryManagementActive = 1;
 			if($item->variationStock->stockNet > 999)
 			{
 				$stock = 999;
@@ -348,6 +377,7 @@ class RakutenDE extends CSVGenerator
 		elseif($item->variationBase->limitOrderByStockSelect == 0)
 		{
 			$variationAvailable = 1;
+			$inventoryManagementActive = 0;
 			if($item->variationStock->stockNet > 999)
 			{
 				$stock = 999;
@@ -367,7 +397,31 @@ class RakutenDE extends CSVGenerator
 		else
 		{
 			$variationAvailable = 0;
+			$inventoryManagementActive = 1;
 			$stock = 0;
+		}
+
+		$vat = $item->variationBase->vatId;
+		if($vat == '19')
+		{
+			$vat = 1;
+		}
+		else if($vat == '10,7')
+		{
+			$vat = 4;
+		}
+		else if($vat == '7')
+		{
+			$vat = 2;
+		}
+		else if($vat == '0')
+		{
+			$vat = 3;
+		}
+		else
+		{
+			//bei anderen Steuers�tzen immer 19% nehmen
+			$vat = 1;
 		}
 
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
@@ -391,8 +445,8 @@ class RakutenDE extends CSVGenerator
 			'grundpreis_einheit'		=> '',
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
-			'mwst_klasse'				=> $item->variationBase->vatId,
-			'bestandsverwaltung_aktiv'	=> '',
+			'mwst_klasse'				=> $vat,
+			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
 			'bild1'						=> $this->getImageByNumber($item, $settings, 1),
 			'bild2'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
