@@ -35,8 +35,7 @@ class RakutenDE extends Filters
             'variationVisibility.isVisibleForMarketplace' => [
 				'mandatoryOneMarketplace' => [],
 				'mandatoryAllMarketplace' => [
-					106,
-					148,
+					106
 				]
             ]
 		];
