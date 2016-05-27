@@ -90,7 +90,8 @@ class RakutenDE extends ResultFields
 				'free19',
 				'free20',
                 'variationCount',
-                'hasAttribute'
+                'hasAttribute',
+				'tradoriaCategory'
 			],
 
 			'itemDescription' => [
