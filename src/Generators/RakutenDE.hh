@@ -205,7 +205,7 @@ class RakutenDE extends CSVGenerator
 		}
 		else
 		{
-			//bei anderen Steuers�tzen immer 19% nehmen
+			//bei anderen Steuersätzen immer 19% nehmen
 			$vat = 1;
 		}
 
