@@ -110,13 +110,18 @@ class RakutenDE extends CSVGenerator
 			]);
 
 			$previousItemId = 0;
+            $attributeName = array();
+            foreach($resultData as $item)
+            {
+                $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
+            }
 
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
 				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1 && $item->itemBase->hasAttribute == true)
 				{
-					$this->buildParentWithChildrenRow($item, $settings);
+					$this->buildParentWithChildrenRow($item, $settings, $attributeName);
 					$this->buildChildRow($item, $settings);
 					$previousItemId = $currentItemId;
 				}
@@ -238,7 +243,7 @@ class RakutenDE extends CSVGenerator
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
 			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),	//todo kategorie name
-			'lieferzeit'				=> '',
+			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 			'tradoria_kategorie'		=> $item->itemBase->tradoriaCategory,
 			'sichtbar'					=> 1,
 			'free_var_1'				=> $item->itemBase->free1,
@@ -280,10 +285,80 @@ class RakutenDE extends CSVGenerator
 	/**
 	 * @param Record $item
 	 * @param KeyValue $settings
+     * @param array $attributeName
 	 * @return void
 	 */
-	private function buildParentWithChildrenRow(Record $item, KeyValue $settings):void
+	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array<int, mixed> $attributeName):void
 	{
+        $vat = $item->variationBase->vatId;
+        if($vat == '19')
+        {
+            $vat = 1;
+        }
+        else if($vat == '10,7')
+        {
+            $vat = 4;
+        }
+        else if($vat == '7')
+        {
+            $vat = 2;
+        }
+        else if($vat == '0')
+        {
+            $vat = 3;
+        }
+        else
+        {
+            //bei anderen Steuers�tzen immer 19% nehmen
+            $vat = 1;
+        }
+
+        if($item->variationBase->limitOrderByStockSelect == 2)
+        {
+            $variationAvailable = 1;
+            $inventoryManagementActive = 0;
+            $stock = 999;
+        }
+        elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
+        {
+            $variationAvailable = 1;
+            $inventoryManagementActive = 1;
+            if($item->variationStock->stockNet > 999)
+            {
+                $stock = 999;
+            }
+            else
+            {
+                $stock = $item->variationStock->stockNet;
+            }
+        }
+        elseif($item->variationBase->limitOrderByStockSelect == 0)
+        {
+            $variationAvailable = 1;
+            $inventoryManagementActive = 0;
+            if($item->variationStock->stockNet > 999)
+            {
+                $stock = 999;
+            }
+            else
+            {
+                if($item->variationStock->stockNet > 0)
+                {
+                    $stock = $item->variationStock->stockNet;
+                }
+                else
+                {
+                    $stock = 0;
+                }
+            }
+        }
+        else
+        {
+            $variationAvailable = 0;
+            $inventoryManagementActive = 1;
+            $stock = 0;
+        }
+
 		$data = [
 			'id'						=> '#'.$item->itemBase->id,
 			'variante_zu_id'			=> '',
@@ -292,7 +367,7 @@ class RakutenDE extends CSVGenerator
 			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
 			'hersteller'				=> '',
 			'beschreibung'				=> $this->elasticExportHelper->getDescription($item, $settings, 5000),
-			'variante'					=> $this->elasticExportHelper->getAttributeName($item, $settings),
+			'variante'					=> $attributeName[$item->itemBase->id],
 			'variantenwert'				=> '',
 			'isbn_ean'					=> '',
 			'lagerbestand'				=> '',
@@ -301,16 +376,16 @@ class RakutenDE extends CSVGenerator
 			'grundpreis_einheit'		=> '',
 			'reduzierter_preis'			=> '',
 			'bezug_reduzierter_preis'	=> '',
-			'mwst_klasse'				=> '',
-			'bestandsverwaltung_aktiv'	=> '',
+			'mwst_klasse'				=> $vat,
+			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
 			'bild1'						=> $this->getImageByNumber($item, $settings, 1),
 			'bild2'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 4),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 5),
 			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
-			'tradoria_kategorie'		=> $item->variationStandardCategory->categoryId,
+			'lieferzeit'				=> '',
+			'tradoria_kategorie'		=> $item->itemBase->tradoriaCategory,
 			'sichtbar'					=> 1,
 			'free_var_1'				=> $item->itemBase->free1,
 			'free_var_2'				=> $item->itemBase->free2,
@@ -358,13 +433,11 @@ class RakutenDE extends CSVGenerator
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{
 			$variationAvailable = 1;
-			$inventoryManagementActive = 0;
 			$stock = 999;
 		}
 		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
 		{
 			$variationAvailable = 1;
-			$inventoryManagementActive = 1;
 			if($item->variationStock->stockNet > 999)
 			{
 				$stock = 999;
@@ -377,7 +450,6 @@ class RakutenDE extends CSVGenerator
 		elseif($item->variationBase->limitOrderByStockSelect == 0)
 		{
 			$variationAvailable = 1;
-			$inventoryManagementActive = 0;
 			if($item->variationStock->stockNet > 999)
 			{
 				$stock = 999;
@@ -397,32 +469,9 @@ class RakutenDE extends CSVGenerator
 		else
 		{
 			$variationAvailable = 0;
-			$inventoryManagementActive = 1;
 			$stock = 0;
 		}
 
-		$vat = $item->variationBase->vatId;
-		if($vat == '19')
-		{
-			$vat = 1;
-		}
-		else if($vat == '10,7')
-		{
-			$vat = 4;
-		}
-		else if($vat == '7')
-		{
-			$vat = 2;
-		}
-		else if($vat == '0')
-		{
-			$vat = 3;
-		}
-		else
-		{
-			//bei anderen Steuers�tzen immer 19% nehmen
-			$vat = 1;
-		}
 
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
@@ -431,7 +480,7 @@ class RakutenDE extends CSVGenerator
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '#'.$item->itemBase->id,
-			'artikelnummer'				=> $item->variationMarketStatus->sku,
+			'artikelnummer'				=>  strlen($item->variationMarketStatus->sku) > 0 ? $item->variationMarketStatus->sku : $item->variationBase->id,
 			'produkt_bestellbar'		=> $variationAvailable,
 			'produktname'				=> '',
 			'hersteller'				=> $item->itemBase->producer,
@@ -445,8 +494,8 @@ class RakutenDE extends CSVGenerator
 			'grundpreis_einheit'		=> '',
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
-			'mwst_klasse'				=> $vat,
-			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
+			'mwst_klasse'				=> '',
+			'bestandsverwaltung_aktiv'	=> '',
 			'bild1'						=> $this->getImageByNumber($item, $settings, 1),
 			'bild2'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild3'						=> $this->getImageByNumber($item, $settings, 3),

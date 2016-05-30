@@ -39,6 +39,7 @@ class RakutenDE extends ResultFields
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
         }
 
+
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
