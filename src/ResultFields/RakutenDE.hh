@@ -39,6 +39,7 @@ class RakutenDE extends ResultFields
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
         }
 
+
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
@@ -89,6 +90,9 @@ class RakutenDE extends ResultFields
 				'free18',
 				'free19',
 				'free20',
+                'variationCount',
+                'hasAttribute',
+				'tradoriaCategory'
 			],
 
 			'itemDescription' => [
@@ -122,9 +126,13 @@ class RakutenDE extends ResultFields
 				'vatId',
 			],
 
-			'variationRetailPrice' => [
+			'variationRecommendedRetailPrice' => [
 				'price',
 			],
+
+            'variationRetailPrice' => [
+                'price',
+            ],
 
 			'variationStandardCategory' => [
 				'params' => [

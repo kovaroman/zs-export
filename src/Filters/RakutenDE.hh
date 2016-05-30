@@ -32,6 +32,12 @@ class RakutenDE extends Filters
 
 		$searchFilter = [
 			'variationBase.isActive?' => [],
+            'variationVisibility.isVisibleForMarketplace' => [
+				'mandatoryOneMarketplace' => [],
+				'mandatoryAllMarketplace' => [
+					106
+				]
+            ]
 		];
 
 		return $searchFilter;
