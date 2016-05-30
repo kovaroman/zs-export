@@ -3,6 +3,7 @@ namespace ElasticExport\Helper;
 
 use Plenty\Modules\Category\Contracts\CategoryBranchMarketplaceRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
+use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
@@ -507,6 +508,26 @@ class ElasticExportHelper
 
         return '';
     }
+
+	/**
+	 * Get category branch marketplace for a custom branch id.
+	 * @param  int $categoryhId
+	 * @param  int $plentyId
+	 * @param  int $marketplaceId
+	 * @param  string $marketplaceSubId
+	 * @return string
+	 */
+	public function getCategoryMarketplace(int $categoryhId, int $plentyId, int $marketplaceId, float $marketplaceSubId = 0.0):string
+	{
+		$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryhId, $plentyId, $marketplaceId, $marketplaceSubId);
+
+		if($categoryBranchMarketplace instanceof CategoryBranchMarketplace)
+		{
+			return $categoryBranchMarketplace->plenty_category_branch_marketplace_value1;
+		}
+
+		return '';
+	}
 
     /**
      * Get shipping cost.

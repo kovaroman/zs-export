@@ -151,7 +151,7 @@ class GoogleShopping extends CSVGenerator
 					'id' 						=> $item->variationBase->id,
 					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 256),
 					'description'				=> $this->getDescription($item, $settings),
-					'google_product_category'	=> '',
+					'google_product_category'	=> $this->elasticExportHelper->getCategoryMarketplace($item->variationStandardCategory->categoryId, 0, 129),
 					'product_type'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'link'						=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
