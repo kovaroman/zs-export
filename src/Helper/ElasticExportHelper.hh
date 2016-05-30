@@ -3,6 +3,7 @@ namespace ElasticExport\Helper;
 
 use Plenty\Modules\Category\Contracts\CategoryBranchMarketplaceRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
+use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
@@ -510,9 +511,9 @@ class ElasticExportHelper
 	{
 		$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryhId, $plentyId, $marketplaceId, $marketplaceSubId);
 
-		if(strlen($categoryBranchMarketplace) > 0)
+		if($categoryBranchMarketplace instanceof CategoryBranchMarketplace)
 		{
-			return $categoryBranchMarketplace;
+			return $categoryBranchMarketplace->plenty_category_branch_marketplace_value1;
 		}
 
 		return '';
