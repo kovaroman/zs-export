@@ -37,6 +37,9 @@ class GoogleShopping extends CSVGenerator
     const string CHARACTER_TYPE_PATTERN						= 'pattern';
     const string CHARACTER_TYPE_MATERIAL					= 'material';
 
+    const string ISO_CODE_2                                 = 'isoCode2';
+    const string ISO_CODE_3                                 = 'isoCode3';
+
         /*
          * @var ElasticExportHelper
          */
@@ -165,7 +168,7 @@ class GoogleShopping extends CSVGenerator
 					'material'					=> $variationAttributes['material'],
 					'pattern'					=> $variationAttributes['pattern'],
 					'item_group_id'				=> $item->itemBase->id,
-					'shipping'					=> 'DE:::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
+					'shipping'					=> $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
 					'gender'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_GENDER),
 					'age_group'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),

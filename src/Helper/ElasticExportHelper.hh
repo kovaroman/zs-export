@@ -26,7 +26,8 @@ use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostReposit
 use Plenty\Modules\Item\Availability\Models\Availability;
 use Plenty\Modules\Item\Availability\Models\AvailabilityLang;
 use Plenty\Plugin\ConfigRepository;
-
+use Plenty\Modules\Shipping\Countries\Contracts\CountryRepositoryContract;
+use Plenty\Modules\Shipping\Countries\Models\Country;
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -118,6 +119,11 @@ class ElasticExportHelper
     private ConfigRepository $configRepository;
 
     /**
+     * CountryRepositoryContract $countryRepository
+     */
+    private CountryRepositoryContract $countryRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -131,6 +137,7 @@ class ElasticExportHelper
      * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository     
      * @param PaymentMethodRepositoryContract $paymentMethodRepository     
      * @param ConfigRepository $configRepository
+     * @param CountryRepositoryContract $countryRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
@@ -143,7 +150,8 @@ class ElasticExportHelper
                                 CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,                                
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
                                 DefaultShippingCostRepositoryContract $defaultShippingCostRepository,                                
-                                ConfigRepository $configRepository
+                                ConfigRepository $configRepository,
+                                CountryRepositoryContract $countryRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -169,6 +177,8 @@ class ElasticExportHelper
         $this->defaultShippingCostRepository = $defaultShippingCostRepository;        
 
         $this->configRepository = $configRepository;
+
+        $this->countryRepository = $countryRepository;
     }
 
     /**
@@ -964,5 +974,17 @@ class ElasticExportHelper
     public function getConfig<T>(string $key, mixed $default = null):T
     {
         return $this->configRepository->get($key, $default);
+    }
+
+    /**
+     * @param KeyValue $settings
+     * @param string $isoCodeType
+     * @return string
+     */
+    public function getCountry(KeyValue $settings, string $isoCodeType):string
+    {
+        $country = $this->countryRepository->findIsoCode($settings->get('destination'), $isoCodeType);
+
+        return $country;
     }
 }
