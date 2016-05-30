@@ -24,8 +24,8 @@ use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostReposit
 use Plenty\Modules\Item\Availability\Models\Availability;
 use Plenty\Modules\Item\Availability\Models\AvailabilityLang;
 use Plenty\Plugin\ConfigRepository;
-use Plenty\Modules\Countries\Contracts\CountryRepositoryContract;
-use Plenty\Modules\Countries\Models\Country;
+use Plenty\Modules\Shipping\Countries\Contracts\CountryRepositoryContract;
+use Plenty\Modules\Shipping\Countries\Models\Country;
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
