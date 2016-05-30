@@ -34,31 +34,35 @@ class BelboonDE extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-				if($settings->get('variations') == 'mainVariations')
-        {
-            $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
-        }
+        $itemDescriptionFields = [
+            'keywords',
+            ($settings->get('nameId') ? 'name' . $settings->get('nameId') : 'name1'),
+            'urlContent',
+        ];
 
-        $itemDescriptionFields = ['urlContent'];
-		$itemDescriptionFields[] = 'keywords';
-        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
-
-        if($settings->get('descriptionType') == 'itemShortDescription')
+        if($settings->get('descriptionType') == 'itemShortDescription'
+            || $settings->get('previewTextType') == 'itemShortDescription')
         {
             $itemDescriptionFields[] = 'shortDescription';
         }
 
-        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        if($settings->get('descriptionType') == 'itemDescription'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemDescription'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'description';
         }
 
-        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        if($settings->get('descriptionType') == 'technicalData'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'technicalData'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'technicalData';
         }
 
-        return [
+		return [
             'itemBase'=> [
                 'id',
                 'producer',
@@ -74,7 +78,7 @@ class BelboonDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => '2',
+                    'referenceMarketplace' => $settings->get('referrerId'),
                 ],
                 'fields' => [
                     'imageId',
@@ -84,16 +88,32 @@ class BelboonDE extends ResultFields
                     'position',
                     'cleanImageName',
                 ]
-
             ],
 
+			'variationBarcode' => [
+				'params' => [
+					'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
+				],
+				'fields' => [
+					'code',
+					'barcodeId',
+				]
+			],
+
             'variationBase' => [
-                'availability',
-								'id',
+				'attributeValueSetId',
+				'availability',
+				'content',
+				'customNumber',
+				'id',
+				'limitOrderByStockSelect',
                 'model',
+				'unitId',
+				'vatId'
             ],
 
             'variationRetailPrice' => [
+                'currency',
                 'price',
             ],
 
@@ -106,15 +126,14 @@ class BelboonDE extends ResultFields
                 ],
             ],
 
-            'variationBarcode' => [
-                'params' => [
-                    'barcodeType' => 'EAN_13',
-                ],
-                'fields' => [
-                    'code',
-                    'barcodeId',
-                ]
-            ],
+			'variationStock' => [
+				'params' => [
+					'type' => 'virtual',
+				],
+				'fields' => [
+					'stockNet',
+				]
+			],
         ];
     }
 }

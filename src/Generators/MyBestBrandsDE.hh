@@ -10,8 +10,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 class MyBestBrandsDE extends CSVGenerator
 {
@@ -172,8 +172,8 @@ class MyBestBrandsDE extends CSVGenerator
 			'ImageUrl' 				=> $this->elasticExportHelper->getMainImage($item, $settings),
 			'ProductDescription' 	=> $this->elasticExportHelper->getDescription($item, $settings),
 			'BrandName'				=> $item->itemBase->producer,
-			'Price'					=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
-			'PreviousPrice'			=> number_format($item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : 0, 2, ',', ''),					
+			'Price'					=> number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
+			'PreviousPrice'			=> number_format($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : 0, 2, ',', ''),
 			'Tags'					=> $item->itemDescription->keywords,
 			'EAN'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'LastUpdate'			=> $item->itemBase->lastUpdateTimestamp,

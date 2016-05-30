@@ -60,6 +60,7 @@ private ArrayHelper $arrayHelper;
                 'variationImageList' => [
                     'params' => [
                         'type' => 'variation',
+                        'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 143,
                     ],
                     'fields' => [
                         'type',
@@ -94,7 +95,12 @@ private ArrayHelper $arrayHelper;
                     'fields' => [
                         'sku'
                     ]
-                ]
+                ],
+
+                'variationAttributeValueList' => [
+				    'attributeId',
+				    'attributeValueId'
+			    ],
             ];
     }
 }

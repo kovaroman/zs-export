@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class Idealo
+ * Class IdealoDE
  * @package ElasticExport\ResultFields
  */
-class Idealo extends ResultFields
+class IdealoDE extends ResultFields
 {
     /*
      * @var ArrayHelper
@@ -37,17 +37,24 @@ class Idealo extends ResultFields
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
-        if($settings->get('descriptionType') == 'itemShortDescription')
+        if($settings->get('descriptionType') == 'itemShortDescription'
+            || $settings->get('previewTextType') == 'itemShortDescription')
         {
             $itemDescriptionFields[] = 'shortDescription';
         }
 
-        if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        if($settings->get('descriptionType') == 'itemDescription'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemDescription'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'description';
         }
 
-        if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
+        if($settings->get('descriptionType') == 'technicalData'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'technicalData'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
         {
             $itemDescriptionFields[] = 'technicalData';
         }
@@ -68,6 +75,7 @@ class Idealo extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 121,
                 ],
                 'fields' => [
                     'type',
@@ -81,12 +89,15 @@ class Idealo extends ResultFields
             ],
 
             'variationBase' => [
+                'id',
                 'availability',
                 'attributeValueSetId',
                 'model',
                 'limitOrderByStockSelect',
                 'unitId',
                 'content',
+                'customNumber',
+                'weightG',
             ],
 
             'variationBarcodeList' => [

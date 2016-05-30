@@ -10,8 +10,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 class TracdelightCOM extends CSVGenerator
 {
@@ -98,7 +98,7 @@ class TracdelightCOM extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
 				$data = [
 
@@ -109,7 +109,7 @@ class TracdelightCOM extends CSVGenerator
                     'Deeplink'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'Produkt-Kategorie'     => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'Produkt-Beschreibung'  => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'Preis'                 => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+                    'Preis'                 => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'Währung'               => $item->variationRetailPrice->currency,
                     'Marke'                 => $item->itemBase->producer,
                     'Versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),

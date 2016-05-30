@@ -6,25 +6,26 @@ use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
-use Plenty\Modules\Unit\Contracts\UnitLangRepositoryContract;
-use Plenty\Modules\Unit\Models\UnitLang;
+use Plenty\Modules\Item\Unit\Contracts\UnitLangRepositoryContract;
+use Plenty\Modules\Item\Unit\Models\UnitLang;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Character\Contracts\CharacterItemNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeLangRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeLang;
+use Plenty\Modules\Item\Character\Contracts\CharacterItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepository;
-use Plenty\Modules\Category\Models\CategoryTemplateHelper;
-use Plenty\Modules\Character\Contracts\CharacterMarketComponentRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterMarketComponent;
+use Plenty\Modules\Category\Models\Category;
+use Plenty\Modules\Item\Character\Contracts\CharacterMarketComponentRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterMarketComponent;
 use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
-use Plenty\Modules\Shipping\DefaultShipping\Contracts\DefaultShippingRepositoryContract;
-use Plenty\Modules\Shipping\DefaultShipping\Models\DefaultShipping;
-use Plenty\Modules\PaymentMethod\Contracts\PaymentMethodRepositoryContract;
-use Plenty\Modules\PaymentMethod\Models\PaymentMethod;
+use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
+use Plenty\Modules\Order\Payment\Method\Contracts\PaymentMethodRepositoryContract;
+use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostRepositoryContract;
-use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
 use Plenty\Modules\Item\Availability\Models\Availability;
 use Plenty\Modules\Item\Availability\Models\AvailabilityLang;
+use Plenty\Plugin\ConfigRepository;
 
 /**
  * Class ElasticExportHelper
@@ -50,6 +51,9 @@ class ElasticExportHelper
     const int TRANSFER_OFFER_PRICE_NO = 0;
     const int TRANSFER_OFFER_PRICE_YES = 1;
 
+    const int TRANSFER_RRP_YES = 1;
+    const int TRANSFER_RRP_NO = 0;
+
     const string BARCODE_EAN = 'EAN_13';
     const string BARCODE_ISBN = 'ISBN';
 
@@ -67,6 +71,11 @@ class ElasticExportHelper
 	 * AttributeValueLangRepositoryContract $attributeValueLangRepository
 	 */
     private AttributeValueLangRepositoryContract $attributeValueLangRepository;
+
+    /**
+     * AttributeLangRepositoryContract $attributeLangRepository
+     */
+    private AttributeLangRepositoryContract $attributeLangRepository;
 
     /**
      * CharacterItemNameRepositoryContract $characterItemNameRepository
@@ -94,11 +103,6 @@ class ElasticExportHelper
     private CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;
 
     /**
-     * @var DefaultShippingRepositoryContract $defaultShippingRepository
-     */
-    private DefaultShippingRepositoryContract $defaultShippingRepository;
-
-    /**
      * @var PaymentMethodRepositoryContract $paymentMethodRepository
      */
     private PaymentMethodRepositoryContract $paymentMethodRepository;
@@ -106,12 +110,12 @@ class ElasticExportHelper
     /**
      * @var DefaultShippingCostRepositoryContract $defaultShippingCostRepository
      */
-    private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;
+    private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;    
 
     /**
-     * @var AvailabilityRepositoryContract $availabilityRepository
+     * @var ConfigRepository $configRepository
      */
-    private AvailabilityRepositoryContract $availabilityRepository;
+    private ConfigRepository $configRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -119,27 +123,27 @@ class ElasticExportHelper
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param UnitLangRepositoryContract $unitLangRepository
      * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
+     * @param AttributeLangRepositoryContract $attributeLangRepository
      * @param CharacterItemNameRepositoryContract $characterItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      * @param CategoryRepository $categoryRepository
-     * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
-     * @param DefaultShippingRepositoryContract $defaultShippingRepository
-     * @param PaymentMethodRepositoryContract $paymentMethodRepository
-     * @param AvailabilityRepositoryContract $availabilityRepository
+     * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository     
+     * @param PaymentMethodRepositoryContract $paymentMethodRepository     
+     * @param ConfigRepository $configRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
                                 AttributeValueLangRepositoryContract $attributeValueLangRepository,
+                                AttributeLangRepositoryContract $attributeLangRepository,
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
                                 CategoryRepository $categoryRepository,
-                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,
-                                DefaultShippingRepositoryContract $defaultShippingRepository,
+                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,                                
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
-                                DefaultShippingCostRepositoryContract $defaultShippingCostRepository,
-                                AvailabilityRepositoryContract $availabilityRepository
+                                DefaultShippingCostRepositoryContract $defaultShippingCostRepository,                                
+                                ConfigRepository $configRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -147,6 +151,8 @@ class ElasticExportHelper
         $this->unitLangRepository = $unitLangRepository;
 
         $this->attributeValueLangRepository = $attributeValueLangRepository;
+
+        $this->attributeLangRepository = $attributeLangRepository;
 
         $this->characterItemNameRepository = $characterItemNameRepository;
 
@@ -158,13 +164,11 @@ class ElasticExportHelper
 
         $this->characterMarketComponentRepository = $characterMarketComponentRepository;
 
-        $this->defaultShippingRepository = $defaultShippingRepository;
-
 		$this->paymentMethodRepository = $paymentMethodRepository;
 
-        $this->defaultShippingCostRepository = $defaultShippingCostRepository;
+        $this->defaultShippingCostRepository = $defaultShippingCostRepository;        
 
-        $this->availabilityRepository = $availabilityRepository;
+        $this->configRepository = $configRepository;
     }
 
     /**
@@ -325,7 +329,7 @@ class ElasticExportHelper
 		    return $settings->get($availabilityIdString);
 		}
 
-        $availability = $this->availabilityRepository->find($item->variationBase->availability < 0 ? 10 : $item->variationBase->availability);
+        $availability = $this->getAvailabilityData($item->variationBase->availability < 0 ? 10 : (int) $item->variationBase->availability);
 
         if($availability instanceof Availability)
         {
@@ -343,6 +347,26 @@ class ElasticExportHelper
 
 		return '';
 	}
+
+    /**
+     * Get availability data.
+     * @param int availabilityId
+     * @return Availability|null
+     */
+    public function getAvailabilityData(int $availabilityId):?Availability
+    {        
+        $availabilities = $this->getConfig('plenty.item.availability');
+
+        foreach($availabilities as $availability)
+        {
+            if($availability instanceof Availability && $availability->id == $availabilityId)
+            {
+                return $availability;
+            }
+        }        
+
+        return null;
+    }
 
     /**
      * Get availability name for a vigen availability and lang.
@@ -365,12 +389,12 @@ class ElasticExportHelper
 
     /**
      * Get the item URL.
-     * @param  {[type]} Record    $item
-     * @param  {[type]} KeyValue  $settings
-     * @param  {[type]} bool      $addReferrer    =             true  Choose if referrer id should be added as parameter.
-     * @param  {[type]} bool      $useIntReferrer =             false Choos if referrer id should be used as integer.
-     * @param  bool $useHttps
-     * @return {[type]}           Item url.
+     * @param  Record $item
+     * @param  KeyValue $settings
+     * @param  ?bool $addReferrer = true  Choose if referrer id should be added as parameter.
+     * @param  ?bool $useIntReferrer = false Choose if referrer id should be used as integer.
+     * @param  ?bool $useHttps = true Choose if https protocol should be used.
+     * @return string Item url.
      */
     public function getUrl(Record $item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false, bool $useHttps = true):string
 	{
@@ -427,40 +451,48 @@ class ElasticExportHelper
 
         $category = null;
 
+        $lang = $settings->get('lang') ? $settings->get('lang') : 'de';
+
         if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch->branch))
         {
             switch($categoryLevel)
             {
                 case 1:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category1_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category1_id, $lang);
                     break;
 
                 case 2:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category2_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category2_id, $lang);
                     break;
 
                 case 3:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category3_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category3_id, $lang);
                     break;
 
                 case 4:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category4_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category4_id, $lang);
                     break;
 
                 case 5:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category5_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category5_id, $lang);
                     break;
 
                 case 6:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category6_id, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category6_id, $lang);
                     break;
 
             }
         }
 
-        if($category instanceof CategoryTemplateHelper)
+        if($category instanceof Category)
         {
-            return (string) $category->name;
+            foreach($category->details as $categoryDetails)
+            {
+                if($categoryDetails->lang == $lang)
+                {
+                    return $categoryDetails->name;
+                }
+            }
         }
 
         return '';
@@ -532,28 +564,82 @@ class ElasticExportHelper
     }
 
     /**
-     * Get price.
+     * returns the price of the given variation
      * @param  Record   $item
-     * @param  KeyValue $settings
      * @return float
      */
-    public function getPrice(Record $item, KeyValue $settings):float
+    public function getPrice(Record $item):float
     {
-        if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
-        {
             return $item->variationRetailPrice->price;
+    }
+
+    /**
+     * returns the recommendedRetailPrice of the given variation if transferRrp is set
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return float
+     */
+    public function getRecommendedRetailPrice(Record $item, KeyValue $settings):float
+    {
+        if($settings->get('transferRrp') == self::TRANSFER_RRP_YES)
+        {
+            return $item->variationRecommendedRetailPrice->price;
         }
 
         return 0.0;
     }
 
     /**
-     * Get the attribute value set short frontend name. Ex. blue, XL
+     * returns the specialOfferPrice of the given variation if transferOfferPrice is set
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return float
+     */
+    public function getSpecialPrice(Record $item, KeyValue $settings):float
+    {
+        if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
+        {
+            return $item->variationSpecialOfferRetailPrice->retailPrice;
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Get the attributeNames
      * @param  Record   $item
      * @param  KeyValue $settings
      * @return string
      */
-    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings):string
+    public function getAttributeName(Record $item, KeyValue $settings):string
+    {
+        $values = [];
+
+        if($item->variationBase->attributeValueSetId)
+        {
+            foreach($item->variationAttributeValueList as $attribute)
+            {
+                $attributeLang = $this->attributeLangRepository->findAttributeName($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                if($attributeLang instanceof AttributeLang)
+                {
+                    $values[] = $attributeLang->name;
+                }
+
+            }
+        }
+
+        return implode('|', $values);
+    }
+
+    /**
+     * Get the attribute value set short frontend name. Ex. blue, XL
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @param  string $delimiter
+     * @return string
+     */
+    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', '):string
     {
         $values = [];
 
@@ -571,7 +657,7 @@ class ElasticExportHelper
             }
         }
 
-        return implode(', ', $values);
+        return implode($delimiter, $values);
     }
 
     /**
@@ -646,18 +732,18 @@ class ElasticExportHelper
 	 */
 	public function getBasePriceList(Record $item, KeyValue $settings):Map<string,mixed>
 	{
-		$price = (float) $item->variationRetailPrice->price;
-		$lot = (int) $item->variationBase->content;
-		$unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+		$price = (float)$item->variationRetailPrice->price;
+		$lot = (int)$item->variationBase->content;
+		$unitLang = $this->unitLangRepository->findUnit((int)$item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
 		if($unitLang instanceof UnitLang)
 		{
-			$unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
+            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
 			$unitName = $unitLang->plenty_unit_lang_name;
 		}
 		else
 		{
-			$unitShortcut = '';
+            $unitShortcut = '';
 			$unitName = '';
 		}
 
@@ -665,7 +751,7 @@ class ElasticExportHelper
 
 		$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
 
-		return Map{'lot' => (int)$basePriceDetails['lot'], 'price' => (float)$basePriceDetails['price'], 'unit' => (string)$unitName};
+        return Map{'lot' => (int)$basePriceDetails['lot'], 'price' => (float)$basePriceDetails['price'], 'unit' => (string)$unitName};
 	}
 
     /**
@@ -874,15 +960,29 @@ class ElasticExportHelper
 	 * @param  KeyValue $settings
 	 * @return DefaultShipping|null
 	 */
-	public function getDefaultShipping(KeyValue $settings):mixed
+	public function getDefaultShipping(KeyValue $settings):?DefaultShipping
 	{
-		$defaultShipping = $this->defaultShippingRepository->find($settings->get('shippingCostConfiguration'));
+        $defaultShippingProfiles = $this->getConfig('plenty.order.shipping.default_shipping');
 
-		if($defaultShipping instanceof DefaultShipping)
-		{
-			return $defaultShipping;
-		}
-
-		return null;
+        foreach($defaultShippingProfiles as $defaultShippingProfile)
+        {
+            if($defaultShippingProfile instanceof DefaultShipping && $defaultShippingProfile->id == $settings->get('shippingCostConfiguration'))
+            {
+                return $defaultShippingProfile;
+            }
+        }        
+        
+        return null;
 	}
+
+    /**
+     * Get custom configuration.
+     * @param  string $key
+     * @param  mixed $default = null
+     * @return T
+     */
+    public function getConfig<T>(string $key, mixed $default = null):T
+    {
+        return $this->configRepository->get($key, $default);
+    }
 }

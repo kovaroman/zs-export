@@ -8,14 +8,14 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Shipping\DefaultShipping\Models\DefaultShipping;
-use Plenty\Modules\PaymentMethod\Models\PaymentMethod;
+use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
+use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 
 /**
- * Class Idealo
+ * Class IdealoDE
  * @package ElasticExport\Generators
  */
-class Idealo extends CSVGenerator
+class IdealoDE extends CSVGenerator
 {
 	const string DEFAULT_PAYMENT_METHOD = 'vorkasse';
 
@@ -58,7 +58,7 @@ class Idealo extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(" ");
+			$this->setDelimiter("	"); // tab not space!
 
 			$this->addCSVContent($this->head($settings));
 
@@ -98,6 +98,7 @@ class Idealo extends CSVGenerator
 			'image_url_preview',
 			'image_url',
 			'base_price',
+			'free_text_field',
 		];
 
 		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
@@ -135,8 +136,8 @@ class Idealo extends CSVGenerator
 	 */
 	private function row(Record $item, KeyValue $settings):array<mixed>
 	{
-		$price = $this->elasticExportHelper->getPrice($item, $settings) <= 0 ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
-		$rrp = $item->variationRecommendedRetailPrice->price <= $price ? 0 : $item->variationRecommendedRetailPrice->price;
+		$price = $this->elasticExportHelper->getPrice($item) <= 0 ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
+		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) <= $price ? 0 : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 
 		$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
 
@@ -180,7 +181,7 @@ class Idealo extends CSVGenerator
 				{
 					$name = $this->getPaymentMethodName($paymentMethod, $settings->get('lang') ?: 'de');
 					$cost = $this->elasticExportHelper->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethod->id);
-					
+
 					$data[$name] = number_format($cost, 2, '.', '');
 				}
 			}

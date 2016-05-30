@@ -11,8 +11,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 class BeezUp extends CSVGenerator
 {
@@ -112,17 +112,17 @@ class BeezUp extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
-                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : $this->elasticExportHelper->getPrice($item, $settings);
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 
 				$data = [
 					'Produkt ID'            =>  $item->itemBase->id,
                     'Artikel Nr'            =>  $item->variationBase->customNumber,
                     'MPN'                   =>  $item->variationBase->model,
-                    'EAN'                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'EAN'                   =>  $item->variationBarcode->code,
                     'Marke'                 =>  $item->itemBase->producer,
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
-                    'Preis inkl. MwSt.'     =>  number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', '')  ,
+                    'Preis inkl. MwSt.'     =>  number_format($this->elasticExportHelper->getPrice($item), 2, '.', '')  ,
                     'UVP inkl. MwSt.'       =>  number_format($rrp, 2, '.', ''),
                     'Produkt-URL'           =>  $this->elasticExportHelper->getUrl($item, $settings),
                     'Bild-URL'              =>  $this->getImageByNumber($item, $settings, 1),

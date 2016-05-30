@@ -7,7 +7,6 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
-use Plenty\Modules\Item\ShippingSupport\Contracts\ShippingSupportRepositoryContract;
 
 class ShippingProfiles extends CSVGenerator
 {
@@ -22,11 +21,6 @@ class ShippingProfiles extends CSVGenerator
 	private ArrayHelper $arrayHelper;
 
 	/**
-	 * @var ShippingSupportRepositoryContract
-	 */
-	private ShippingSupportRepositoryContract $shippingSupportRepository;
-
-	/**
 	 * @var int
 	 */
 	private int $columns = 5;
@@ -38,13 +32,11 @@ class ShippingProfiles extends CSVGenerator
 	 */
 	public function __construct(
 		ElasticExportHelper $elasticExportHelper,
-		ArrayHelper $arrayHelper,
-		ShippingSupportRepositoryContract $shippingSupportRepository
+		ArrayHelper $arrayHelper		
 	)
 	{
 		$this->elasticExportHelper = $elasticExportHelper;
-		$this->arrayHelper = $arrayHelper;
-		$this->shippingSupportRepository = $shippingSupportRepository;
+		$this->arrayHelper = $arrayHelper;		
 	}
 
 	/**
@@ -67,7 +59,7 @@ class ShippingProfiles extends CSVGenerator
 					'item_id' => $item->itemBase->id,
 				];
 
-				foreach($this->getShippingSupportIds($item->itemBase->id) as $key => $id)
+				foreach($this->getShippingSupportIds($item) as $key => $id)
 				{
 					$row['parcel_service_preset_id' . (string) ($key+1)] = $id;
 				}
@@ -116,19 +108,17 @@ class ShippingProfiles extends CSVGenerator
 	}
 
 	/**
-	 * Get list of supported shipping profile ids for the given item id.
-	 * @param  int $itemId
+	 * Get list of supported shipping profile ids for the given item.
+	 * @param  Record $item
 	 * @return array<int,int>
 	 */
-	private function getShippingSupportIds(int $itemId):array<int>
+	private function getShippingSupportIds(Record $item):array<int>
 	{
-		$list = $this->shippingSupportRepository->findByItemId($itemId);
-
 		$ids = [];
 
-		foreach($list as $shippingSupport)
+		foreach($item->itemShippingProfilesList as $itemShippingProfile)
 		{
-			$ids[] = $shippingSupport->profileId;
+			$ids[] = $itemShippingProfile->id;
 		}
 
 		$this->maxColumns(count($ids));

@@ -5,8 +5,7 @@ use Plenty\Modules\DataExchange\Contracts\Filters;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
-
-class ShoppingCOM extends Filters
+class TreepodiaCOM extends Filters
 {
     /*
 	 * @var ArrayHelper
@@ -14,7 +13,7 @@ class ShoppingCOM extends Filters
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Shopping constructor.
+     * Billiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)

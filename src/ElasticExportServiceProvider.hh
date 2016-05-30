@@ -8,7 +8,6 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
 	public function register():void
 	{
-
 	}
 
 	public function exports(ExportPresetContainer $container):void
@@ -21,7 +20,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 			'GeizhalsDE',
 			'GoogleShopping',
 			'GuenstigerDE',
-			'Idealo',
+			'IdealoDE',
 			'KaufluxDE',
 			'PreisRoboterDE',
 			'RakutenDE',
@@ -34,6 +33,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'FashionDE',
             'EcondaDE',
             'MyBestBrandsDE',
+            'TreepodiaCOM',
             'TwengaCOM',
             'ZanoxDE',
             'SchuheDE',
@@ -45,7 +45,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 		foreach ($formats as $format)
 		{
 			$container->add(
-				$format.'Format',
+				$format,
 				'ElasticExport\ResultFields\\'.$format,
 				'ElasticExport\Generators\\'.$format,
 				'ElasticExport\Filters\\' . $format

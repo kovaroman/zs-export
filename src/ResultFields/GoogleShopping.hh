@@ -24,7 +24,7 @@ class GoogleShopping extends ResultFields
 	{
 		$this->arrayHelper = $arrayHelper;
 	}
-		
+
 	/**
 	 * Generate result fields.
 	 * @param  array<FormatSetting> $formatSettings = []
@@ -37,20 +37,27 @@ class GoogleShopping extends ResultFields
 		$itemDescriptionFields = ['urlContent'];
 		$itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
-		if($settings->get('descriptionType') == 'itemShortDescription')
-		{
-			$itemDescriptionFields[] = 'shortDescription';
-		}
+		if($settings->get('descriptionType') == 'itemShortDescription'
+            || $settings->get('previewTextType') == 'itemShortDescription')
+        {
+            $itemDescriptionFields[] = 'shortDescription';
+        }
 
-		if($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
-		{
-			$itemDescriptionFields[] = 'description';
-		}
+        if($settings->get('descriptionType') == 'itemDescription'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemDescription'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'description';
+        }
 
-		if($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData')
-		{
-			$itemDescriptionFields[] = 'technicalData';
-		}
+        if($settings->get('descriptionType') == 'technicalData'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'technicalData'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
+        {
+            $itemDescriptionFields[] = 'technicalData';
+        }
 
 		$fields = [
 			'itemBase'=> [
@@ -66,14 +73,12 @@ class GoogleShopping extends ResultFields
 				'fields' => $itemDescriptionFields,
 			],
 
-
-
 			'variationImageList' => [
 				'params' => [
-					'type' => 'variation',
+					'type' => 'all',
 					'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
 				],
-				'fields' => [					
+				'fields' => [
 					'type',
 					'path',
 					'position',
@@ -91,6 +96,23 @@ class GoogleShopping extends ResultFields
 				'weightG',
 			],
 
+			'variationSpecialOfferRetailPrice' => array(
+					'retailPriceId', //[integer]
+					'retailPrice', //[float]
+					'retailPriceNet', //[float]
+					'basePrice', //[float]
+					'basePriceNet', //[float]
+					'unitPrice', //[float]
+					'unitPriceNet', //[float]
+					'orderParamsMarkup', //[float]
+					'orderParamsMarkupNet', //[float]
+					'vatId', //[integer]
+					'vatValue', //[float]
+					'currency', //[mixed]
+					'exchangeRatio', //[float]
+					'lastUpdateTimestamp' //[mixed]
+
+			),
 			'variationRetailPrice' => [
 				'price',
 			],
@@ -115,6 +137,14 @@ class GoogleShopping extends ResultFields
 					'barcodeId',
 				]
 			],
+
+			'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
+            ],
 
 			'variationAttributeValueList' => [
 				'attributeId',

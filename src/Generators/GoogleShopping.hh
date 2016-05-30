@@ -7,12 +7,12 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
-use Plenty\Modules\Unit\Models\UnitLang;
+use Plenty\Modules\Item\Unit\Models\UnitLang;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 
 class GoogleShopping extends CSVGenerator
@@ -63,16 +63,6 @@ class GoogleShopping extends CSVGenerator
     private array<int,array<string,string>>$itemPropertyCache = [];
 
     /**
-     * @var ImmMap<int,string>
-     */
-    private ImmMap<int,string> $itemAvailability = ImmMap{
-                                                        0 => 'in stock',
-                                                        1 => 'in stock',
-                                                        2 => 'out of stock',
-                                                        3 => 'preorder'
-                                                    };
-
-    /**
          * GoogleShopping constructor.
          * @param ElasticExportHelper $elasticExportHelper
          * @param ArrayHelper $arrayHelper
@@ -97,7 +87,7 @@ class GoogleShopping extends CSVGenerator
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-			$this->setDelimiter(";");
+			$this->setDelimiter("	"); // this is tab character!
 
 			$this->addCSVContent([
 				'id',
@@ -112,7 +102,7 @@ class GoogleShopping extends CSVGenerator
 				'price',
 				'sale_price',
 				'brand',
-				'ean',
+				'gtin',
 				'isbn',
 				'mpn',
 				'color',
@@ -147,6 +137,12 @@ class GoogleShopping extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
+                $variationPrice = number_format($this->elasticExportHelper->getPrice($item), 2, '.', '');
+                $salePrice = number_format($this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
+                if($salePrice >= $variationPrice || $salePrice <= 0.00)
+                {
+                    $salePrice = '';
+                }
 
 				$data = [
 					'id' 						=> $item->variationBase->id,
@@ -157,11 +153,11 @@ class GoogleShopping extends CSVGenerator
 					'link'						=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'condition'					=> $this->getCondition($item->itemBase->condition),
-					'availability'				=> $this->itemAvailability->get((int)$this->elasticExportHelper->getAvailability($item, $settings, false)),
-					'price'						=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
-					'sale_price'				=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
+					'price'						=> $variationPrice,
+					'sale_price'				=> $salePrice,
 					'brand'						=> $item->itemBase->producer,
-					'ean'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+					'gtin'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 					'isbn'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
 					'mpn'						=> $item->variationBase->model,
 					'color'						=> $variationAttributes['color'],
@@ -169,15 +165,15 @@ class GoogleShopping extends CSVGenerator
 					'material'					=> $variationAttributes['material'],
 					'pattern'					=> $variationAttributes['pattern'],
 					'item_group_id'				=> $item->itemBase->id,
-					'shipping'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+					'shipping'					=> 'DE:::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
 					'gender'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_GENDER),
 					'age_group'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
 					'excluded_destination'		=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item),
-					'unit_pricing_measure'		=> $this->getUnitPricingMeasure($item, $settings),
-					'unit_pricing_base_measure'	=> $this->getUnitPricingBaseMeasure($item, $settings),
+					'unit_pricing_measure'		=> '', // $this->getUnitPricingMeasure($item, $settings),
+					'unit_pricing_base_measure'	=> '', // $this->getUnitPricingBaseMeasure($item, $settings),
 					'energy_efficiency_class'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
 					'size_system'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
 					'size_type'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),

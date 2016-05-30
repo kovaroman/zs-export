@@ -70,12 +70,12 @@ private ArrayHelper $arrayHelper;
 
 			foreach($resultData as $item)
 			{
-                $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
 				$data = [
                     'prod_number'           => $item->itemBase->id,
                     'prod_name'             => $this->elasticExportHelper->getName($item, $settings),
-                    'prod_price'            => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+                    'prod_price'            => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'prod_price_old'        => $rrp,
                     'currency_symbol'       => $item->variationRetailPrice->currency,
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
@@ -88,7 +88,7 @@ private ArrayHelper $arrayHelper;
                     'img_small'             => $this->getImages($item, $settings, ';', 'preview'),
                     'img_medium'            => $this->getImages($item, $settings, ';', 'middle'),
                     'img_large'             => $this->getImages($item, $settings, ';', 'normal'),
-                    'ean_code'              => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'ean_code'              => $item->variationBarcode->code,
                     'versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings),
                     'platform'              => '',

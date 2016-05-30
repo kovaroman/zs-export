@@ -28,16 +28,25 @@ class BeezUp extends ResultFields
         $itemDescriptionFields = ['urlContent'];
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
-        if($settings->get('descriptionType') == 'itemShortDescription')
+        if($settings->get('descriptionType') == 'itemShortDescription'
+            || $settings->get('previewTextType') == 'itemShortDescription')
         {
             $itemDescriptionFields[] = 'shortDescription';
         }
 
-        if ($settings->get('descriptionType') == 'itemDescription' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') {
+        if($settings->get('descriptionType') == 'itemDescription'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'itemDescription'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
+        {
             $itemDescriptionFields[] = 'description';
         }
 
-        if ($settings->get('descriptionType') == 'technicalData' || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData') {
+        if($settings->get('descriptionType') == 'technicalData'
+            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
+            || $settings->get('previewTextType') == 'technicalData'
+            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
+        {
             $itemDescriptionFields[] = 'technicalData';
         }
 
@@ -72,6 +81,7 @@ class BeezUp extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 127,
                 ],
                 'fields' => [
                     'type',
@@ -90,6 +100,15 @@ class BeezUp extends ResultFields
                 ]
             ],
 
+            'variationStandardCategory' => [
+                'params' => [
+                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                ],
+                'fields' => [
+                    'categoryId'
+                ],
+            ],
+
             'variationStock' => [
                 'params' => [
                     'type' => 'virtual',
@@ -97,6 +116,11 @@ class BeezUp extends ResultFields
                 'fields' => [
                     'stockNet',
                 ]
+            ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId'
             ]
 
         ];

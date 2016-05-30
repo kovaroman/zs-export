@@ -10,8 +10,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 
 class Shopping24DE extends CSVGenerator
@@ -142,14 +142,14 @@ class Shopping24DE extends CSVGenerator
      */
     private function getMain(Record $item, KeyValue $settings):array<string,mixed>
 	{
-        $rrp = $item->variationRecommendedRetailPrice->price > $this->elasticExportHelper->getPrice($item, $settings) ? $item->variationRecommendedRetailPrice->price : '';
+        $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
         $data = [
             'art_name'          => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings, 80))),
             'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings)))),
             'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
             'deep_link'         => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-            'price'             => number_format($this->elasticExportHelper->getPrice($item, $settings), 2, ',', ''),
+            'price'             => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
             'old_price'         => number_format($rrp, 2, ',',''),
             'currency'          => $item->variationRetailPrice->currency,
             'delivery_costs'    => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),

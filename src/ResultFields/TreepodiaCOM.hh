@@ -6,10 +6,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 
 /**
- * Class ShoppingCOM
+ * Class TreepodiaCOM
  * @package ElasticExport\ResultFields
  */
-class ShoppingCOM extends ResultFields
+class TreepodiaCOM extends ResultFields
 {
     /*
 	 * @var ArrayHelper
@@ -17,7 +17,7 @@ class ShoppingCOM extends ResultFields
 	private ArrayHelper $arrayHelper;
 
     /**
-     * Shopping constructor.
+     * Geizhals constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -34,7 +34,10 @@ class ShoppingCOM extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        $itemDescriptionFields = array();
+        $itemDescriptionFields = [
+            'urlContent',
+            'keywords',
+        ];
 
         $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
 
@@ -60,18 +63,21 @@ class ShoppingCOM extends ResultFields
             $itemDescriptionFields[] = 'technicalData';
         }
 
-        return [
+        $fields = [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
+                'free1',
+                'free2',
+                'free3',
+                'free4',
             ],
 
             'itemDescription' => [
                 'params' => [
                     'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
                 ],
-                'fields' =>
-                    $itemDescriptionFields,
+                'fields' => $itemDescriptionFields,
             ],
 
             'variationImageList' => [
@@ -80,20 +86,28 @@ class ShoppingCOM extends ResultFields
                     'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                 ],
                 'fields' => [
-                    'imageId',
                     'type',
-                    'fileType',
                     'path',
                     'position',
-                    'cleanImageName',
                 ]
-
             ],
 
             'variationBase' => [
                 'availability',
+                'attributeValueSetId',
                 'model',
-                'weightG',
+                'limitOrderByStockSelect',
+                'unitId',
+                'content',
+            ],
+
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual',
+                ],
+                'fields' => [
+                    'stockNet'
+                ]
             ],
 
             'variationRetailPrice' => [
@@ -102,28 +116,36 @@ class ShoppingCOM extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
-                    'categoryId'
+                    'categoryId',
+                    'plentyId',
+                    'manually',
                 ],
+            ],
+
+            'variationCategoryList' => [
+                'categoryId',
             ],
 
             'variationBarcode' => [
                 'params' => [
-                    'barcodeType' => $settings->get('barcode'),
+                    'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
                 ],
                 'fields' => [
                     'code',
                     'barcodeId',
                 ]
             ],
-            'itemCharacterList' => [
-                'itemCharacterId',
-                'characterId',
-                'characterValue',
-                'characterValueType',
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId',
             ],
         ];
+
+
+        return $fields;
     }
 }

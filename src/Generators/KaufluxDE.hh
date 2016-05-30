@@ -8,9 +8,8 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Character\Models\CharacterSelection;
-use Plenty\Modules\Market\Kauflux\Contracts\KaufluxRepositoryContract;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 /**
  * Class KaufluxDE
@@ -35,12 +34,7 @@ class KaufluxDE extends CSVGenerator
 	/**
 	 * CharacterSelectionRepositoryContract $characterSelectionRepository
 	 */
-	private CharacterSelectionRepositoryContract $characterSelectionRepository;
-
-	/**
-	 * KaufluxRepositoryContract $kaufluxRepository
-	 */
-	private KaufluxRepositoryContract $kaufluxRepository;
+	private CharacterSelectionRepositoryContract $characterSelectionRepository;	
 
 	/**
 	 * @var array<int,mixed>
@@ -66,18 +60,17 @@ class KaufluxDE extends CSVGenerator
      * IdealoGenerator constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
+     * @param CharacterSelectionRepositoryContract $characterSelectionRepository
      */
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		CharacterSelectionRepositoryContract $characterSelectionRepository,
-		KaufluxRepositoryContract $kaufluxRepository
+		CharacterSelectionRepositoryContract $characterSelectionRepository,		
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
-		$this->characterSelectionRepository = $characterSelectionRepository;
-		$this->kaufluxRepository = $kaufluxRepository;
+		$this->characterSelectionRepository = $characterSelectionRepository;		
     }
 
     protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
@@ -151,9 +144,9 @@ class KaufluxDE extends CSVGenerator
 					'Bild2' 			=> $this->getImageByNumber($item, $settings, 2),
 					'Bild3' 			=> $this->getImageByNumber($item, $settings, 3),
 					'Gewicht' 			=> $item->variationBase->weightG,
-					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item, $settings), 2, '.', ''),
+					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'MwSt' 				=> $item->variationRetailPrice->vatValue,
-					'UVP' 				=> $item->variationRecommendedRetailPrice->price,
+					'UVP' 				=> $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings),
 					'Katalog1' 			=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('lang'), $settings->get('plentyId')),
 					'Flags' 			=> $this->flags->get($item->itemBase->storeSpecial),
 					'LinkXS' 			=> implode(', ', $this->getCrossSellingItems($item)),
@@ -315,9 +308,9 @@ class KaufluxDE extends CSVGenerator
 	 */
 	private function config(string $key):string
 	{
-		$config = $this->kaufluxRepository->getConfig();
+		$config = $this->elasticExportHelper->getConfig('plenty.market.kauflux');
 
-		if(array_key_exists($key, $config))
+		if(is_array($config) && array_key_exists($key, $config))
 		{
 			return (string) $config[$key];
 		}

@@ -57,7 +57,7 @@ class GuenstigerDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('reffererId'),
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                 ],
                 'fields' => [
                     'imageId',
@@ -96,6 +96,14 @@ class GuenstigerDE extends ResultFields
                     'code',
                     'barcodeId',
                 ]
+            ],
+
+            'variationBarcodeList' => [
+                'variationId',
+                'code',
+                'barcodeId',
+                'barcodeType',
+                'barcodeName',
             ],
         ];
     }
