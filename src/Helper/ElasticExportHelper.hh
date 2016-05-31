@@ -29,6 +29,8 @@ use Plenty\Modules\Item\Availability\Models\AvailabilityLang;
 use Plenty\Plugin\ConfigRepository;
 use Plenty\Modules\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Shipping\Countries\Models\Country;
+use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
+use Plenty\Modules\System\Models\Webstore;
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -115,7 +117,7 @@ class ElasticExportHelper
     private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;    
 
     /**
-     * @var ConfigRepository $configRepository
+     * ConfigRepository $configRepository
      */
     private ConfigRepository $configRepository;
 
@@ -123,6 +125,11 @@ class ElasticExportHelper
      * CountryRepositoryContract $countryRepository
      */
     private CountryRepositoryContract $countryRepository;
+
+    /**
+     * WebstoreRepositoryContract $webstoreRepository
+     */
+    private WebstoreRepositoryContract $webstoreRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -139,6 +146,7 @@ class ElasticExportHelper
      * @param PaymentMethodRepositoryContract $paymentMethodRepository     
      * @param ConfigRepository $configRepository
      * @param CountryRepositoryContract $countryRepository
+     * @param WebstoreRepositoryContract $webstoreRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
@@ -152,7 +160,8 @@ class ElasticExportHelper
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
                                 DefaultShippingCostRepositoryContract $defaultShippingCostRepository,                                
                                 ConfigRepository $configRepository,
-                                CountryRepositoryContract $countryRepository
+                                CountryRepositoryContract $countryRepository,
+                                WebstoreRepositoryContract $webstoreRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -180,6 +189,8 @@ class ElasticExportHelper
         $this->configRepository = $configRepository;
 
         $this->countryRepository = $countryRepository;
+
+        $this->webstoreRepository = $webstoreRepository;
     }
 
     /**
@@ -519,7 +530,8 @@ class ElasticExportHelper
 	 */
 	public function getCategoryMarketplace(int $categoryhId, int $plentyId, int $marketplaceId, float $marketplaceSubId = 0.0):string
 	{
-		$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryhId, $plentyId, $marketplaceId, $marketplaceSubId);
+        $webstoreId = $this->getWebstoreId($plentyId);
+		$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryhId, $webstoreId, $marketplaceId, $marketplaceSubId);
 
 		if($categoryBranchMarketplace instanceof CategoryBranchMarketplace)
 		{
@@ -1007,5 +1019,21 @@ class ElasticExportHelper
         $country = $this->countryRepository->findIsoCode($settings->get('destination'), $isoCodeType);
 
         return $country;
+    }
+
+    /**
+     * @param int $plentyId
+     * @return int
+     */
+    public function getWebstoreId(int $plentyId):int
+    {
+        $webstore = $this->webstoreRepository->findByPlentyId($plentyId);
+
+        if($webstore instanceof Webstore)
+        {
+            $webstoreId = $webstore->plenty_webstore_id;
+            return $webstoreId;
+        }
+        return 0;
     }
 }
