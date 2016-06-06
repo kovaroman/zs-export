@@ -1056,7 +1056,7 @@ class ElasticExportHelper
      */
     public function generateSku(Record $item, KeyValue $settings, int $accountId = 0):mixed
     {
-        $sku = $this->variationSkuRepository->generateSku($item->variationBase->id, $settings->get('referrerId'), $accountId);
+        $sku = $this->variationSkuRepository->generateSku($item->variationBase->id, $settings->get('referrerId'), $accountId, $item->variationMarketStatus->sku);
 
         return $sku;
     }
