@@ -1050,13 +1050,16 @@ class ElasticExportHelper
 
     /**
      * @param Record $item
-     * @param KeyValue $settings
+     * @param int $marketId
+     * @param null|mixed $sku
      * @param int $accountId
-     * @return mixed
+     * @param bool $setLastExportedTimestamp
+     * return mixed
      */
-    public function generateSku(Record $item, KeyValue $settings, int $accountId = 0):mixed
+    public function generateSku(Record $item, int $marketId, mixed $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):mixed
     {
-        $sku = $this->variationSkuRepository->generateSku($item->variationBase->id, $settings->get('referrerId'), $accountId, $item->variationMarketStatus->sku);
+        $sku = $this->variationSkuRepository
+            ->generateSku($item->variationBase->id, $marketId, $accountId, $sku, $setLastExportedTimestamp);
 
         return $sku;
     }
