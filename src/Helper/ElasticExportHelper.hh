@@ -31,6 +31,8 @@ use Plenty\Modules\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Shipping\Countries\Models\Country;
 use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
 use Plenty\Modules\System\Models\Webstore;
+use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
+use Plenty\Modules\Item\VariationSku\Models\VariationSku;
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -132,6 +134,11 @@ class ElasticExportHelper
     private WebstoreRepositoryContract $webstoreRepository;
 
     /**
+     * VariationSkuRepositoryContract $variationSkuRepository
+     */
+    private VariationSkuRepositoryContract $variationSkuRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -147,6 +154,7 @@ class ElasticExportHelper
      * @param ConfigRepository $configRepository
      * @param CountryRepositoryContract $countryRepository
      * @param WebstoreRepositoryContract $webstoreRepository
+     * @param VariationSkuRepositoryContract $variationSkuRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
@@ -161,7 +169,8 @@ class ElasticExportHelper
                                 DefaultShippingCostRepositoryContract $defaultShippingCostRepository,                                
                                 ConfigRepository $configRepository,
                                 CountryRepositoryContract $countryRepository,
-                                WebstoreRepositoryContract $webstoreRepository
+                                WebstoreRepositoryContract $webstoreRepository,
+                                VariationSkuRepositoryContract $variationSkuRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -191,6 +200,8 @@ class ElasticExportHelper
         $this->countryRepository = $countryRepository;
 
         $this->webstoreRepository = $webstoreRepository;
+
+        $this->variationSkuRepository = $variationSkuRepository;
     }
 
     /**
@@ -1035,5 +1046,21 @@ class ElasticExportHelper
             return $webstoreId;
         }
         return 0;
+    }
+
+    /**
+     * @param Record $item
+     * @param int $marketId
+     * @param null|mixed $sku
+     * @param int $accountId
+     * @param bool $setLastExportedTimestamp
+     * return mixed
+     */
+    public function generateSku(Record $item, int $marketId, mixed $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):mixed
+    {
+        $sku = $this->variationSkuRepository
+            ->generateSku($item->variationBase->id, $marketId, $accountId, $sku, $setLastExportedTimestamp);
+
+        return $sku;
     }
 }
