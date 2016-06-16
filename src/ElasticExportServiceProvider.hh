@@ -14,6 +14,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 	{
 		$formats = [
 			'CdiscountCOM',
+			'Check24DE',
 			'BeezUp',
 			'BelboonDE',
 			'BilligerDE',
@@ -39,7 +40,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'SchuheDE',
 			'ShippingProfiles',
             'Shopping24DE',
-            'TracdelightCOM'
+            'TracdelightCOM',            
 		];
 
 		foreach ($formats as $format)
