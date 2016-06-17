@@ -8,7 +8,6 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
-
 class Check24DE extends CSVGenerator
 {
 	/*
@@ -64,12 +63,14 @@ class Check24DE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
+				
 				$data = [
 					'id' 				=> $this->getSku($item),
 					'manufacturer' 		=> $item->itemBase->producer,
 					'mpnr' 				=> $item->variationBase->model,
 					'ean' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
-					'name' 				=> $this->elasticExportHelper->getName($item, $settings),
+					'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 					'category_path' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'price' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),

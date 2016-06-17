@@ -146,6 +146,11 @@ class Check24DE extends ResultFields
                 'barcodeType',
                 'barcodeName',
             ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId',
+            ],
         ];
     }
 }
