@@ -33,6 +33,8 @@ use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
 use Plenty\Modules\System\Models\Webstore;
 use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
 use Plenty\Modules\Item\VariationSku\Models\VariationSku;
+use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
+
 /**
  * Class ElasticExportHelper
  * @package ElasticExportHelper\Helper
@@ -139,6 +141,11 @@ class ElasticExportHelper
     private VariationSkuRepositoryContract $variationSkuRepository;
 
     /**
+     * AvailabilityRepositoryContract $availabilityRepositoryContract
+     */
+    private AvailabilityRepositoryContract $availabilityRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -155,6 +162,7 @@ class ElasticExportHelper
      * @param CountryRepositoryContract $countryRepository
      * @param WebstoreRepositoryContract $webstoreRepository
      * @param VariationSkuRepositoryContract $variationSkuRepository
+     * @param AvailabilityRepositoryContract $availabilityRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitLangRepositoryContract $unitLangRepository,
@@ -170,7 +178,8 @@ class ElasticExportHelper
                                 ConfigRepository $configRepository,
                                 CountryRepositoryContract $countryRepository,
                                 WebstoreRepositoryContract $webstoreRepository,
-                                VariationSkuRepositoryContract $variationSkuRepository
+                                VariationSkuRepositoryContract $variationSkuRepository,
+                                AvailabilityRepositoryContract $availabilityRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -202,6 +211,8 @@ class ElasticExportHelper
         $this->webstoreRepository = $webstoreRepository;
 
         $this->variationSkuRepository = $variationSkuRepository;
+
+        $this->availabilityRepository = $availabilityRepository;
     }
 
     /**
@@ -362,7 +373,7 @@ class ElasticExportHelper
 		    return $settings->get($availabilityIdString);
 		}
 
-        $availability = $this->getAvailabilityData($item->variationBase->availability < 0 ? 10 : (int) $item->variationBase->availability);
+        $availability = $this->availabilityRepository->findAvailability($item->variationBase->availability < 0 ? 10 : (int) $item->variationBase->availability);
 
         if($availability instanceof Availability)
         {
@@ -382,38 +393,18 @@ class ElasticExportHelper
 	}
 
     /**
-     * Get availability data.
-     * @param int availabilityId
-     * @return Availability|null
-     */
-    public function getAvailabilityData(int $availabilityId):?Availability
-    {        
-        $availabilities = $this->getConfig('plenty.item.availability');
-
-        foreach($availabilities as $availability)
-        {
-            if($availability instanceof Availability && $availability->id == $availabilityId)
-            {
-                return $availability;
-            }
-        }        
-
-        return null;
-    }
-
-    /**
      * Get availability name for a vigen availability and lang.
      * @param Availability $availability
-     * @param string $lang
+     * @param string $language
      * @return string
      */
-    private function getAvailabilityName(Availability $availability, string $lang):string
+    private function getAvailabilityName(Availability $availability, string $language):string
     {
-        foreach($availability->langs as $availabilityLang)
+        foreach($availability->languages as $availabilityLanguage)
         {
-            if($availabilityLang->lang == $lang)
+            if($availabilityLanguage->language == $language)
             {
-                return $availabilityLang->name;
+                return $availabilityLanguage->name;
             }
         }
 
@@ -513,7 +504,6 @@ class ElasticExportHelper
                 case 6:
                     $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category6_id, $lang);
                     break;
-
             }
         }
 
