@@ -119,7 +119,7 @@ class RakutenDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
-				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1 && $item->itemBase->hasAttribute == true)
+				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
 				{
 					$this->buildParentWithChildrenRow($item, $settings, $attributeName);
 					$this->buildChildRow($item, $settings);
