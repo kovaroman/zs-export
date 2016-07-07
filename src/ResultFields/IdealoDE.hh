@@ -32,6 +32,7 @@ class IdealoDE extends ResultFields
         if($settings->get('variations') == 'mainVariations')
         {
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
+
         }
 
         $itemDescriptionFields = ['urlContent'];
@@ -130,7 +131,23 @@ class IdealoDE extends ResultFields
                  'characterValueType',
             ],
 
+            'variationMarketStatus' => [
+                'params' => [
+                    'marketId' => 121
+                ],
+                'fields' => [
+                    'sku'
+                ]
+            ],
 
+            'variationStock' => [
+                'params' => [
+                    'type' => 'virtual'
+                ],
+                'fields' => [
+                    'stockNet'
+                ]
+            ],
         ];
     }
 }

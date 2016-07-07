@@ -223,7 +223,7 @@ class CdiscountCOM extends CSVGenerator
             return $variationAttributes[$property];
         }
 
-        $itemPropertyList = $this->getItemPropertyList($item, $settings);
+        $itemPropertyList = $this->getItemPropertyList($item);
 
         if(array_key_exists($property, $itemPropertyList))
         {
@@ -236,14 +236,13 @@ class CdiscountCOM extends CSVGenerator
     /**
      * Get item properties.
      * @param 	Record $item
-     * @param  KeyValue $settings
      * @return array<string,string>
      */
-    private function getItemPropertyList(Record $item, KeyValue $settings):array<string,string>
+    private function getItemPropertyList(Record $item):array<string,string>
     {
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
-            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings);
+            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 143.00);
 
             $list = [];
 

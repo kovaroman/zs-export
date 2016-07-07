@@ -123,7 +123,7 @@ class Check24DE extends ResultFields
 
             'variationMarketStatus' => [
                 'params' => [
-                    'marketId' => $settings->get('referrerId')
+                    'marketId' => 150
                 ],
                 'fields' => [
                     'sku'

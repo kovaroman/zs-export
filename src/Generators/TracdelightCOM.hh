@@ -247,14 +247,14 @@ class TracdelightCOM extends CSVGenerator
     /**
      * Get item properties.
      * @param 	Record $item
-     * @param  KeyValue $settings
+     * @param   KeyValue $settings
      * @return array<string,string>
      */
 	protected function getItemPropertyList(Record $item, KeyValue $settings):array<string,string>
 	{
         $list = [];
 
-        $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings);
+        $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 130.00);
 
         if(count($characterMarketComponentList))
         {

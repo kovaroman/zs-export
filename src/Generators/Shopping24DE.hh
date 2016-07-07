@@ -198,14 +198,13 @@ class Shopping24DE extends CSVGenerator
     /**
      * Get item properties.
      * @param 	Record $item
-     * @param  KeyValue $settings
      * @return array<string,string>
      */
-	protected function getItemPropertyList(Record $item, KeyValue $settings):array<string,string>
+	protected function getItemPropertyList(Record $item):array<string,string>
 	{
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
-            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings);
+            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 146.00);
 
             $list = [];
 

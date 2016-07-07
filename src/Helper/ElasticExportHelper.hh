@@ -845,15 +845,15 @@ class ElasticExportHelper
     /**
      * Get item characters that match referrer from settings and a given component id.
      * @param  Record   $item
-     * @param  KeyValue $settings
+     * @param  float      $marketId
      * @param  ?int     $componentId  = null
      * @return array<int, mixed>
      */
-    public function getItemCharactersByComponent(Record $item, KeyValue $settings, ?int $componentId = null):Vector<array<string,mixed>>
+    public function getItemCharactersByComponent(Record $item, float $marketId, ?int $componentId = null):Vector<array<string,mixed>>
     {
         $characterList = $item->itemCharacterList;
 
-        $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($settings->get('referrerId'), !is_null($componentId) ? $componentId : null);
+        $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($marketId, !is_null($componentId) ? $componentId : null);
 
         $list = Vector{};
 

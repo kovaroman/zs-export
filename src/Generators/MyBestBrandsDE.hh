@@ -115,7 +115,7 @@ class MyBestBrandsDE extends CSVGenerator
 				}
 				elseif(array_key_exists($item->itemBase->id, $rows))
 				{
-					$itemPropertyList = $this->getItemPropertyList($item, $settings);
+					$itemPropertyList = $this->getItemPropertyList($item);
 
 					foreach($itemPropertyList as $key => $value)
 					{
@@ -158,7 +158,7 @@ class MyBestBrandsDE extends CSVGenerator
 	 */
 	private function getMain(Record $item, KeyValue $settings):array<string,mixed>
 	{
-		$itemPropertyList = $this->getItemPropertyList($item, $settings);
+		$itemPropertyList = $this->getItemPropertyList($item);
 
 		$productName = array_key_exists('itemName', $itemPropertyList) && strlen((string) $itemPropertyList['itemName']) ? 
 							$this->elasticExportHelper->cleanName((string) $itemPropertyList['itemName'], $settings->get('nameMaxLength')) : 
@@ -216,14 +216,13 @@ class MyBestBrandsDE extends CSVGenerator
 	/**
 	 * Get item properties. 
 	 * @param 	Record $item
-	 * @param  KeyValue $settings
 	 * @return array<string,string>
 	 */
-	protected function getItemPropertyList(Record $item, KeyValue $settings):array<string,string>
+	protected function getItemPropertyList(Record $item):array<string,string>
 	{
 		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
 		{
-			$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings);
+			$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 142.00);
 
 			$list = [];
 

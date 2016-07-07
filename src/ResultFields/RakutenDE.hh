@@ -157,7 +157,7 @@ class RakutenDE extends ResultFields
 
 			'variationMarketStatus' => [
 				'params' => [
-					'marketId' => $settings->get('referrerId')
+					'marketId' => 106
 				],
 				'fields' => [
 					'sku'
