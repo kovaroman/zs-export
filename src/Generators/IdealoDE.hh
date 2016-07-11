@@ -203,7 +203,6 @@ class IdealoDE extends CSVGenerator
 		if(is_null($checkoutApproved))
 		{
 			$checkoutApproved = 'false';
-			$data['itemsInStock'] = '';
 		}
 		else
 		{
