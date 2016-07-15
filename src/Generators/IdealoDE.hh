@@ -264,6 +264,11 @@ class IdealoDE extends CSVGenerator
 				strlen($disposal) > 0 ?
 					$data['disposalPrice'] = $disposal : $data['disposalPrice'] = '';
 			}
+			else
+			{
+				$data['twoManHandlingPrice'] = '';
+				$data['disposalPrice'] = '';
+			}
 		}
 
 		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
@@ -357,9 +362,9 @@ class IdealoDE extends CSVGenerator
 		 * Get property.
 		 * @param  Record   $item
 		 * @param  string   $property
-		 * @return string
+		 * @return string|null
 		 */
-    private function getProperty(Record $item, string $property):string
+    private function getProperty(Record $item, string $property):?string
 	{
 		$itemPropertyList = $this->getItemPropertyList($item, 121.00);
 
@@ -368,7 +373,7 @@ class IdealoDE extends CSVGenerator
 			return $itemPropertyList[$property];
 		}
 
-		return '';
+		return null;
 	}
 
     /**
@@ -389,7 +394,7 @@ class IdealoDE extends CSVGenerator
 			{
 				foreach($characterMarketComponentList as $data)
 				{
-					if((string) $data['characterValueType'] != 'file' && (string) $data['characterValueType'] != 'empty' && (string) $data['externalComponent'] != "0")
+					if((string) $data['characterValueType'] != 'file')
 					{
 						if((string) $data['characterValueType'] == 'selection')
 						{
