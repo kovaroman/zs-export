@@ -271,10 +271,15 @@ class IdealoDE extends CSVGenerator
 			}
 			else
 			{
-				$data['itemsInStock'] = '';
 				$data['twoManHandlingPrice'] = '';
 				$data['disposalPrice'] = '';
 			}
+		}
+		else
+		{
+			$data['itemsInStock'] = '';
+			$data['twoManHandlingPrice'] = '';
+			$data['disposalPrice'] = '';
 		}
 
 		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
