@@ -262,12 +262,21 @@ class IdealoDE extends CSVGenerator
 			if($data['fulfillmentType'] == 'Spedition')
 			{
 				$twoManHandling = $this->getProperty($item, 'TwoManHandlingPrice');
+				$twoManHandling = number_format($twoManHandling, 2, ',', '');
 				$disposal = $this->getProperty($item, 'DisposalPrice');
+				$disposal = number_format($disposal, 2, ',', '');
 
-				strlen($twoManHandling) > 0 ?
+				$twoManHandling > 0 ?
 					$data['twoManHandlingPrice'] = $twoManHandling : $data['twoManHandlingPrice'] = '';
-				strlen($disposal) > 0 ?
-					$data['disposalPrice'] = $disposal : $data['disposalPrice'] = '';
+				if($twoManHandling > 0)
+				{
+					$disposal > 0 ?
+						$data['disposalPrice'] = $disposal : $data['disposalPrice'] = '';
+				}
+				else
+				{
+					$data['disposalPrice'] = '';
+				}
 			}
 			else
 			{
