@@ -278,6 +278,7 @@ class IdealoDE extends CSVGenerator
 		else
 		{
 			$data['itemsInStock'] = '';
+			$data['fulfillmentType'] = '';
 			$data['twoManHandlingPrice'] = '';
 			$data['disposalPrice'] = '';
 		}
