@@ -79,6 +79,11 @@ class IdealoDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+				$attributes = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
+				if(strlen($attributes) <= 0 && $item->itemBase->variationCount > 1)
+				{
+					continue;
+				}
 				$this->addCSVContent($this->row($item, $settings));
 			}
 		}
@@ -266,6 +271,7 @@ class IdealoDE extends CSVGenerator
 			}
 			else
 			{
+				$data['itemsInStock'] = '';
 				$data['twoManHandlingPrice'] = '';
 				$data['disposalPrice'] = '';
 			}

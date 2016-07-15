@@ -64,6 +64,7 @@ class IdealoDE extends ResultFields
             'itemBase'=> [
                 'id',
                 'producer',
+                'variationCount'
             ],
 
             'itemDescription' => [
@@ -147,6 +148,11 @@ class IdealoDE extends ResultFields
                 'fields' => [
                     'stockNet'
                 ]
+            ],
+
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId'
             ],
         ];
     }
