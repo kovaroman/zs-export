@@ -258,21 +258,23 @@ class IdealoDE extends CSVGenerator
 		if($checkoutApproved == 'true')
 		{
 			$data['itemsInStock'] = $stock;
-			$fulfillmentType = $this->getProperty($item, 'Spedition');
+			$fulfillmentType = $this->getProperty($item, 'FulfillmentType:Spedition');
 			if(!is_null($fulfillmentType))
 			{
 				$fulfillmentType = 'Spedition';
 			}
 			else
 			{
-				$fulfillmentType = is_null($this->getProperty($item, 'Paketdienst')) ? '' : 'Paketdienst';
+				$fulfillmentType = is_null($this->getProperty($item, 'FulfillmentType:Paketdienst')) ? '' : 'Paketdienst';
 			}
 			$data['fulfillmentType'] = $fulfillmentType;
 			if($data['fulfillmentType'] == 'Spedition')
 			{
 				$twoManHandling = $this->getProperty($item, 'TwoManHandlingPrice');
+				$twoManHandling = str_replace(",", '.', $twoManHandling);
 				$twoManHandling = number_format($twoManHandling, 2, ',', '');
 				$disposal = $this->getProperty($item, 'DisposalPrice');
+				$disposal = str_replace(",", '.', $disposal);
 				$disposal = number_format($disposal, 2, ',', '');
 
 				$twoManHandling > 0 ?
