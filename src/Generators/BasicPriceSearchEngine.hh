@@ -12,7 +12,7 @@ use Plenty\Modules\Helper\Models\KeyValue;
 
 class BasicPriceSearchEngine extends CSVGenerator
 {
-    const string DELIMITER = ' ';
+    const string DELIMITER = '	';
     /*
      * @var ElasticExportHelper
      */
