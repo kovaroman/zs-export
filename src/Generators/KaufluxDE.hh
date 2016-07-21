@@ -174,7 +174,7 @@ class KaufluxDE extends CSVGenerator
 	 */
 	private function getPropertyDescription(Record $item, KeyValue $settings):string
 	{
-		$properties = $this->getItemPropertyList($item, $settings);
+		$properties = $this->getItemPropertyList($item);
 
 		$propertyDescription = '';
 
@@ -189,14 +189,13 @@ class KaufluxDE extends CSVGenerator
 	/**
 	 * Get item properties.
 	 * @param 	Record $item
-	 * @param  KeyValue $settings
 	 * @return array<string,string>
 	 */
-	private function getItemPropertyList(Record $item, KeyValue $settings):array<string>
+	private function getItemPropertyList(Record $item):array<string>
 	{
 		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
 		{
-			$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings, 1);
+			$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 116.00, 1);
 
 			$list = [];
 

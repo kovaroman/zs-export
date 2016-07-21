@@ -149,7 +149,7 @@ class KaufluxDE extends ResultFields
 
             'variationMarketStatus' => [
                 'params' => [
-                    'marketId' => $settings->get('referrerId'),
+                    'marketId' => 116,
                 ],
                 'fields' => [
                     'id',

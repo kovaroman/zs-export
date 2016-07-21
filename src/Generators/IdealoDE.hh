@@ -10,6 +10,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
+use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
+use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
 /**
  * Class IdealoDE
@@ -22,11 +24,21 @@ class IdealoDE extends CSVGenerator
 	const string SHIPPING_COST_TYPE_FLAT = 'flat';
     const string SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
 
-
 	/**
      * @var ElasticExportHelper $elasticExportHelper
      */
     private ElasticExportHelper $elasticExportHelper;
+
+
+	/**
+	 * CharacterSelectionRepositoryContract $characterSelectionRepository
+	 */
+	private CharacterSelectionRepositoryContract $characterSelectionRepository;
+
+	/**
+	 * @var array<int,mixed>
+	 */
+	private array<int,array<string,string>>$itemPropertyCache = [];
 
 	/**
 	 * @var ArrayHelper $arrayHelper
@@ -42,14 +54,17 @@ class IdealoDE extends CSVGenerator
      * IdealoGenerator constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-     */
+	 * @param CharacterSelectionRepositoryContract $characterSelectionRepository
+	 */
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
-		ArrayHelper $arrayHelper
+		ArrayHelper $arrayHelper,
+		CharacterSelectionRepositoryContract $characterSelectionRepository
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
+		$this->characterSelectionRepository = $characterSelectionRepository;
     }
 
     protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
@@ -64,6 +79,11 @@ class IdealoDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+				$attributes = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
+				if(strlen($attributes) <= 0 && $item->itemBase->variationCount > 1)
+				{
+					continue;
+				}
 				$this->addCSVContent($this->row($item, $settings));
 			}
 		}
@@ -99,6 +119,11 @@ class IdealoDE extends CSVGenerator
 			'image_url',
 			'base_price',
 			'free_text_field',
+			'checkoutApproved',
+			'itemsInStock',
+			'fulfillmentType',
+			'twoManHandlingPrice',
+			'disposalPrice'
 		];
 
 		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
@@ -141,8 +166,56 @@ class IdealoDE extends CSVGenerator
 
 		$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
 
+		if($item->variationBase->limitOrderByStockSelect == 2)
+		{
+			$stock = 999;
+		}
+		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
+		{
+			if($item->variationStock->stockNet > 999)
+			{
+				$stock = 999;
+			}
+			else
+			{
+				$stock = $item->variationStock->stockNet;
+			}
+		}
+		elseif($item->variationBase->limitOrderByStockSelect == 0)
+		{
+			if($item->variationStock->stockNet > 999)
+			{
+				$stock = 999;
+			}
+			else
+			{
+				if($item->variationStock->stockNet > 0)
+				{
+					$stock = $item->variationStock->stockNet;
+				}
+				else
+				{
+					$stock = 0;
+				}
+			}
+		}
+		else
+		{
+			$stock = 0;
+		}
+
+		$checkoutApproved = $this->getProperty($item, 'CheckoutApproved');
+		if(is_null($checkoutApproved))
+		{
+			$checkoutApproved = 'false';
+		}
+		else
+		{
+			$checkoutApproved = 'true';
+		}
+
 		$data = [
-			'article_id' 		=> $item->variationBase->id,
+			'article_id' 		=> $this->elasticExportHelper->generateSku($item, 121, $item->variationMarketStatus->sku),
 			'deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 			'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 			'short_description' => $this->elasticExportHelper->getPreviewText($item, $settings),
@@ -168,8 +241,67 @@ class IdealoDE extends CSVGenerator
 			'image_url_preview' => $this->getImages($item, $settings, ';', 'preview'),
 			'image_url' 		=> $this->getImages($item, $settings, ';', 'normal'),
 			'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
-			'free_text_field'   => $this->getFreeText($item, $settings),
+			'free_text_field'   => $this->getFreeText($item),
+			'checkoutApproved'	=> $checkoutApproved,
+
 		];
+
+		/**
+		 * if the article is available for idealo DK further fields will be set depending on the properties of the article.
+		 *
+		 * Be sure to set the price in twoManHandlingPrice and disposalPrice with a dot instead of a comma for idealo DK
+		 * will only except it that way.
+		 *
+		 * The properties twoManHandlingPrice and disposalPrice will also only be set if the property fulfillmentType is 'Spedition'
+		 * otherwise these two properties will be ignored.
+		*/
+		if($checkoutApproved == 'true')
+		{
+			$data['itemsInStock'] = $stock;
+			$fulfillmentType = $this->getProperty($item, 'FulfillmentType:Spedition');
+			if(!is_null($fulfillmentType))
+			{
+				$fulfillmentType = 'Spedition';
+			}
+			else
+			{
+				$fulfillmentType = is_null($this->getProperty($item, 'FulfillmentType:Paketdienst')) ? '' : 'Paketdienst';
+			}
+			$data['fulfillmentType'] = $fulfillmentType;
+			if($data['fulfillmentType'] == 'Spedition')
+			{
+				$twoManHandling = $this->getProperty($item, 'TwoManHandlingPrice');
+				$twoManHandling = str_replace(",", '.', $twoManHandling);
+				$twoManHandling = number_format($twoManHandling, 2, ',', '');
+				$disposal = $this->getProperty($item, 'DisposalPrice');
+				$disposal = str_replace(",", '.', $disposal);
+				$disposal = number_format($disposal, 2, ',', '');
+
+				$twoManHandling > 0 ?
+					$data['twoManHandlingPrice'] = $twoManHandling : $data['twoManHandlingPrice'] = '';
+				if($twoManHandling > 0)
+				{
+					$disposal > 0 ?
+						$data['disposalPrice'] = $disposal : $data['disposalPrice'] = '';
+				}
+				else
+				{
+					$data['disposalPrice'] = '';
+				}
+			}
+			else
+			{
+				$data['twoManHandlingPrice'] = '';
+				$data['disposalPrice'] = '';
+			}
+		}
+		else
+		{
+			$data['itemsInStock'] = '';
+			$data['fulfillmentType'] = '';
+			$data['twoManHandlingPrice'] = '';
+			$data['disposalPrice'] = '';
+		}
 
 		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
 		{
@@ -198,12 +330,11 @@ class IdealoDE extends CSVGenerator
 	/**
 	 * Get free text.
 	 * @param  Record   $item
-	 * @param  KeyValue $settings
 	 * @return {string
 	 */
-	private function getFreeText(Record $item, KeyValue $settings):string
+	private function getFreeText(Record $item):string
 	{
-		$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $settings, 1);
+		$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 121.00 , 1);
 
 		$freeText = [];
 
@@ -257,5 +388,66 @@ class IdealoDE extends CSVGenerator
 		}
 
 		return '';
+	}
+
+	    /**
+		 * Get property.
+		 * @param  Record   $item
+		 * @param  string   $property
+		 * @return string|null
+		 */
+    private function getProperty(Record $item, string $property):?string
+	{
+		$itemPropertyList = $this->getItemPropertyList($item, 121.00);
+
+		if(array_key_exists($property, $itemPropertyList))
+		{
+			return $itemPropertyList[$property];
+		}
+
+		return null;
+	}
+
+    /**
+	 * Get item properties.
+	 * @param 	Record $item
+	 * @param   float $marketId
+	 * @return  array<string,string>
+	 */
+    private function getItemPropertyList(Record $item, float $marketId):array<string,string>
+    {
+		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
+		{
+			$characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, $marketId);
+
+			$list = [];
+
+			if(count($characterMarketComponentList))
+			{
+				foreach($characterMarketComponentList as $data)
+				{
+					if((string) $data['characterValueType'] != 'file')
+					{
+						if((string) $data['characterValueType'] == 'selection')
+						{
+							$characterSelection = $this->characterSelectionRepository->findCharacterSelection((int) $data['characterValue']);
+							if($characterSelection instanceof CharacterSelection)
+							{
+								$list[(string) $data['externalComponent']] = (string) $characterSelection->name;
+							}
+						}
+						else
+						{
+							$list[(string) $data['externalComponent']] = (string) $data['characterValue'];
+						}
+
+					}
+				}
+			}
+
+			$this->itemPropertyCache[$item->itemBase->id] = $list;
+		}
+
+		return $this->itemPropertyCache[$item->itemBase->id];
 	}
 }
