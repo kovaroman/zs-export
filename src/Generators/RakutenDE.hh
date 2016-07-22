@@ -217,6 +217,7 @@ class RakutenDE extends CSVGenerator
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 		$price = $price > 0 ? $price : '';
+		$basePriceDetails = $this->elasticExportHelper->getBasePriceList($item, $settings);
 
 		$data = [
 			'id'						=> '',
@@ -309,7 +310,7 @@ class RakutenDE extends CSVGenerator
         }
         else
         {
-            //bei anderen Steuers�tzen immer 19% nehmen
+            //bei anderen Steuersaetzen immer 19% nehmen
             $vat = 1;
         }
 
@@ -359,6 +360,8 @@ class RakutenDE extends CSVGenerator
             $stock = 0;
         }
 
+		$unit = $this->getUnit($item, $settings);
+
 		$data = [
 			'id'						=> '#'.$item->itemBase->id,
 			'variante_zu_id'			=> '',
@@ -372,8 +375,8 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> '',
 			'lagerbestand'				=> '',
 			'preis'						=> '',
-			'grundpreis_inhalt'			=> '',
-			'grundpreis_einheit'		=> '',
+			'grundpreis_inhalt'			=> strlen($unit) ? (int)$item->variationBase->content/1000 : '',
+			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> '',
 			'bezug_reduzierter_preis'	=> '',
 			'mwst_klasse'				=> $vat,
@@ -477,6 +480,8 @@ class RakutenDE extends CSVGenerator
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 		$price = $price > 0 ? $price : '';
 
+		$unit = $this->getUnit($item, $settings);
+
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '#'.$item->itemBase->id,
@@ -490,8 +495,8 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
-			'grundpreis_inhalt'			=> '',
-			'grundpreis_einheit'		=> '',
+			'grundpreis_inhalt'			=> strlen($unit) ? (int)$item->variationBase->content/1000 : '',
+			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
 			'mwst_klasse'				=> '',
@@ -558,6 +563,39 @@ class RakutenDE extends CSVGenerator
 		else
 		{
 			return '';
+		}
+	}
+
+	/**
+	 * Returns the unit, if there is any unit configured, which is allowed
+	 * for the Rakuten.de API.
+	 *
+	 * @param  Record   $item
+	 * @param  KeyValue $settings
+	 * @return string
+	 */
+	private function getUnit(Record $item, KeyValue $settings):string
+	{
+		$unit = $this->elasticExportHelper->getBasePriceDetailUnit($item, $settings);
+
+		switch($unit)
+		{
+			case 'MLT':
+				return 'ml'; //Milliliter
+			case 'LTR':
+				return 'l'; // Liter
+			case 'GRM':
+				return 'g'; //Gramm
+			case 'KGM':
+				return 'kg'; // Kilogramm
+			case 'CTM':
+				return 'cm'; // Zentimeter
+			case 'MTR':
+				return 'm'; // Meter
+			case 'MTK':
+				return 'm²'; // Quadratmeter
+			default:
+				return '';
 		}
 	}
 }
