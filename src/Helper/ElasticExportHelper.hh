@@ -118,7 +118,7 @@ class ElasticExportHelper
     /**
      * @var DefaultShippingCostRepositoryContract $defaultShippingCostRepository
      */
-    private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;    
+    private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;
 
     /**
      * ConfigRepository $configRepository
@@ -156,8 +156,8 @@ class ElasticExportHelper
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      * @param CategoryRepository $categoryRepository
-     * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository     
-     * @param PaymentMethodRepositoryContract $paymentMethodRepository     
+     * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
+     * @param PaymentMethodRepositoryContract $paymentMethodRepository
      * @param ConfigRepository $configRepository
      * @param CountryRepositoryContract $countryRepository
      * @param WebstoreRepositoryContract $webstoreRepository
@@ -172,9 +172,9 @@ class ElasticExportHelper
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
                                 CategoryRepository $categoryRepository,
-                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,                                
+                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
-                                DefaultShippingCostRepositoryContract $defaultShippingCostRepository,                                
+                                DefaultShippingCostRepositoryContract $defaultShippingCostRepository,
                                 ConfigRepository $configRepository,
                                 CountryRepositoryContract $countryRepository,
                                 WebstoreRepositoryContract $webstoreRepository,
@@ -202,7 +202,7 @@ class ElasticExportHelper
 
 		$this->paymentMethodRepository = $paymentMethodRepository;
 
-        $this->defaultShippingCostRepository = $defaultShippingCostRepository;        
+        $this->defaultShippingCostRepository = $defaultShippingCostRepository;
 
         $this->configRepository = $configRepository;
 
@@ -779,6 +779,29 @@ class ElasticExportHelper
 	}
 
     /**
+     * Get base price unit as short cut.
+     *
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return string
+     */
+    public function getBasePriceDetailUnit(Record $item, KeyValue $settings):string
+    {
+        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+		if($unitLang instanceof UnitLang)
+		{
+            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
+		}
+		else
+		{
+            $unitShortcut = '';
+		}
+
+        return $unitShortcut;
+    }
+
+    /**
      * Get main image.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -907,7 +930,7 @@ class ElasticExportHelper
      * @param  string $unit
      * @return Map
      */
-    private function getBasePriceDetails(int $lot, float $price, string $unit):Map<string,mixed>
+    public function getBasePriceDetails(int $lot, float $price, string $unit):Map<string,mixed>
     {
         $lot = $lot == 0 ? 1 : $lot; // TODO  PlentyStringUtils::numberFormatLot($lot, true);
 		$basePrice = 0;
@@ -994,8 +1017,8 @@ class ElasticExportHelper
             {
                 return $defaultShippingProfile;
             }
-        }        
-        
+        }
+
         return null;
 	}
 

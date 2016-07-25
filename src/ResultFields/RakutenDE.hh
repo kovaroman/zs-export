@@ -115,14 +115,14 @@ class RakutenDE extends ResultFields
 			],
 
 			'variationBase' => [
-				'id',
 				'availability',
 				'attributeValueSetId',
-				'model',
-				'limitOrderByStockSelect',
-				'unitId',
 				'content',
 				'customNumber',
+				'id',
+				'limitOrderByStockSelect',
+				'model',
+				'unitId',
 				'vatId',
 			],
 
