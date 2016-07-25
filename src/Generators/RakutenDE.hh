@@ -217,7 +217,7 @@ class RakutenDE extends CSVGenerator
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 		$price = $price > 0 ? $price : '';
-		$basePriceDetails = $this->elasticExportHelper->getBasePriceList($item, $settings);
+		$unit = $this->getUnit($item, $settings);
 
 		$data = [
 			'id'						=> '',
@@ -232,8 +232,8 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
-			'grundpreis_inhalt'			=> '',
-			'grundpreis_einheit'		=> '',
+			'grundpreis_inhalt'			=> strlen($unit) ? (int)$item->variationBase->content/1000 : '',
+			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
 			'mwst_klasse'				=> $vat,
@@ -360,8 +360,6 @@ class RakutenDE extends CSVGenerator
             $stock = 0;
         }
 
-		$unit = $this->getUnit($item, $settings);
-
 		$data = [
 			'id'						=> '#'.$item->itemBase->id,
 			'variante_zu_id'			=> '',
@@ -375,8 +373,8 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> '',
 			'lagerbestand'				=> '',
 			'preis'						=> '',
-			'grundpreis_inhalt'			=> strlen($unit) ? (int)$item->variationBase->content/1000 : '',
-			'grundpreis_einheit'		=> $unit,
+			'grundpreis_inhalt'			=> '',
+			'grundpreis_einheit'		=> '',
 			'reduzierter_preis'			=> '',
 			'bezug_reduzierter_preis'	=> '',
 			'mwst_klasse'				=> $vat,
