@@ -119,10 +119,10 @@ class RakutenDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
+                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
 				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
 				{
 					$this->buildParentWithChildrenRow($item, $settings, $attributeName);
-					$attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
 					if(strlen($attributeValue) > 0)
 					{
 						$this->buildChildRow($item, $settings, $attributeValue);
@@ -136,7 +136,7 @@ class RakutenDE extends CSVGenerator
 				}
 				else
 				{
-					$this->buildChildRow($item, $settings);
+					$this->buildChildRow($item, $settings, $attributeValue);
 				}
 			}
 		}
