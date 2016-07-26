@@ -712,8 +712,8 @@ class ElasticExportHelper
 
         if($unitLang instanceof UnitLang)
         {
-            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
-            $unitName = $unitLang->plenty_unit_lang_name;
+            $unitShortcut = $unitLang->unit->unitOfMeasurement;
+            $unitName = $unitLang->name;
         }
         else
         {
@@ -762,8 +762,8 @@ class ElasticExportHelper
 
 		if($unitLang instanceof UnitLang)
 		{
-            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
-			$unitName = $unitLang->plenty_unit_lang_name;
+            $unitShortcut = $unitLang->unit->unitOfMeasurement;
+			$unitName = $unitLang->name;
 		}
 		else
 		{
@@ -791,7 +791,7 @@ class ElasticExportHelper
 
 		if($unitLang instanceof UnitLang)
 		{
-            $unitShortcut = $unitLang->unit->plenty_unit_unit_of_measurement;
+            $unitShortcut = $unitLang->unit->unitOfMeasurement;
 		}
 		else
 		{

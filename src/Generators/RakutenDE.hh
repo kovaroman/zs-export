@@ -122,7 +122,11 @@ class RakutenDE extends CSVGenerator
 				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
 				{
 					$this->buildParentWithChildrenRow($item, $settings, $attributeName);
-					$this->buildChildRow($item, $settings);
+					$attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
+					if(strlen($attributeValue) > 0)
+					{
+						$this->buildChildRow($item, $settings, $attributeValue);
+					}
 					$previousItemId = $currentItemId;
 				}
 				elseif($previousItemId != $currentItemId && $item->itemBase->variationCount == 1 && $item->itemBase->hasAttribute == false)
@@ -316,48 +320,19 @@ class RakutenDE extends CSVGenerator
 
         if($item->variationBase->limitOrderByStockSelect == 2)
         {
-            $variationAvailable = 1;
             $inventoryManagementActive = 0;
-            $stock = 999;
         }
         elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
         {
-            $variationAvailable = 1;
             $inventoryManagementActive = 1;
-            if($item->variationStock->stockNet > 999)
-            {
-                $stock = 999;
-            }
-            else
-            {
-                $stock = $item->variationStock->stockNet;
-            }
         }
         elseif($item->variationBase->limitOrderByStockSelect == 0)
         {
-            $variationAvailable = 1;
             $inventoryManagementActive = 0;
-            if($item->variationStock->stockNet > 999)
-            {
-                $stock = 999;
-            }
-            else
-            {
-                if($item->variationStock->stockNet > 0)
-                {
-                    $stock = $item->variationStock->stockNet;
-                }
-                else
-                {
-                    $stock = 0;
-                }
-            }
         }
         else
         {
-            $variationAvailable = 0;
             $inventoryManagementActive = 1;
-            $stock = 0;
         }
 
 		$data = [
@@ -427,9 +402,10 @@ class RakutenDE extends CSVGenerator
 	/**
 	 * @param Record $item
 	 * @param KeyValue $settings
+     * @param ?string $attributeValue
 	 * @return void
 	 */
-	private function buildChildRow(Record $item, KeyValue $settings):void
+	private function buildChildRow(Record $item, KeyValue $settings, ?string $attributeValue = null):void
 	{
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{
@@ -489,7 +465,7 @@ class RakutenDE extends CSVGenerator
 			'hersteller'				=> $item->itemBase->producer,
 			'beschreibung'				=> '',
 			'variante'					=> '',
-			'variantenwert'				=> $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|'),
+			'variantenwert'				=> $attributeValue,
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
