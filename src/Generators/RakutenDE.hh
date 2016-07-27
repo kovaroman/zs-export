@@ -402,10 +402,10 @@ class RakutenDE extends CSVGenerator
 	/**
 	 * @param Record $item
 	 * @param KeyValue $settings
-     * @param ?string $attributeValue
+     * @param string $attributeValue
 	 * @return void
 	 */
-	private function buildChildRow(Record $item, KeyValue $settings, ?string $attributeValue = null):void
+	private function buildChildRow(Record $item, KeyValue $settings, string $attributeValue = ''):void
 	{
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{
