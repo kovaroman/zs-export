@@ -222,6 +222,7 @@ class RakutenDE extends CSVGenerator
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 		$price = $price > 0 ? $price : '';
 		$unit = $this->getUnit($item, $settings);
+		$basePriceContent = $this->getBasePriceContent($item, $unit);
 
 		$data = [
 			'id'						=> '',
@@ -236,7 +237,7 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) ? (int)$item->variationBase->content/1000 : '',
+			'grundpreis_inhalt'			=> strlen($unit) > 0 ? $basePriceContent : '',
 			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
@@ -455,6 +456,7 @@ class RakutenDE extends CSVGenerator
 		$price = $price > 0 ? $price : '';
 
 		$unit = $this->getUnit($item, $settings);
+		$basePriceContent = $this->getBasePriceContent($item, $unit);
 
 		$data = [
 			'id'						=> '',
@@ -469,7 +471,7 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) ? (int)$item->variationBase->content/1000 : '',
+			'grundpreis_inhalt'			=> strlen($unit) ? $basePriceContent : '',
 			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> 'UVP',
@@ -555,11 +557,11 @@ class RakutenDE extends CSVGenerator
 		switch($unit)
 		{
 			case 'MLT':
-				return 'ml'; //Milliliter
+				return 'ml'; // Milliliter
 			case 'LTR':
 				return 'l'; // Liter
 			case 'GRM':
-				return 'g'; //Gramm
+				return 'g'; // Gramm
 			case 'KGM':
 				return 'kg'; // Kilogramm
 			case 'CTM':
@@ -571,5 +573,26 @@ class RakutenDE extends CSVGenerator
 			default:
 				return '';
 		}
+	}
+
+	/**
+	 * Returns the content depending on unit.
+	 *
+	 * @param Record $item
+	 * @param string $unit
+	 * @return string
+	 */
+	private function getBasePriceContent(Record $item, string $unit):string
+	{
+		if($unit == 'C62')
+		{
+			$basePriceContent = (int)$item->variationBase->content / 1000;
+		}
+		else
+		{
+			$basePriceContent = $item->variationBase->content;
+		}
+
+		return $basePriceContent;
 	}
 }
