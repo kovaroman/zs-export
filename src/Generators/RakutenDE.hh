@@ -593,6 +593,6 @@ class RakutenDE extends CSVGenerator
 			$basePriceContent = $item->variationBase->content;
 		}
 
-		return $basePriceContent;
+		return (string)$basePriceContent;
 	}
 }
