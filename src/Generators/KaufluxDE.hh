@@ -207,7 +207,7 @@ class KaufluxDE extends CSVGenerator
 					{
 						if((string) $data['characterValueType'] == 'selection')
 						{
-							$characterSelection = $this->propertySelectionRepository->findByPropertyItemId((int) $data['characterValue']);
+							$characterSelection = $this->propertySelectionRepository->findOne((int) $data['characterValue'], 'de');
 							if($characterSelection instanceof PropertySelection)
 							{
 								$list[] = (string) $characterSelection->name;

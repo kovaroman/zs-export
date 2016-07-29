@@ -430,7 +430,7 @@ class IdealoDE extends CSVGenerator
 					{
 						if((string) $data['characterValueType'] == 'selection')
 						{
-							$propertySelection = $this->propertySelectionRepository->findByPropertyItemId((int) $data['characterValue']);
+							$propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterValue'], 'de');
 							if($propertySelection instanceof PropertySelection)
 							{
 								$list[(string) $data['externalComponent']] = (string) $propertySelection->name;
