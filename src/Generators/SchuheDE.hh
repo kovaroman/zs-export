@@ -9,10 +9,10 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Item\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
+use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
+use Plenty\Modules\Item\Property\Models\PropertySelection;
 
 class SchuheDE extends CSVGenerator
 {
@@ -27,14 +27,14 @@ class SchuheDE extends CSVGenerator
 	private ArrayHelper $arrayHelper;
 
 	/**
-	 * AttributeValueLangRepositoryContract $attributeValueLangRepository
+	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-	private AttributeValueLangRepositoryContract $attributeValueLangRepository;
+	private AttributeValueNameRepositoryContract $attributeValueNameRepository;
 
 	/**
-	 * CharacterSelectionRepositoryContract $characterSelectionRepository
+	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private CharacterSelectionRepositoryContract $characterSelectionRepository;
+	private PropertySelectionRepositoryContract $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
@@ -50,20 +50,20 @@ class SchuheDE extends CSVGenerator
      * Geizhals constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-     * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
-     * @param CharacterSelectionRepositoryContract $characterSelectionRepository
+     * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
+     * @param PropertySelectionRepositoryContract $propertySelectionRepository
      */
     public function __construct(
     	ElasticExportHelper $elasticExportHelper,
     	ArrayHelper $arrayHelper,
-    	AttributeValueLangRepositoryContract $attributeValueLangRepository,
-    	CharacterSelectionRepositoryContract $characterSelectionRepository
+    	AttributeValueNameRepositoryContract $attributeValueNameRepository,
+    	PropertySelectionRepositoryContract $propertySelectionRepository
     )
     {
 		$this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
-		$this->attributeValueLangRepository = $attributeValueLangRepository;
-		$this->characterSelectionRepository = $characterSelectionRepository;
+		$this->attributeValueNameRepository = $attributeValueNameRepository;
+		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
 	/**
@@ -245,10 +245,10 @@ class SchuheDE extends CSVGenerator
 					{
 						if((string) $data['characterValueType'] == 'selection')
 						{
-							$characterSelection = $this->characterSelectionRepository->findCharacterSelection((int) $data['characterValue']);
-							if($characterSelection instanceof CharacterSelection)
+							$propertySelection = $this->propertySelectionRepository->findByPropertyItemId((int) $data['characterValue']);
+							if($propertySelection instanceof PropertySelection)
 							{
-								$list[(string) $data['externalComponent']] = (string) $characterSelection->name;
+								$list[(string) $data['externalComponent']] = (string) $propertySelection->name;
 							}
 						}
 						else
@@ -314,18 +314,18 @@ class SchuheDE extends CSVGenerator
 
 		foreach($item->variationAttributeValueList as $variationAttribute)
 		{
-			$attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
+			$attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute->attributeValueId, $settings->get('lang'));
 
-			if($attributeValueLang instanceof AttributeValueLang)
+			if($attributeValueName instanceof AttributeValueName)
 			{
-				if($attributeValueLang->attributeValue->attribute->amazon_variation == 'Color')
+				if($attributeValueName->attributeValue->attribute->amazon_variation == 'Color')
 				{
-					$variationAttributes['color'][] = $attributeValueLang->name;
+					$variationAttributes['color'][] = $attributeValueName->name;
 				}
 
-				if($attributeValueLang->attributeValue->attribute->amazon_variation == 'Size')
+				if($attributeValueName->attributeValue->attribute->amazon_variation == 'Size')
 				{
-					$variationAttributes['size'][] = $attributeValueLang->name;
+					$variationAttributes['size'][] = $attributeValueName->name;
 				}
 			}
 		}
