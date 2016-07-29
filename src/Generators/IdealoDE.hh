@@ -10,8 +10,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
-use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Item\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
+use Plenty\Modules\Item\Property\Models\PropertySelection;
 
 /**
  * Class IdealoDE
@@ -31,9 +31,9 @@ class IdealoDE extends CSVGenerator
 
 
 	/**
-	 * CharacterSelectionRepositoryContract $characterSelectionRepository
+	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private CharacterSelectionRepositoryContract $characterSelectionRepository;
+	private PropertySelectionRepositoryContract $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
@@ -54,17 +54,17 @@ class IdealoDE extends CSVGenerator
      * IdealoGenerator constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-	 * @param CharacterSelectionRepositoryContract $characterSelectionRepository
+	 * @param PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		CharacterSelectionRepositoryContract $characterSelectionRepository
+		PropertySelectionRepositoryContract $propertySelectionRepository
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
-		$this->characterSelectionRepository = $characterSelectionRepository;
+		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
     protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
@@ -430,10 +430,10 @@ class IdealoDE extends CSVGenerator
 					{
 						if((string) $data['characterValueType'] == 'selection')
 						{
-							$characterSelection = $this->characterSelectionRepository->findCharacterSelection((int) $data['characterValue']);
-							if($characterSelection instanceof CharacterSelection)
+							$propertySelection = $this->propertySelectionRepository->findByPropertyItemId((int) $data['characterValue']);
+							if($propertySelection instanceof PropertySelection)
 							{
-								$list[(string) $data['externalComponent']] = (string) $characterSelection->name;
+								$list[(string) $data['externalComponent']] = (string) $propertySelection->name;
 							}
 						}
 						else
