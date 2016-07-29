@@ -9,8 +9,8 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
 use Plenty\Modules\Item\Character\Models\CharacterSelection;
 
@@ -37,9 +37,9 @@ class CdiscountCOM extends CSVGenerator
     private ArrayHelper $arrayHelper;
 
         /**
-         * AttributeValueLangRepositoryContract $attributeValueLangRepository
+         * AttributeValueNameRepositoryContract $AttributeValueNameRepository
          */
-    private AttributeValueLangRepositoryContract $attributeValueLangRepository;
+    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
 
         /**
          * CharacterSelectionRepositoryContract $characterSelectionRepository
@@ -56,19 +56,19 @@ class CdiscountCOM extends CSVGenerator
      * Geizhals constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-     * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
+     * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
      * @param CharacterSelectionRepositoryContract $characterSelectionRepository
      */
     public function __construct(
         ElasticExportHelper $elasticExportHelper,
         ArrayHelper $arrayHelper,
-        AttributeValueLangRepositoryContract $attributeValueLangRepository,
+        AttributeValueNameRepositoryContract $attributeValueNameRepository,
         CharacterSelectionRepositoryContract $characterSelectionRepository
     )
     {
         $this->elasticExportHelper = $elasticExportHelper;
         $this->arrayHelper = $arrayHelper;
-        $this->attributeValueLangRepository = $attributeValueLangRepository;
+        $this->attributeValueNameRepository = $attributeValueNameRepository;
         $this->characterSelectionRepository = $characterSelectionRepository;
     }
 
@@ -305,13 +305,13 @@ class CdiscountCOM extends CSVGenerator
 
         foreach($item->variationAttributeValueList as $variationAttribute)
         {
-            $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
+            $attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute->attributeValueId, $settings->get('lang'));
 
-            if($attributeValueLang instanceof AttributeValueLang)
+            if($attributeValueName instanceof AttributeValueName)
             {
-                if($attributeValueLang->attributeValue->attribute->amazon_variation)
+                if($attributeValueName->attributeValue->attribute->amazon_variation)
                 {
-                    $variationAttributes[$attributeValueLang->attributeValue->attribute->amazon_variation][] = $attributeValueLang->name;
+                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazon_variation][] = $attributeValueName->name;
                 }
             }
         }

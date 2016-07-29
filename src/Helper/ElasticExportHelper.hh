@@ -7,8 +7,8 @@ use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
-use Plenty\Modules\Item\Unit\Contracts\UnitLangRepositoryContract;
-use Plenty\Modules\Item\Unit\Models\UnitLang;
+use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
+use Plenty\Modules\Item\Unit\Models\UnitName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeLangRepositoryContract;
@@ -71,9 +71,9 @@ class ElasticExportHelper
     private CategoryBranchRepositoryContract $categoryBranchRepository;
 
     /**
-     * UnitLangRepositoryContract $unitLangRepository
+     * UnitNameRepositoryContract $unitNameRepository
      */
-    private UnitLangRepositoryContract $unitLangRepository;
+    private UnitNameRepositoryContract $unitNameRepository;
 
 	/**
 	 * AttributeValueLangRepositoryContract $attributeValueLangRepository
@@ -149,7 +149,7 @@ class ElasticExportHelper
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
-     * @param UnitLangRepositoryContract $unitLangRepository
+     * @param UnitNameRepositoryContract $unitNameRepository
      * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
      * @param AttributeLangRepositoryContract $attributeLangRepository
      * @param CharacterItemNameRepositoryContract $characterItemNameRepository
@@ -165,7 +165,7 @@ class ElasticExportHelper
      * @param AvailabilityRepositoryContract $availabilityRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
-                                UnitLangRepositoryContract $unitLangRepository,
+                                UnitNameRepositoryContract $unitNameRepository,
                                 AttributeValueLangRepositoryContract $attributeValueLangRepository,
                                 AttributeLangRepositoryContract $attributeLangRepository,
                                 CharacterItemNameRepositoryContract $characterItemNameRepository,
@@ -184,7 +184,7 @@ class ElasticExportHelper
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
 
-        $this->unitLangRepository = $unitLangRepository;
+        $this->unitNameRepository = $unitNameRepository;
 
         $this->attributeValueLangRepository = $attributeValueLangRepository;
 
@@ -708,9 +708,9 @@ class ElasticExportHelper
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
 		$price = $price > 0 ? $price : (float) $item->variationRetailPrice->price;
         $lot = (int) $item->variationBase->content;
-        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+        $unitLang = $this->unitNameRepository->findByUnitId((int) $item->variationBase->unitId);
 
-        if($unitLang instanceof UnitLang)
+        if($unitLang instanceof UnitName)
         {
             $unitShortcut = $unitLang->unit->unitOfMeasurement;
             $unitName = $unitLang->name;
@@ -758,9 +758,9 @@ class ElasticExportHelper
 	{
 		$price = (float)$item->variationRetailPrice->price;
 		$lot = (int)$item->variationBase->content;
-		$unitLang = $this->unitLangRepository->findUnit((int)$item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+		$unitLang = $this->unitNameRepository->findByUnitId((int)$item->variationBase->unitId);
 
-		if($unitLang instanceof UnitLang)
+		if($unitLang instanceof UnitName)
 		{
             $unitShortcut = $unitLang->unit->unitOfMeasurement;
 			$unitName = $unitLang->name;
@@ -787,9 +787,9 @@ class ElasticExportHelper
      */
     public function getBasePriceDetailUnit(Record $item, KeyValue $settings):string
     {
-        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+        $unitLang = $this->unitNameRepository->findByUnitId((int) $item->variationBase->unitId);
 
-		if($unitLang instanceof UnitLang)
+		if($unitLang instanceof UnitName)
 		{
             $unitShortcut = $unitLang->unit->unitOfMeasurement;
 		}
