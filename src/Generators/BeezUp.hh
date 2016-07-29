@@ -9,14 +9,12 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
-use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Item\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 
 class BeezUp extends CSVGenerator
 {
-    const string CHARACTER_TYPE_DESCRIPTION					= 'description';
+    const string PROPERTY_TYPE_DESCRIPTION					= 'description';
         /*
          * @var ElasticExportHelper
          */
@@ -28,14 +26,9 @@ class BeezUp extends CSVGenerator
     private ArrayHelper $arrayHelper;
 
         /**
-         * AttributeValueLangRepositoryContract $attributeValueLangRepository
+         * AttributeValueNameRepositoryContract $attributeValueNameRepository
          */
-    private AttributeValueLangRepositoryContract $attributeValueLangRepository;
-
-        /**
-         * CharacterSelectionRepositoryContract $characterSelectionRepository
-         */
-    private CharacterSelectionRepositoryContract $characterSelectionRepository;
+    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
 
         /**
          * @var array<int,mixed>
@@ -47,20 +40,17 @@ class BeezUp extends CSVGenerator
      * Geizhals constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-     * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
-     * @param CharacterSelectionRepositoryContract $characterSelectionRepository
+     * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
      */
     public function __construct(
         ElasticExportHelper $elasticExportHelper,
         ArrayHelper $arrayHelper,
-        AttributeValueLangRepositoryContract $attributeValueLangRepository,
-        CharacterSelectionRepositoryContract $characterSelectionRepository
+        AttributeValueNameRepositoryContract $attributeValueNameRepository
     )
     {
         $this->elasticExportHelper = $elasticExportHelper;
         $this->arrayHelper = $arrayHelper;
-        $this->attributeValueLangRepository = $attributeValueLangRepository;
-        $this->characterSelectionRepository = $characterSelectionRepository;
+        $this->attributeValueNameRepository = $attributeValueNameRepository;
     }
 
     /**
@@ -160,7 +150,7 @@ class BeezUp extends CSVGenerator
      */
     private function getDescription(Record $item, KeyValue $settings):string
     {
-        $description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_DESCRIPTION);
+        $description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::PROPERTY_TYPE_DESCRIPTION);
 
         if (strlen($description) <= 0)
         {
@@ -182,13 +172,13 @@ class BeezUp extends CSVGenerator
 
         foreach($item->variationAttributeValueList as $variationAttribute)
         {
-            $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
+            $attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute->attributeValueId, $settings->get('lang'));
 
-            if($attributeValueLang instanceof AttributeValueLang)
+            if($attributeValueName instanceof AttributeValueName)
             {
-                if($attributeValueLang->attributeValue->attribute->amazon_variation)
+                if($attributeValueName->attributeValue->attribute->amazon_variation)
                 {
-                    $variationAttributes[$attributeValueLang->attributeValue->attribute->amazon_variation][] = $attributeValueLang->name;
+                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazon_variation][] = $attributeValueName->name;
                 }
             }
         }

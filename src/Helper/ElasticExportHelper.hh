@@ -7,25 +7,25 @@ use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
-use Plenty\Modules\Item\Unit\Contracts\UnitLangRepositoryContract;
-use Plenty\Modules\Item\Unit\Models\UnitLang;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
+use Plenty\Modules\Item\Unit\Models\UnitName;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeLangRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeLang;
-use Plenty\Modules\Item\Character\Contracts\CharacterItemNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeName;
+use Plenty\Modules\Item\Property\Contracts\PropertyItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepository;
 use Plenty\Modules\Category\Models\Category;
-use Plenty\Modules\Item\Character\Contracts\CharacterMarketComponentRepositoryContract;
-use Plenty\Modules\Item\Character\Models\CharacterMarketComponent;
+use Plenty\Modules\Item\Property\Contracts\PropertyMarketComponentRepositoryContract;
+use Plenty\Modules\Item\Property\Models\PropertyMarketComponent;
 use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
 use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Contracts\PaymentMethodRepositoryContract;
 use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostRepositoryContract;
 use Plenty\Modules\Item\Availability\Models\Availability;
-use Plenty\Modules\Item\Availability\Models\AvailabilityLang;
+use Plenty\Modules\Item\Availability\Models\AvailabilityLanguage;
 use Plenty\Plugin\ConfigRepository;
 use Plenty\Modules\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Shipping\Countries\Models\Country;
@@ -34,6 +34,7 @@ use Plenty\Modules\System\Models\Webstore;
 use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
 use Plenty\Modules\Item\VariationSku\Models\VariationSku;
 use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeNameRepositoryContract;
 
 /**
  * Class ElasticExportHelper
@@ -71,24 +72,24 @@ class ElasticExportHelper
     private CategoryBranchRepositoryContract $categoryBranchRepository;
 
     /**
-     * UnitLangRepositoryContract $unitLangRepository
+     * UnitNameRepositoryContract $unitNameRepository
      */
-    private UnitLangRepositoryContract $unitLangRepository;
+    private UnitNameRepositoryContract $unitNameRepository;
 
 	/**
-	 * AttributeValueLangRepositoryContract $attributeValueLangRepository
+	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-    private AttributeValueLangRepositoryContract $attributeValueLangRepository;
+    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
 
     /**
-     * AttributeLangRepositoryContract $attributeLangRepository
+     * AttributeNameRepositoryContract $attributeNameRepository
      */
-    private AttributeLangRepositoryContract $attributeLangRepository;
+    private AttributeNameRepositoryContract $attributeNameRepository;
 
     /**
-     * CharacterItemNameRepositoryContract $characterItemNameRepository
+     * PropertyItemNameRepositoryContract $propertyItemNameRepository
      */
-    private CharacterItemNameRepositoryContract $characterItemNameRepository;
+    private PropertyItemNameRepositoryContract $propertyItemNameRepository;
 
     /**
      * CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
@@ -106,9 +107,9 @@ class ElasticExportHelper
     private CategoryRepository $categoryRepository;
 
     /**
-     * CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;s
+     * PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository;s
      */
-    private CharacterMarketComponentRepositoryContract $characterMarketComponentRepository;
+    private PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository;
 
     /**
      * @var PaymentMethodRepositoryContract $paymentMethodRepository
@@ -149,14 +150,14 @@ class ElasticExportHelper
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
-     * @param UnitLangRepositoryContract $unitLangRepository
-     * @param AttributeValueLangRepositoryContract $attributeValueLangRepository
-     * @param AttributeLangRepositoryContract $attributeLangRepository
-     * @param CharacterItemNameRepositoryContract $characterItemNameRepository
+     * @param UnitNameRepositoryContract $unitNameRepository
+     * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
+     * @param AttributeNameRepositoryContract $attributeNameRepository
+     * @param PropertyItemNameRepositoryContract $propertyItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      * @param CategoryRepository $categoryRepository
-     * @param CharacterMarketComponentRepositoryContract $characterMarketComponentRepository
+     * @param PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository
      * @param PaymentMethodRepositoryContract $paymentMethodRepository
      * @param ConfigRepository $configRepository
      * @param CountryRepositoryContract $countryRepository
@@ -165,14 +166,14 @@ class ElasticExportHelper
      * @param AvailabilityRepositoryContract $availabilityRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
-                                UnitLangRepositoryContract $unitLangRepository,
-                                AttributeValueLangRepositoryContract $attributeValueLangRepository,
-                                AttributeLangRepositoryContract $attributeLangRepository,
-                                CharacterItemNameRepositoryContract $characterItemNameRepository,
+                                UnitNameRepositoryContract $unitNameRepository,
+                                AttributeValueNameRepositoryContract $attributeValueNameRepository,
+                                AttributeNameRepositoryContract $attributeNameRepository,
+                                PropertyItemNameRepositoryContract $propertyItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
                                 CategoryRepository $categoryRepository,
-                                CharacterMarketComponentRepositoryContract $characterMarketComponentRepository,
+                                PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository,
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
                                 DefaultShippingCostRepositoryContract $defaultShippingCostRepository,
                                 ConfigRepository $configRepository,
@@ -184,13 +185,13 @@ class ElasticExportHelper
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
 
-        $this->unitLangRepository = $unitLangRepository;
+        $this->unitNameRepository = $unitNameRepository;
 
-        $this->attributeValueLangRepository = $attributeValueLangRepository;
+        $this->attributeValueNameRepository = $attributeValueNameRepository;
 
-        $this->attributeLangRepository = $attributeLangRepository;
+        $this->attributeNameRepository = $attributeNameRepository;
 
-        $this->characterItemNameRepository = $characterItemNameRepository;
+        $this->propertyItemNameRepository = $propertyItemNameRepository;
 
         $this->categoryBranchMarketplaceRepository = $categoryBranchMarketplaceRepository;
 
@@ -198,7 +199,7 @@ class ElasticExportHelper
 
         $this->categoryRepository = $categoryRepository;
 
-        $this->characterMarketComponentRepository = $characterMarketComponentRepository;
+        $this->propertyMarketComponentRepository = $propertyMarketComponentRepository;
 
 		$this->paymentMethodRepository = $paymentMethodRepository;
 
@@ -643,11 +644,11 @@ class ElasticExportHelper
         {
             foreach($item->variationAttributeValueList as $attribute)
             {
-                $attributeLang = $this->attributeLangRepository->findAttributeName($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
-                if($attributeLang instanceof AttributeLang)
+                if($attributeName instanceof AttributeName)
                 {
-                    $values[] = $attributeLang->name;
+                    $values[] = $attributeName->name;
                 }
 
             }
@@ -671,11 +672,11 @@ class ElasticExportHelper
         {
             foreach($item->variationAttributeValueList as $attribute)
             {
-                $attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                $attributeValueName = $this->attributeValueNameRepository->findOne($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
-                if($attributeValueLang instanceof AttributeValueLang)
+                if($attributeValueName instanceof AttributeValueName)
                 {
-                    $values[] = $attributeValueLang->name;
+                    $values[] = $attributeValueName->name;
                 }
 
             }
@@ -708,9 +709,9 @@ class ElasticExportHelper
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
 		$price = $price > 0 ? $price : (float) $item->variationRetailPrice->price;
         $lot = (int) $item->variationBase->content;
-        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+        $unitLang = $this->unitNameRepository->findByUnitId((int) $item->variationBase->unitId);
 
-        if($unitLang instanceof UnitLang)
+        if($unitLang instanceof UnitName)
         {
             $unitShortcut = $unitLang->unit->unitOfMeasurement;
             $unitName = $unitLang->name;
@@ -758,9 +759,9 @@ class ElasticExportHelper
 	{
 		$price = (float)$item->variationRetailPrice->price;
 		$lot = (int)$item->variationBase->content;
-		$unitLang = $this->unitLangRepository->findUnit((int)$item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+		$unitLang = $this->unitNameRepository->findByUnitId((int)$item->variationBase->unitId);
 
-		if($unitLang instanceof UnitLang)
+		if($unitLang instanceof UnitName)
 		{
             $unitShortcut = $unitLang->unit->unitOfMeasurement;
 			$unitName = $unitLang->name;
@@ -787,9 +788,9 @@ class ElasticExportHelper
      */
     public function getBasePriceDetailUnit(Record $item, KeyValue $settings):string
     {
-        $unitLang = $this->unitLangRepository->findUnit((int) $item->variationBase->unitId, $settings->get('lang') ? $settings->get('lang') : 'de');
+        $unitLang = $this->unitNameRepository->findByUnitId((int) $item->variationBase->unitId);
 
-		if($unitLang instanceof UnitLang)
+		if($unitLang instanceof UnitName)
 		{
             $unitShortcut = $unitLang->unit->unitOfMeasurement;
 		}
@@ -854,9 +855,9 @@ class ElasticExportHelper
     {
         foreach($item->itemCharacterList as $itemCharacter)
         {
-            $itemCharacterBackendName = $this->characterItemNameRepository->findCharacterItem($itemCharacter->itemCharacterId, $settings->get('lang')? $settings->get('lang') : 'de');
+            $propertyItemName = $this->propertyItemNameRepository->findOne($itemCharacter->itemCharacterId, $settings->get('lang')? $settings->get('lang') : 'de');
 
-            if($itemCharacterBackendName == $backendName)
+            if($propertyItemName->name == $backendName)
             {
                 return (string) $itemCharacter->characterValue;
             }
@@ -876,25 +877,25 @@ class ElasticExportHelper
     {
         $characterList = $item->itemCharacterList;
 
-        $characterMarketComponents = $this->characterMarketComponentRepository->getCharacterMarketComponents($marketId, !is_null($componentId) ? $componentId : null);
+        $propertyMarketComponents = $this->propertyMarketComponentRepository->getPropertyMarketComponents($marketId, !is_null($componentId) ? $componentId : null);
 
         $list = Vector{};
 
         foreach($characterList as $character)
 		{
-            foreach($characterMarketComponents as $characterMarketComponent)
+            foreach($propertyMarketComponents as $propertyMarketComponent)
             {
-                if($characterMarketComponent instanceof CharacterMarketComponent && $characterMarketComponent->character_item_id == $character->characterId)
+                if($propertyMarketComponent instanceof PropertyMarketComponent && $propertyMarketComponent->character_item_id == $character->characterId)
                 {
                     $list[] = [
                         'itemCharacterId' => $character->itemCharacterId,
                         'characterId' => $character->characterId,
                         'characterValue' => $character->characterValue,
                         'characterValueType' => $character->characterValueType,
-                        'characterItemId' => $characterMarketComponent->character_item_id,
-                        'componentId' => $characterMarketComponent->component_id,
-                        'referrerId' => $characterMarketComponent->market_reference,
-                        'externalComponent' => $characterMarketComponent->external_component,
+                        'characterItemId' => $propertyMarketComponent->character_item_id,
+                        'componentId' => $propertyMarketComponent->component_id,
+                        'referrerId' => $propertyMarketComponent->market_reference,
+                        'externalComponent' => $propertyMarketComponent->external_component,
 					];
                 }
             }

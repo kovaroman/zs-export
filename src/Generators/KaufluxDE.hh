@@ -8,8 +8,8 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Item\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
+use Plenty\Modules\Item\Property\Models\PropertySelection;
 
 /**
  * Class KaufluxDE
@@ -32,9 +32,9 @@ class KaufluxDE extends CSVGenerator
 	private ArrayHelper $arrayHelper;
 
 	/**
-	 * CharacterSelectionRepositoryContract $characterSelectionRepository
+	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private CharacterSelectionRepositoryContract $characterSelectionRepository;	
+	private PropertySelectionRepositoryContract $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
@@ -60,17 +60,17 @@ class KaufluxDE extends CSVGenerator
      * IdealoGenerator constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-     * @param CharacterSelectionRepositoryContract $characterSelectionRepository
+     * @param PropertySelectionRepositoryContract $propertySelectionRepository
      */
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		CharacterSelectionRepositoryContract $characterSelectionRepository,		
+		PropertySelectionRepositoryContract $propertySelectionRepository,
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
-		$this->characterSelectionRepository = $characterSelectionRepository;		
+		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
     protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
@@ -207,8 +207,8 @@ class KaufluxDE extends CSVGenerator
 					{
 						if((string) $data['characterValueType'] == 'selection')
 						{
-							$characterSelection = $this->characterSelectionRepository->findCharacterSelection((int) $data['characterValue']);
-							if($characterSelection instanceof CharacterSelection)
+							$characterSelection = $this->propertySelectionRepository->findByPropertyItemId((int) $data['characterValue']);
+							if($characterSelection instanceof PropertySelection)
 							{
 								$list[] = (string) $characterSelection->name;
 							}
