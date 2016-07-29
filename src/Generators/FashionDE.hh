@@ -8,8 +8,8 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeValueLangRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeValueLang;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 
 class FashionDE extends CSVGenerator
 {
@@ -24,22 +24,22 @@ class FashionDE extends CSVGenerator
 	private ArrayHelper $arrayHelper;
 
 	/**
-	 * AttributeValueLangRepositoryContract $attributeValueLangRepository
+	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-	private AttributeValueLangRepositoryContract $attributeValueLangRepository;
+	private AttributeValueNameRepositoryContract $attributeValueNameRepository;
 
 
 	/**
      * Billiger constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
-     * @param AttributeValueLangRepositoryContract $attributeValueLangRepository,
+     * @param AttributeValueNameRepositoryContract $attributeValueNameRepository,
      */
-    public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper, AttributeValueLangRepositoryContract $attributeValueLangRepository)
+    public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper, AttributeValueNameRepositoryContract $attributeValueNameRepository)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
-		$this->attributeValueLangRepository = $attributeValueLangRepository;
+		$this->attributeValueNameRepository = $attributeValueNameRepository;
     }
 
 	/**
@@ -159,13 +159,13 @@ class FashionDE extends CSVGenerator
 
 		foreach($item->variationAttributeValueList as $variationAttribute)
 		{
-			$attributeValueLang = $this->attributeValueLangRepository->findAttributeValue($variationAttribute->attributeValueId, $settings->get('lang'));
+			$attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute->attributeValueId, $settings->get('lang'));
 
-			if($attributeValueLang instanceof AttributeValueLang)
+			if($attributeValueName instanceof AttributeValueName)
 			{
-				if($attributeValueLang->attributeValue->attribute->amazon_variation)
+				if($attributeValueName->attributeValue->attribute->amazon_variation)
 				{
-					$variationAttributes[$attributeValueLang->attributeValue->attribute->amazon_variation][] = $attributeValueLang->name;
+					$variationAttributes[$attributeValueName->attributeValue->attribute->amazon_variation][] = $attributeValueName->name;
 				}
 			}
 		}
