@@ -11,8 +11,8 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
-use Plenty\Modules\Item\Character\Contracts\CharacterSelectionRepositoryContract;
-use Plenty\Modules\Item\Character\Models\CharacterSelection;
+use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
+use Plenty\Modules\Item\Property\Models\PropertySelection;
 
 class CdiscountCOM extends CSVGenerator
 {
@@ -42,9 +42,9 @@ class CdiscountCOM extends CSVGenerator
     private AttributeValueNameRepositoryContract $attributeValueNameRepository;
 
         /**
-         * CharacterSelectionRepositoryContract $characterSelectionRepository
+         * PropertySelectionRepositoryContract $propertySelectionRepository
          */
-    private CharacterSelectionRepositoryContract $characterSelectionRepository;
+    private PropertySelectionRepositoryContract $propertySelectionRepository;
 
         /**
          * @var array<int,mixed>
@@ -57,19 +57,19 @@ class CdiscountCOM extends CSVGenerator
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
-     * @param CharacterSelectionRepositoryContract $characterSelectionRepository
+     * @param PropertySelectionRepositoryContract $propertySelectionRepository
      */
     public function __construct(
         ElasticExportHelper $elasticExportHelper,
         ArrayHelper $arrayHelper,
         AttributeValueNameRepositoryContract $attributeValueNameRepository,
-        CharacterSelectionRepositoryContract $characterSelectionRepository
+        PropertySelectionRepositoryContract $propertySelectionRepository
     )
     {
         $this->elasticExportHelper = $elasticExportHelper;
         $this->arrayHelper = $arrayHelper;
         $this->attributeValueNameRepository = $attributeValueNameRepository;
-        $this->characterSelectionRepository = $characterSelectionRepository;
+        $this->propertySelectionRepository = $propertySelectionRepository;
     }
 
     /**
@@ -254,10 +254,10 @@ class CdiscountCOM extends CSVGenerator
                     {
                         if((string) $data['characterValueType'] == 'selection')
                         {
-                            $characterSelection = $this->characterSelectionRepository->findCharacterSelection((int) $data['characterValue']);
-                            if($characterSelection instanceof CharacterSelection)
+                            $propertySelection = $this->propertySelectionRepository->findByPropertyItemId((int) $data['characterValue']);
+                            if($propertySelection instanceof PropertySelection)
                             {
-                                $list[(string) $data['externalComponent']] = (string) $characterSelection->name;
+                                $list[(string) $data['externalComponent']] = (string) $propertySelection->name;
                             }
                         }
                         else
