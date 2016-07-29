@@ -34,6 +34,7 @@ use Plenty\Modules\System\Models\Webstore;
 use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
 use Plenty\Modules\Item\VariationSku\Models\VariationSku;
 use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeNameRepositoryContract;
 
 /**
  * Class ElasticExportHelper
