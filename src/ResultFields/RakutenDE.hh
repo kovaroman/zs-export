@@ -38,6 +38,10 @@ class RakutenDE extends ResultFields
         {
             $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
         }
+		else
+		{
+			$this->setOrderByList(['orderBy.itemId' => 'asc']);
+		}
 
 
         $itemDescriptionFields = ['urlContent'];
