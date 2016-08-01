@@ -7,7 +7,6 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
-use Plenty\Modules\Item\Unit\Models\UnitLang;
 use Plenty\Modules\Helper\Models\KeyValue;
 
 class RakutenDE extends CSVGenerator
@@ -122,7 +121,10 @@ class RakutenDE extends CSVGenerator
                 $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
 				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
 				{
-					$this->buildParentWithChildrenRow($item, $settings, $attributeName);
+                    if(strlen($attributeName[$item->itemBase->id]) > 0)
+                    {
+                        $this->buildParentWithChildrenRow($item, $settings, $attributeName);
+                    }
 					if(strlen($attributeValue) > 0)
 					{
 						$this->buildChildRow($item, $settings, $attributeValue);
