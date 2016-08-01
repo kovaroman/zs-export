@@ -11,7 +11,6 @@ use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeLangRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeName;
 use Plenty\Modules\Item\Property\Contracts\PropertyItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
