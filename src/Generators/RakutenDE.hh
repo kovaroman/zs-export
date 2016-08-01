@@ -125,6 +125,10 @@ class RakutenDE extends CSVGenerator
                     {
                         $this->buildParentWithChildrenRow($item, $settings, $attributeName);
                     }
+                    else
+                    {
+                        $this->buildParentWithoutChildrenRow($item, $settings);
+                    }
 					if(strlen($attributeValue) > 0)
 					{
 						$this->buildChildRow($item, $settings, $attributeValue);
