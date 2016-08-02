@@ -50,7 +50,7 @@ class PreisRoboterDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                         'type' => 'variation',
-                        'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
+                        'referenceMarketplace' => -1,
                 ],
                 'fields' => [
                     'imageId',

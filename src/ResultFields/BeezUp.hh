@@ -81,7 +81,7 @@ class BeezUp extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 127,
+                    'referenceMarketplace' => 127,
                 ],
                 'fields' => [
                     'type',

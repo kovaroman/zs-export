@@ -75,7 +75,7 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 130,
+                    'referenceMarketplace' => 130,
                 ],
                 'fields' => [
                     'type',

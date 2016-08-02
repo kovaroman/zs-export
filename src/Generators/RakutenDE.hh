@@ -609,15 +609,20 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function getBasePriceContent(Record $item, string $unit):string
 	{
-		if($unit == 'C62')
+		switch($unit)
 		{
-			$basePriceContent = (int)$item->variationBase->content / 1000;
+			case 'C62':
+				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
+			case 'GRM':
+				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
+			case 'LTR':
+				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
+			case 'MTR':
+				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
+			case 'MTK':
+				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
+			default:
+				return (string)$basePriceContent = (int)$item->variationBase->content;
 		}
-		else
-		{
-			$basePriceContent = $item->variationBase->content;
-		}
-
-		return (string)$basePriceContent;
 	}
 }
