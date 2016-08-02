@@ -119,27 +119,46 @@ class RakutenDE extends CSVGenerator
 			{
 				$currentItemId = $item->itemBase->id;
                 $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
-				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
+
+                /**
+                 * Case of an item with more variation
+                 */
+                if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
 				{
+                    /**
+                     * The item has multiple active variations with attributes
+                     */
                     if(strlen($attributeName[$item->itemBase->id]) > 0)
                     {
                         $this->buildParentWithChildrenRow($item, $settings, $attributeName);
                     }
+                    /**
+                     * The item has only inactive variations
+                     */
                     else
                     {
                         $this->buildParentWithoutChildrenRow($item, $settings);
                     }
+                    /**
+                     * This will only be triggered if the main variation also has a attribute value
+                     */
 					if(strlen($attributeValue) > 0)
 					{
 						$this->buildChildRow($item, $settings, $attributeValue);
 					}
 					$previousItemId = $currentItemId;
 				}
+                /**
+                 * Case item has only the main variation
+                 */
 				elseif($previousItemId != $currentItemId && $item->itemBase->variationCount == 1 && $item->itemBase->hasAttribute == false)
 				{
 					$this->buildParentWithoutChildrenRow($item, $settings);
 					$previousItemId = $currentItemId;
 				}
+                /**
+                 * The parent is already in the csv
+                 */
 				else
 				{
 					$this->buildChildRow($item, $settings, $attributeValue);
