@@ -101,7 +101,7 @@ class KaufluxDE extends ResultFields
                 'limitOrderByStockSelect',
             ],
 
-            'variationBarcode' => [
+            'variationBarcodeList' => [
                 'params' => [
                     'barcodeType' => $settings->get('barcode'),
                 ],

@@ -89,8 +89,8 @@ private ArrayHelper $arrayHelper;
                     'in_stock'          => $item->variationStock->stockNet > 0 ? 'Y' : 'N',
                     'stock_detail'      => $item->variationStock->stockNet,
                     'condition'         => $itemCondition[(int)$item->itemBase->condition],
-                    'upc_ean'           => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
-                    'isbn'              => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
+                    'upc_ean'           => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
+                    'isbn'              => $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
                     'brand'             => $item->itemBase->producer
 				];
 

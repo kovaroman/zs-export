@@ -111,7 +111,7 @@ class Check24DE extends ResultFields
                 ],
             ],
 
-            'variationBarcode' => [
+            'variationBarcodeList' => [
                 'params' => [
                     'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
                 ],

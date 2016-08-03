@@ -69,7 +69,7 @@ class Check24DE extends CSVGenerator
 					'id' 				=> $this->getSku($item),
 					'manufacturer' 		=> $item->itemBase->producer,
 					'mpnr' 				=> $item->variationBase->model,
-					'ean' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+					'ean' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 					'category_path' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),

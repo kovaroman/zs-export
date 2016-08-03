@@ -167,7 +167,7 @@ class CdiscountCOM extends CSVGenerator
 
                     // Mandatory data
                     'Your reference'                        =>  $item->variationMarketStatus->sku,
-                    'EAN'                                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'EAN'                                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
                     'Brand'                                 =>  $item->itemBase->producer,
                     'Nature of product'                     =>  strlen($color) || strlen($size) ? 'variante' : 'standard',
                     'Category code'                         =>  $item->variationStandardCategory->categoryId,
@@ -185,7 +185,7 @@ class CdiscountCOM extends CSVGenerator
                     'Picture 2 (jpeg)'                      =>  $this->getImageByNumber($item, $settings, 2),
                     'Picture 3 (jpeg)'                      =>  $this->getImageByNumber($item, $settings, 3),
                     'Picture 4 (jpeg)'                      =>  $this->getImageByNumber($item, $settings, 4),
-                    'ISBN / GTIN'                           =>  $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_ISBN),
+                    'ISBN / GTIN'                           =>  $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
                     'MFPN'                                  =>  $item->variationBase->model,
                     'Length'                                =>  $lengthCm,
                     'Width'                                 =>  $widthCm,

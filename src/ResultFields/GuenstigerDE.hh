@@ -88,7 +88,7 @@ class GuenstigerDE extends ResultFields
                 ],
             ],
 
-            'variationBarcode' => [
+            'variationBarcodeList' => [
                 'params' => [
                     'barcodeType' => $settings->get('barcode'),
                 ],

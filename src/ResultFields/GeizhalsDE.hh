@@ -117,7 +117,7 @@ class GeizhalsDE extends ResultFields
                 ],
             ],
 
-            'variationBarcode' => [
+            'variationBarcodeList' => [
                 'params' => [
                     'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
                 ],
