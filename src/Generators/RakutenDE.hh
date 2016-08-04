@@ -159,7 +159,7 @@ class RakutenDE extends CSVGenerator
                 /**
                  * The parent is already in the csv
                  */
-				else
+				elseif(strlen($attributeValue) > 0)
 				{
 					$this->buildChildRow($item, $settings, $attributeValue);
 				}
