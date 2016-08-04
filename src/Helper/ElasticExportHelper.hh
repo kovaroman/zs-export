@@ -913,7 +913,7 @@ class ElasticExportHelper
     {
         foreach($item->variationBarcodeList as $variationBarcode)
         {
-            if($variationBarcode->barcodeType == $barcodeType)
+            if($variationBarcode->barcodeType == $barcodeType || $barcodeType == 'FirstBarcode')
             {
                 return (string) $variationBarcode->code;
             }
