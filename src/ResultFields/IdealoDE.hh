@@ -77,7 +77,7 @@ class IdealoDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => 121,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 121,
                 ],
                 'fields' => [
                     'type',

@@ -76,7 +76,7 @@ class GoogleShopping extends ResultFields
 			'variationImageList' => [
 				'params' => [
 					'type' => 'all',
-					'referenceMarketplace' => 7,
+					'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
 				],
 				'fields' => [
 					'type',

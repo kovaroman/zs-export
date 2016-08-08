@@ -75,7 +75,7 @@ class Check24DE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => 150,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 150,
                 ],
                 'fields' => [
                     'type',

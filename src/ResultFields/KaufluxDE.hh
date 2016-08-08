@@ -78,7 +78,7 @@ class KaufluxDE extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => 116,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 116,
                 ],
                 'fields' => [
                     'type',

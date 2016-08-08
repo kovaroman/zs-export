@@ -77,7 +77,7 @@ class ShoppingCOM extends ResultFields
             'variationImageList' => [
                 'params' => [
                     'type' => 'variation',
-                    'referenceMarketplace' => -1,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                 ],
                 'fields' => [
                     'imageId',

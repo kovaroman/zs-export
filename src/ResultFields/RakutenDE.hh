@@ -110,7 +110,7 @@ class RakutenDE extends ResultFields
 				'params' => [
 					'type' => 'variation',
 				],
-				'referenceMarketplace' => 106,
+				'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				'fields' => [
 					'type',
 					'path',
