@@ -247,7 +247,7 @@ class RakutenDE extends CSVGenerator
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 		$price = $price > 0 ? $price : '';
 		$unit = $this->getUnit($item, $settings);
-		$basePriceContent = $this->getBasePriceContent($item, $unit);
+		$basePriceContent = (int)$item->variationBase->content;
 
 		$data = [
 			'id'						=> '',
@@ -481,7 +481,7 @@ class RakutenDE extends CSVGenerator
 		$price = $price > 0 ? $price : '';
 
 		$unit = $this->getUnit($item, $settings);
-		$basePriceContent = $this->getBasePriceContent($item, $unit);
+		$basePriceContent = (int)$item->variationBase->content;
 
 		$data = [
 			'id'						=> '',
@@ -597,32 +597,6 @@ class RakutenDE extends CSVGenerator
 				return 'm²'; // Quadratmeter
 			default:
 				return '';
-		}
-	}
-
-	/**
-	 * Returns the content depending on unit.
-	 *
-	 * @param Record $item
-	 * @param string $unit
-	 * @return string
-	 */
-	private function getBasePriceContent(Record $item, string $unit):string
-	{
-		switch($unit)
-		{
-			case 'C62':
-				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
-			case 'GRM':
-				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
-			case 'LTR':
-				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
-			case 'MTR':
-				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
-			case 'MTK':
-				return (string)$basePriceContent = (int)$item->variationBase->content / 1000;
-			default:
-				return (string)$basePriceContent = (int)$item->variationBase->content;
 		}
 	}
 }
