@@ -119,7 +119,7 @@ class TracdelightCOM extends CSVGenerator
                     'Streichpreis'          => $rrp,
                     'Lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings, false),
                     'Produktstamm-ID'       => $item->itemBase->id,
-                    'EAN'                   => $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+                    'EAN'                   => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
                     'Bild2-URL'             => $this->getImageByNumber($item, $settings, 2),
                     'Bild3-URL'             => $this->getImageByNumber($item, $settings, 3),
                     'Bild4-URL'             => $this->getImageByNumber($item, $settings, 4),

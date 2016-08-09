@@ -109,8 +109,8 @@ class RakutenDE extends ResultFields
 			'variationImageList' => [
 				'params' => [
 					'type' => 'variation',
-					'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				],
+				'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				'fields' => [
 					'type',
 					'path',
@@ -149,7 +149,7 @@ class RakutenDE extends ResultFields
 				],
 			],
 
-			'variationBarcode' => [
+			'variationBarcodeList' => [
 				'params' => [
 					'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
 				],

@@ -99,7 +99,7 @@ private ArrayHelper $arrayHelper;
                 ],
             ],
 
-            'variationBarcode' => [
+            'variationBarcodeList' => [
                 'params' => [
                     'barcodeType' => $settings->get('barcode'),
                 ],

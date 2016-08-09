@@ -175,7 +175,7 @@ class MyBestBrandsDE extends CSVGenerator
 			'Price'					=> number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
 			'PreviousPrice'			=> number_format($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : 0, 2, ',', ''),
 			'Tags'					=> $item->itemDescription->keywords,
-			'EAN'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+			'EAN'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'LastUpdate'			=> $item->itemBase->lastUpdateTimestamp,
 			'UnitPrice'				=> $this->elasticExportHelper->getBasePrice($item, $settings),
 			'RetailerAttributes'	=> $item->itemBase->storeSpecial == 2 ? 'new-arrival' : '',

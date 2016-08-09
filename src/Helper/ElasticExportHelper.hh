@@ -906,15 +906,14 @@ class ElasticExportHelper
     /**
      * Get barcode by a given type.
      * @param  Record   $item
-     * @param  KeyValue $settings
      * @param  string   $barcodeType
      * @return string
      */
-    public function getBarcodeByType(Record $item, KeyValue $settings, string $barcodeType):string
+    public function getBarcodeByType(Record $item,string $barcodeType):string
     {
         foreach($item->variationBarcodeList as $variationBarcode)
         {
-            if($variationBarcode->barcodeType == $barcodeType)
+            if($variationBarcode->barcodeType == $barcodeType || $barcodeType == 'FirstBarcode')
             {
                 return (string) $variationBarcode->code;
             }

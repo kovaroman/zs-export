@@ -69,7 +69,7 @@ private ArrayHelper $arrayHelper;
                     ]
                 ],
 
-                'variationBarcode' => [
+                'variationBarcodeList' => [
                     'params' => [
                         'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
                     ],
@@ -90,7 +90,7 @@ private ArrayHelper $arrayHelper;
 
                 'variationMarketStatus' => [
                     'params' => [
-                        'marketId' => $settings->get('referrerId'),
+                        'marketId' => 143,
                     ],
                     'fields' => [
                         'sku'

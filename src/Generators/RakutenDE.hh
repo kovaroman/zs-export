@@ -119,28 +119,47 @@ class RakutenDE extends CSVGenerator
 			{
 				$currentItemId = $item->itemBase->id;
                 $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
-				if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
+
+                /**
+                 * Case of an item with more variation
+                 */
+                if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
 				{
+                    /**
+                     * The item has multiple active variations with attributes
+                     */
                     if(strlen($attributeName[$item->itemBase->id]) > 0)
                     {
                         $this->buildParentWithChildrenRow($item, $settings, $attributeName);
                     }
+                    /**
+                     * The item has only inactive variations
+                     */
                     else
                     {
                         $this->buildParentWithoutChildrenRow($item, $settings);
                     }
+                    /**
+                     * This will only be triggered if the main variation also has a attribute value
+                     */
 					if(strlen($attributeValue) > 0)
 					{
 						$this->buildChildRow($item, $settings, $attributeValue);
 					}
 					$previousItemId = $currentItemId;
 				}
+                /**
+                 * Case item has only the main variation
+                 */
 				elseif($previousItemId != $currentItemId && $item->itemBase->variationCount == 1 && $item->itemBase->hasAttribute == false)
 				{
 					$this->buildParentWithoutChildrenRow($item, $settings);
 					$previousItemId = $currentItemId;
 				}
-				else
+                /**
+                 * The parent is already in the csv
+                 */
+				elseif(strlen($attributeValue) > 0)
 				{
 					$this->buildChildRow($item, $settings, $attributeValue);
 				}
@@ -228,7 +247,7 @@ class RakutenDE extends CSVGenerator
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 		$price = $price > 0 ? $price : '';
 		$unit = $this->getUnit($item, $settings);
-		$basePriceContent = $this->getBasePriceContent($item, $unit);
+		$basePriceContent = (int)$item->variationBase->content;
 
 		$data = [
 			'id'						=> '',
@@ -240,7 +259,7 @@ class RakutenDE extends CSVGenerator
 			'beschreibung'				=> $this->elasticExportHelper->getDescription($item, $settings, 5000),
 			'variante'					=> $this->elasticExportHelper->getAttributeName($item, $settings),
 			'variantenwert'				=> '',
-			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
 			'grundpreis_inhalt'			=> strlen($unit) > 0 ? $basePriceContent : '',
@@ -462,7 +481,7 @@ class RakutenDE extends CSVGenerator
 		$price = $price > 0 ? $price : '';
 
 		$unit = $this->getUnit($item, $settings);
-		$basePriceContent = $this->getBasePriceContent($item, $unit);
+		$basePriceContent = (int)$item->variationBase->content;
 
 		$data = [
 			'id'						=> '',
@@ -474,7 +493,7 @@ class RakutenDE extends CSVGenerator
 			'beschreibung'				=> '',
 			'variante'					=> '',
 			'variantenwert'				=> $attributeValue,
-			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings, ElasticExportHelper::BARCODE_EAN),
+			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format($rrp, 2, '.', ''),
 			'grundpreis_inhalt'			=> strlen($unit) ? $basePriceContent : '',
@@ -579,26 +598,5 @@ class RakutenDE extends CSVGenerator
 			default:
 				return '';
 		}
-	}
-
-	/**
-	 * Returns the content depending on unit.
-	 *
-	 * @param Record $item
-	 * @param string $unit
-	 * @return string
-	 */
-	private function getBasePriceContent(Record $item, string $unit):string
-	{
-		if($unit == 'C62')
-		{
-			$basePriceContent = (int)$item->variationBase->content / 1000;
-		}
-		else
-		{
-			$basePriceContent = $item->variationBase->content;
-		}
-
-		return (string)$basePriceContent;
 	}
 }
