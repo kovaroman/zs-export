@@ -162,10 +162,10 @@ class GoogleShopping extends CSVGenerator
 					'gtin'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'isbn'						=> $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
 					'mpn'						=> $item->variationBase->model,
-					'color'						=> $variationAttributes['color'],
-					'size'						=> $variationAttributes['size'],
-					'material'					=> $variationAttributes['material'],
-					'pattern'					=> $variationAttributes['pattern'],
+					'color'						=> $variationAttributes['color'][0],
+					'size'						=> $variationAttributes['size'][0],
+					'material'					=> $variationAttributes['material'][0],
+					'pattern'					=> $variationAttributes['pattern'][0],
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
@@ -405,88 +405,6 @@ class GoogleShopping extends CSVGenerator
         $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
         return (string)number_format($item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
     }
-
-//    /**
-//     * Check if gender is valid.
-//     * @param Record $item
-//     * @param KeyValue $settings
-//     * @param string $type
-//     * @return string
-//     */
-//    private function getCharacterValue(Record $item, KeyValue $settings, string $type):string
-//    {
-//        $characterValue = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, $type);
-//
-//        switch ($type)
-//        {
-//            case self::CHARACTER_TYPE_GENDER:
-//                $allowedList = [
-//                    'male',
-//                    'female',
-//                    'unisex',
-//                ];
-//                break;
-//
-//            case self::CHARACTER_TYPE_AGE_GROUP:
-//                $allowedList = [
-//                    'newborn',
-//                    'infant',
-//                    'toddler',
-//                    'adult',
-//                    'kids',
-//                ];
-//                break;
-//
-//            case self::CHARACTER_TYPE_SIZE_TYPE:
-//                $allowedList = [
-//                    'regular',
-//                    'petite',
-//                    'plus',
-//                    'maternity',
-//                ];
-//                break;
-//
-//            case self::CHARACTER_TYPE_SIZE_SYSTEM:
-//                $allowedList = [
-//                    'US',
-//                    'UK',
-//                    'EU',
-//                    'DE',
-//                    'FR',
-//                    'JP',
-//                    'CN',
-//                    'IT',
-//                    'BR',
-//                    'MEX',
-//                    'AU',
-//                ];
-//                break;
-//
-//            case self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS:
-//                $allowedList = [
-//                    'G',
-//                    'F',
-//                    'E',
-//                    'D',
-//                    'C',
-//                    'B',
-//                    'A',
-//                    'A+',
-//                    'A++',
-//                    'A+++',
-//                ];
-//                break;
-//        }
-//
-//        if (in_array($characterValue, $allowedList))
-//        {
-//            return $characterValue;
-//        }
-//        else
-//        {
-//            return '';
-//        }
-//    }
 
     /**
      * Get item description.
