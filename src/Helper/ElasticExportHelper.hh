@@ -1068,7 +1068,7 @@ class ElasticExportHelper
      * @param bool $setLastExportedTimestamp
      * return string
      */
-    public function generateSku(Record $item, int $marketId, ?string $sku, int $accountId = 0, bool $setLastExportedTimestamp = true):string
+    public function generateSku(Record $item, int $marketId, ?string $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):string
     {
         $sku = $this->variationSkuRepository
             ->generateSku($item->variationBase->id, $marketId, $accountId, $sku, $setLastExportedTimestamp);
