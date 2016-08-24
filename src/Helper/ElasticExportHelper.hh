@@ -884,17 +884,17 @@ class ElasticExportHelper
 		{
             foreach($propertyMarketComponents as $propertyMarketComponent)
             {
-                if($propertyMarketComponent instanceof PropertyMarketComponent && $propertyMarketComponent->character_item_id == $character->characterId)
+                if($propertyMarketComponent instanceof PropertyMarketComponent && $propertyMarketComponent->propertyItemId == $character->characterId)
                 {
                     $list[] = [
                         'itemCharacterId' => $character->itemCharacterId,
                         'characterId' => $character->characterId,
                         'characterValue' => $character->characterValue,
                         'characterValueType' => $character->characterValueType,
-                        'characterItemId' => $propertyMarketComponent->character_item_id,
-                        'componentId' => $propertyMarketComponent->component_id,
-                        'referrerId' => $propertyMarketComponent->market_reference,
-                        'externalComponent' => $propertyMarketComponent->external_component,
+                        'characterItemId' => $propertyMarketComponent->propertyItemId,
+                        'componentId' => $propertyMarketComponent->componentId,
+                        'referrerId' => $propertyMarketComponent->marketReference,
+                        'externalComponent' => $propertyMarketComponent->externalComponent,
 					];
                 }
             }
@@ -1063,12 +1063,12 @@ class ElasticExportHelper
     /**
      * @param Record $item
      * @param int $marketId
-     * @param null|mixed $sku
+     * @param null|string $sku
      * @param int $accountId
      * @param bool $setLastExportedTimestamp
-     * return mixed
+     * return string
      */
-    public function generateSku(Record $item, int $marketId, mixed $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):mixed
+    public function generateSku(Record $item, int $marketId, ?string $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):string
     {
         $sku = $this->variationSkuRepository
             ->generateSku($item->variationBase->id, $marketId, $accountId, $sku, $setLastExportedTimestamp);

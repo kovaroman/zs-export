@@ -96,6 +96,6 @@ class Check24DE extends CSVGenerator
 	 */
 	private function getSku(Record $item):string
 	{
-		return (string) $this->elasticExportHelper->generateSku($item, 150, $item->variationMarketStatus->sku);
+		return (string) $this->elasticExportHelper->generateSku($item, 150, (string)$item->variationMarketStatus->sku);
 	}
 }

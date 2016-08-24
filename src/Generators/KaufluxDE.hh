@@ -127,7 +127,7 @@ class KaufluxDE extends CSVGenerator
 
 				$data = [
 					'GroupID' 			=> $item->itemBase->id,
-					'BestellNr' 		=> $this->elasticExportHelper->generateSku($item, 116, $item->variationMarketStatus->sku),
+					'BestellNr' 		=> $this->elasticExportHelper->generateSku($item, 116, (string)$item->variationMarketStatus->sku),
 					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'Hersteller' 		=> $item->itemBase->producer,
 					'BestandModus' 		=> $this->config('stockCondition'),
