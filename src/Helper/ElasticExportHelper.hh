@@ -26,8 +26,8 @@ use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostReposit
 use Plenty\Modules\Item\Availability\Models\Availability;
 use Plenty\Modules\Item\Availability\Models\AvailabilityLanguage;
 use Plenty\Plugin\ConfigRepository;
-use Plenty\Modules\Shipping\Countries\Contracts\CountryRepositoryContract;
-use Plenty\Modules\Shipping\Countries\Models\Country;
+use Plenty\Modules\Order\Shipping\Countries\Contracts\CountryRepositoryContract;
+use Plenty\Modules\Order\Shipping\Countries\Models\Country;
 use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
 use Plenty\Modules\System\Models\Webstore;
 use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
