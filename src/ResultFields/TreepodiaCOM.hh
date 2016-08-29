@@ -82,7 +82,7 @@ class TreepodiaCOM extends ResultFields
 
             'variationImageList' => [
                 'params' => [
-                    'type' => 'variation',
+                    'type' => 'item_variation',
                     'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : -1,
                 ],
                 'fields' => [
