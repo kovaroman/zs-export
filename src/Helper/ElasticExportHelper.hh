@@ -19,7 +19,7 @@ use Plenty\Modules\Category\Models\Category;
 use Plenty\Modules\Item\Property\Contracts\PropertyMarketComponentRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertyMarketComponent;
 use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
-use Plenty\Modules\Order\Shipping\DefaultShipping\Models\DefaultShipping;
+use Plenty\Modules\Order\Shipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Contracts\PaymentMethodRepositoryContract;
 use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostRepositoryContract;
