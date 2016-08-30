@@ -125,11 +125,11 @@ class IdealoDE extends ResultFields
                 ],
             ],
 
-            'itemPropertyList' => [
-                 'itemPropertyId',
-                 'propertyId',
-                 'propertyValue',
-                 'propertyValueType',
+            'itemCharacterList' => [
+                 'itemCharacterId',
+                 'characterId',
+                 'characterValue',
+                 'characterValueType',
             ],
 
             'variationMarketStatus' => [

@@ -120,11 +120,11 @@ class FashionDE extends ResultFields
                 ],
             ],
 
-            'itemPropertyList' => [
-                 'itemPropertyId',
-                 'propertyId',
-                 'propertyValue',
-                 'propertyValueType',
+            'itemCharacterList' => [
+                 'itemCharacterId',
+                 'characterId',
+                 'characterValue',
+                 'characterValueType',
             ],
 
             'variationAttributeValueList' => [

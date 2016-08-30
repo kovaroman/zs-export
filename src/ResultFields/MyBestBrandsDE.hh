@@ -142,11 +142,11 @@ class MyBestBrandsDE extends ResultFields
                 'attributeValueId',
             ],
 
-            'itemPropertyList' => [
-                 'itemPropertyId',
-                 'propertyId',
-                 'propertyValue',
-                 'propertyValueType',
+            'itemCharacterList' => [
+                 'itemCharacterId',
+                 'characterId',
+                 'characterValue',
+                 'characterValueType',
             ],
         ];
 

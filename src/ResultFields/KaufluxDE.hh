@@ -135,11 +135,11 @@ class KaufluxDE extends ResultFields
                 ],
             ],
 
-            'itemPropertyList' => [
-                 'itemPropertyId',
-                 'propertyId',
-                 'propertyValue',
-                 'propertyValueType',
+            'itemCharacterList' => [
+                 'itemCharacterId',
+                 'characterId',
+                 'characterValue',
+                 'characterValueType',
             ],
 
             'itemCrossSellingList' => [

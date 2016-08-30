@@ -121,11 +121,11 @@ private ArrayHelper $arrayHelper;
                 ],
             ],
 
-            'itemPropertyList' => [
-                'itemPropertyId',
-                'propertyId',
-                'propertyValue',
-                'propertyValueType',
+            'itemCharacterList' => [
+                'itemCharacterId',
+                'characterId',
+                'characterValue',
+                'characterValueType',
             ],
         ];
     }

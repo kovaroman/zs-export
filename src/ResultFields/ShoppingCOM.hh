@@ -118,11 +118,11 @@ class ShoppingCOM extends ResultFields
                     'barcodeId',
                 ]
             ],
-            'itemPropertyList' => [
-                'itemPropertyId',
-                'propertyId',
-                'propertyValue',
-                'propertyValueType',
+            'itemCharacterList' => [
+                'itemCharacterId',
+                'characterId',
+                'characterValue',
+                'characterValueType',
             ],
         ];
     }

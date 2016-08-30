@@ -121,11 +121,11 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
                 ],
             ],
 
-            'itemPropertyList' => [
-                'itemPropertyId',
-                'propertyId',
-                'propertyValue',
-                'propertyValueType',
+            'itemCharacterList' => [
+                'itemCharacterId',
+                'characterId',
+                'characterValue',
+                'characterValueType',
             ],
         ];
     }
