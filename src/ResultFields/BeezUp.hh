@@ -64,6 +64,17 @@ class BeezUp extends ResultFields
                 'fields' => $itemDescriptionFields,
             ],
 
+            'itemPropertyList' => array(
+                'fields' => array(
+                    'itemPropertyId',
+                    'propertyId',
+                    'propertyValue',
+                    'propertyValueType',
+                    'isOrderProperty',
+                    'propertyOrderMarkup'
+                )
+            ),
+
             'variationBase' =>  [
                 'availability',
                 'id',

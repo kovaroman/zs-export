@@ -73,6 +73,18 @@ class GoogleShopping extends ResultFields
 				'fields' => $itemDescriptionFields,
 			],
 
+			'itemPropertyList' => [
+				'params' => [],
+				'fields' => [
+					'itemPropertyId',
+					'propertyId',
+					'propertyValue',
+					'propertyValueType',
+					'isOrderProperty',
+					'propertyOrderMarkup'
+				]
+			],
+
 			'variationImageList' => [
 				'params' => [
 					'type' => 'all',

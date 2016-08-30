@@ -119,10 +119,10 @@ class ShoppingCOM extends ResultFields
                 ]
             ],
             'itemCharacterList' => [
-                'itemCharacterId',
-                'characterId',
-                'characterValue',
-                'characterValueType',
+                'itemPropertyId',
+                'propertyId',
+                'propertyValue',
+                'propertyValueType',
             ],
         ];
     }
