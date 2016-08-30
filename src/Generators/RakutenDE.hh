@@ -243,9 +243,31 @@ class RakutenDE extends CSVGenerator
 			$vat = 1;
 		}
 
-		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
-		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
-		$price = $price > 0 ? $price : '';
+		$variationPrice = $this->elasticExportHelper->getPrice($item);
+		$variationRrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
+		$variationSpecialPrice = $this->elasticExportHelper->getSpecialPrice($item, $settings);
+
+		$price = $variationPrice;
+		$reducedPrice = '';
+		$referenceReducedPrice = '';
+
+		if ($variationRrp > 0 && $variationRrp > $variationPrice)
+		{
+			$price = $variationRrp;
+			$referenceReducedPrice = 'UVP';
+			$reducedPrice = $variationPrice;
+		}
+
+		if ($variationSpecialPrice > 0 && $variationPrice > $variationSpecialPrice && $referenceReducedPrice == 'UVP')
+		{
+			$reducedPrice = $variationSpecialPrice;
+		}
+		else if ($variationSpecialPrice > 0 && $variationPrice > $variationSpecialPrice)
+		{
+			$reducedPrice = $variationSpecialPrice;
+			$referenceReducedPrice = 'VK';
+		}
+
 		$unit = $this->getUnit($item, $settings);
 		$basePriceContent = (int)$item->variationBase->content;
 
@@ -261,11 +283,11 @@ class RakutenDE extends CSVGenerator
 			'variantenwert'				=> '',
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
-			'preis'						=> number_format($rrp, 2, '.', ''),
+			'preis'						=> number_format($price, 2, '.', ''),
 			'grundpreis_inhalt'			=> strlen($unit) > 0 ? $basePriceContent : '',
 			'grundpreis_einheit'		=> $unit,
-			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
-			'bezug_reduzierter_preis'	=> 'UVP',
+			'reduzierter_preis'			=> number_format($reducedPrice, 2, '.', ''),
+			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
 			'mwst_klasse'				=> $vat,
 			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
 			'bild1'						=> $this->getImageByNumber($item, $settings, 0),
@@ -475,10 +497,30 @@ class RakutenDE extends CSVGenerator
 			$stock = 0;
 		}
 
+		$variationPrice = $this->elasticExportHelper->getPrice($item);
+		$variationRrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
+		$variationSpecialPrice = $this->elasticExportHelper->getSpecialPrice($item, $settings);
 
-		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
-		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
-		$price = $price > 0 ? $price : '';
+		$price = $variationPrice;
+		$reducedPrice = '';
+		$referenceReducedPrice = '';
+
+		if ($variationRrp > 0 && $variationRrp > $variationPrice)
+		{
+			$price = $variationRrp;
+			$referenceReducedPrice = 'UVP';
+			$reducedPrice = $variationPrice;
+		}
+
+		if ($variationSpecialPrice > 0 && $variationPrice > $variationSpecialPrice && $referenceReducedPrice == 'UVP')
+		{
+			$reducedPrice = $variationSpecialPrice;
+		}
+		else if ($variationSpecialPrice > 0 && $variationPrice > $variationSpecialPrice)
+		{
+			$reducedPrice = $variationSpecialPrice;
+			$referenceReducedPrice = 'VK';
+		}
 
 		$unit = $this->getUnit($item, $settings);
 		$basePriceContent = (int)$item->variationBase->content;
@@ -495,11 +537,11 @@ class RakutenDE extends CSVGenerator
 			'variantenwert'				=> $attributeValue,
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
-			'preis'						=> number_format($rrp, 2, '.', ''),
+			'preis'						=> number_format($price, 2, '.', ''),
 			'grundpreis_inhalt'			=> strlen($unit) ? $basePriceContent : '',
 			'grundpreis_einheit'		=> $unit,
-			'reduzierter_preis'			=> number_format($price, 2, '.', ''),
-			'bezug_reduzierter_preis'	=> 'UVP',
+			'reduzierter_preis'			=> number_format($reducedPrice, 2, '.', ''),
+			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
 			'mwst_klasse'				=> '',
 			'bestandsverwaltung_aktiv'	=> '',
 			'bild1'						=> $this->getImageByNumber($item, $settings, 0),
