@@ -440,9 +440,9 @@ class GoogleShopping extends CSVGenerator
 
             if($attributeValueName instanceof AttributeValueName)
             {
-                if($attributeValueName->attributeValue->attribute->googleproducts_variation)
+                if($attributeValueName->attributeValue->attribute->googleproductsVariation)
                 {
-                    $variationAttributes[$attributeValueName->attributeValue->attribute->googleproducts_variation][] = $attributeValueName->name;
+                    $variationAttributes[$attributeValueName->attributeValue->attribute->googleproductsVariation][] = $attributeValueName->name;
                 }
             }
         }

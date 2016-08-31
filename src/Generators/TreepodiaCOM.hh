@@ -70,8 +70,8 @@ class TreepodiaCOM extends XMLGenerator
      * @param ProducerRepositoryContract $producerRepository
      */
     public function __construct(
-    	ElasticExportHelper $elasticExportHelper, 
-    	ArrayHelper $arrayHelper, 
+    	ElasticExportHelper $elasticExportHelper,
+    	ArrayHelper $arrayHelper,
     	CategoryBranchRepositoryContract $categoryBranchRepository,
     	CategoryRepository $categoryRepository,
     	ProducerRepositoryContract $producerRepository
@@ -99,7 +99,7 @@ class TreepodiaCOM extends XMLGenerator
 			{
 				$product = $this->createElement('product');
 				$this->root()->appendChild($product);
-				
+
 				// sku
 				$product->appendChild($this->createElement('sku', $item->itemBase->id));
 
@@ -117,11 +117,11 @@ class TreepodiaCOM extends XMLGenerator
 					{
 						if($detail->lang == $settings->get('lang'))
 						{
-							$product->appendChild($this->createElement('commodity', $detail->name));			
+							$product->appendChild($this->createElement('commodity', $detail->name));
 						}
 					}
 				}
-				
+
 
 				// description
 				$product->appendChild($description = $this->createElement('description'));
@@ -178,7 +178,7 @@ class TreepodiaCOM extends XMLGenerator
 				foreach($this->getKeywords($item, $settings) as $keyword)
 				{
 					$product->appendChild($this->createElement('youtubetag', htmlspecialchars(trim($keyword))));
-					$product->appendChild($this->createElement('Video-Sitemaptag', htmlspecialchars(trim($keyword))));		
+					$product->appendChild($this->createElement('Video-Sitemaptag', htmlspecialchars(trim($keyword))));
 				}
 			}
 
@@ -264,7 +264,7 @@ class TreepodiaCOM extends XMLGenerator
 			{
 				if($detail->lang == $settings->get('lang'))
 				{
-					$list = array_merge($list, explode(',', $detail->metaKeywords));			
+					$list = array_merge($list, explode(',', $detail->metaKeywords));
 				}
 			}
 		}
