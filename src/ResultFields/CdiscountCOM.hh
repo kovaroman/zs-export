@@ -48,6 +48,18 @@ private ArrayHelper $arrayHelper;
                     'fields' => $itemDescriptionFields,
                 ],
 
+                'itemPropertyList' => [
+    				'params' => [],
+    				'fields' => [
+    					'itemPropertyId',
+    					'propertyId',
+    					'propertyValue',
+    					'propertyValueType',
+    					'isOrderProperty',
+    					'propertyOrderMarkup'
+    				]
+    			],
+
                 'variationBase' =>  [
                     'id',
                     'model'
