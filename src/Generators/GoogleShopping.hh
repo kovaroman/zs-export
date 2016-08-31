@@ -291,7 +291,7 @@ class GoogleShopping extends CSVGenerator
 	{
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
-            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 7.00);
+            $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 129.00);
 
             $list = [];
 

@@ -106,6 +106,18 @@ class RakutenDE extends ResultFields
                 'fields' => $itemDescriptionFields,
             ],
 
+			'itemPropertyList' => [
+				'params' => [],
+				'fields' => [
+					'itemPropertyId',
+					'propertyId',
+					'propertyValue',
+					'propertyValueType',
+					'isOrderProperty',
+					'propertyOrderMarkup'
+				]
+			],
+
 			'variationImageList' => [
 				'params' => [
 					'type' => 'item_variation',
