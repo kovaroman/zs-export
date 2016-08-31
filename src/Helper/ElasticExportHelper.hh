@@ -1054,7 +1054,7 @@ class ElasticExportHelper
 
         if($webstore instanceof Webstore)
         {
-            $webstoreId = $webstore->plenty_webstore_id;
+            $webstoreId = $webstore->id;
             return $webstoreId;
         }
         return 0;
