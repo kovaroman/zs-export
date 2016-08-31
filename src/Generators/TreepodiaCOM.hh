@@ -10,8 +10,8 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepository;
-use Plenty\Modules\Item\Producer\Contracts\ProducerRepositoryContract;
-use Plenty\Modules\Item\Producer\Models\Producer;
+use Plenty\Modules\Item\Manufacturer\Contracts\ManufacturerRepositoryContract;
+use Plenty\Modules\Item\Manufacturer\Models\Manufacturer;
 use Plenty\Modules\Category\Models\Category;
 
 class TreepodiaCOM extends XMLGenerator
@@ -57,9 +57,9 @@ class TreepodiaCOM extends XMLGenerator
     private CategoryRepository $categoryRepository;
 
     /**
-     * ProducerRepositoryContract $producerRepository
+     * ManufacturerRepositoryContract $manufacturerRepository
      */
-    private ProducerRepositoryContract $producerRepository;
+    private ManufacturerRepositoryContract $manufacturerRepository;
 
 	/**
      * TreepodiaDE constructor.
@@ -67,21 +67,21 @@ class TreepodiaCOM extends XMLGenerator
      * @param ArrayHelper $arrayHelper
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param CategoryRepository $categoryRepository
-     * @param ProducerRepositoryContract $producerRepository
+     * @param ManufacturerRepositoryContract $manufacturerRepository
      */
     public function __construct(
     	ElasticExportHelper $elasticExportHelper,
     	ArrayHelper $arrayHelper,
     	CategoryBranchRepositoryContract $categoryBranchRepository,
     	CategoryRepository $categoryRepository,
-    	ProducerRepositoryContract $producerRepository
+    	ManufacturerRepositoryContract $manufacturerRepository
     )
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
 		$this->categoryBranchRepository = $categoryBranchRepository;
 		$this->categoryRepository = $categoryRepository;
-		$this->producerRepository = $producerRepository;
+		$this->manufacturerRepository = $manufacturerRepository;
 
 		$this->init('products');
     }
@@ -130,24 +130,24 @@ class TreepodiaCOM extends XMLGenerator
 				// brand-name, brand-logo
 				if((int) $item->itemBase->producerId > 0)
 				{
-					$producer = $this->getProducer($item->itemBase->producerId);
+					$manufacturer = $this->getProducer($item->itemBase->producerId);
 
-					if($producer instanceof Producer)
+					if($manufacturer instanceof Manufacturer)
 					{
-						if(strlen($producer->external_name) > 0)
+						if(strlen($manufacturer->externalName) > 0)
 						{
 							$product->appendChild($brandName = $this->createElement('brand-name'));
-							$brandName->appendChild($this->createCDATASection($producer->external_name));
+							$brandName->appendChild($this->createCDATASection($manufacturer->externalName));
 						}
-						elseif(strlen($producer->name) > 0)
+						elseif(strlen($manufacturer->name) > 0)
 						{
 							$product->appendChild($brandName = $this->createElement('brand-name'));
-							$brandName->appendChild($this->createCDATASection($producer->name));
+							$brandName->appendChild($this->createCDATASection($manufacturer->name));
 						}
 
-						if(strlen($producer->logo) > 0)
+						if(strlen($manufacturer->logo) > 0)
 						{
-							$product->appendChild($this->createElement('brand_logo', $producer->logo));
+							$product->appendChild($this->createElement('brand_logo', $manufacturer->logo));
 						}
 					}
 				}
@@ -221,12 +221,12 @@ class TreepodiaCOM extends XMLGenerator
 
 	/**
 	 * Get producer.
-	 * @param int producerId
-	 * @return Producer
+	 * @param int $manufacturerId
+	 * @return Manufacturer
 	 */
-	public function getProducer(int $producerId):mixed
+	public function getProducer(int $manufacturerId):mixed
 	{
-		return $this->producerRepository->findById($producerId);
+		return $this->manufacturerRepository->findById($manufacturerId);
 	}
 
 	/**
