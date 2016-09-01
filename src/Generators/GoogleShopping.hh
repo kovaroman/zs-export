@@ -471,7 +471,6 @@ class GoogleShopping extends CSVGenerator
 		return $variationAttributes;
 	}
 
-
 	/**
 	 * Get google linkes attribute list.
 	 * @param  KeyValue $settings
@@ -487,9 +486,9 @@ class GoogleShopping extends CSVGenerator
 			{
 				if($attributeRepository instanceof Attribute)
 				{
-					if (strlen($attributeRepository->googleproducts_variation) > 0)
+					if (strlen($attributeRepository->googleproductsVariation) > 0)
 					{
-						$this->linkedAttributeList[$attributeRepository->id] = $attributeRepository->googleproducts_variation;
+						$this->linkedAttributeList[$attributeRepository->id] = $attributeRepository->googleproductsVariation;
 
 						$attributeValueList = $this->attributeValueRepository->findByAttributeId($attributeRepository->id);
 

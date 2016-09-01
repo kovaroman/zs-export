@@ -185,9 +185,9 @@ class Shopping24DE extends CSVGenerator
 
             if($attributeValueName instanceof AttributeValueName)
             {
-                if($attributeValueName->attributeValue->attribute->amazon_variation)
+                if($attributeValueName->attributeValue->attribute->amazonVariation)
                 {
-                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazon_variation][] = $attributeValueName->name;
+                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazonVariation][] = $attributeValueName->name;
                 }
             }
         }
