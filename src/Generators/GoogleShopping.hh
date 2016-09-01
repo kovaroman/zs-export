@@ -8,8 +8,12 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\Attribute;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
+use Plenty\Modules\Item\Attribute\Contracts\AttributeValueRepositoryContract;
+use Plenty\Modules\Item\Attribute\Models\AttributeValue;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
 
@@ -39,20 +43,30 @@ class GoogleShopping extends CSVGenerator
     const string ISO_CODE_2                                 = 'isoCode2';
     const string ISO_CODE_3                                 = 'isoCode3';
 
-        /*
-         * @var ElasticExportHelper
-         */
+	/*
+	 * @var ElasticExportHelper
+	 */
     private ElasticExportHelper $elasticExportHelper;
 
-        /*
-         * @var ArrayHelper
-         */
+	/*
+	 * @var ArrayHelper
+	 */
     private ArrayHelper $arrayHelper;
 
-        /**
-         * AttributeValueNameRepositoryContract $attributeValueNameRepository
-         */
+	/**
+	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
+	 */
     private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+
+	/**
+	 * AttributeRepositoryContract $attributeRepository
+	 */
+	private AttributeRepositoryContract $attributeRepository;
+
+	/**
+	 * AttributeValueRepositoryContract $attributeValueRepository
+	 */
+	private AttributeValueRepositoryContract $attributeValueRepository;
 
     /**
      * PropertySelectionRepositoryContract $propertySelectionRepository
@@ -64,20 +78,38 @@ class GoogleShopping extends CSVGenerator
      */
     private array<int,array<string,string>>$itemPropertyCache = [];
 
-    /**
-         * GoogleShopping constructor.
-         * @param ElasticExportHelper $elasticExportHelper
-         * @param ArrayHelper $arrayHelper
-         */
+	/**
+	 * @var array<int,string>
+	 */
+	private array<int,string>$attributeValueCache = [];
+
+	/**
+	 * @var array<int,string>
+	 */
+	private array<int,string>$linkedAttributeList = [];
+
+	/**
+	 * GoogleShopping constructor.
+	 * @param ElasticExportHelper $elasticExportHelper
+	 * @param ArrayHelper $arrayHelper
+	 * @param AttributeRepositoryContract $attributeRepository
+	 * @param AttributeValueRepositoryContract $attributeValueRepository
+	 * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
+	 * @param PropertySelectionRepositoryContract $propertySelectionRepository
+	 */
     public function __construct(
         ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper,
         AttributeValueNameRepositoryContract $attributeValueNameRepository,
-        PropertySelectionRepositoryContract $propertySelectionRepository)
+        PropertySelectionRepositoryContract $propertySelectionRepository,
+		AttributeValueRepositoryContract $attributeValueRepository,
+		AttributeRepositoryContract $attributeRepository)
     {
         $this->elasticExportHelper = $elasticExportHelper;
         $this->arrayHelper = $arrayHelper;
         $this->attributeValueNameRepository = $attributeValueNameRepository;
         $this->propertySelectionRepository = $propertySelectionRepository;
+		$this->attributeValueRepository = $attributeValueRepository;
+		$this->attributeRepository = $attributeRepository;
     }
 
     /**
@@ -88,7 +120,7 @@ class GoogleShopping extends CSVGenerator
 		if($resultData instanceof RecordList)
 		{
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
-
+			$this->loadLinkedAttributeList($settings);
 			$this->setDelimiter("	"); // this is tab character!
 
 			$this->addCSVContent([
@@ -138,7 +170,7 @@ class GoogleShopping extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-                $variationAttributes = $this->getVariationAttributes($item, $settings);
+                $variationAttributes = $this->getVariationAttributes($item);
                 $variationPrice = number_format($this->elasticExportHelper->getPrice($item), 2, '.', '');
                 $salePrice = number_format($this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
                 if($salePrice >= $variationPrice || $salePrice <= 0.00)
@@ -169,24 +201,24 @@ class GoogleShopping extends CSVGenerator
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
-					'gender'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_GENDER),
-					'age_group'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
-					'excluded_destination'		=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
-					'adwords_redirect'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
+					'gender'					=> $this->getProperty($item, self::CHARACTER_TYPE_GENDER),
+					'age_group'					=> $this->getProperty($item, self::CHARACTER_TYPE_AGE_GROUP),
+					'excluded_destination'		=> $this->getProperty($item, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
+					'adwords_redirect'			=> $this->getProperty($item, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item),
 					'unit_pricing_measure'		=> '', // $this->getUnitPricingMeasure($item, $settings),
 					'unit_pricing_base_measure'	=> '', // $this->getUnitPricingBaseMeasure($item, $settings),
-					'energy_efficiency_class'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
-					'size_system'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
-					'size_type'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),
-					'mobile_link'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_MOBILE_LINK),
-					'sale_price_effective_date'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE),
+					'energy_efficiency_class'	=> $this->getProperty($item, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
+					'size_system'				=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_SYSTEM),
+					'size_type'					=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_TYPE),
+					'mobile_link'				=> $this->getProperty($item, self::CHARACTER_TYPE_MOBILE_LINK),
+					'sale_price_effective_date'	=> $this->getProperty($item, self::CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE),
 					'adult'						=> '',
-					'custom_label_0'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_0),
-					'custom_label_1'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_1),
-					'custom_label_2'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_2),
-					'custom_label_3'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_3),
-					'custom_label_4'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_4),
+					'custom_label_0'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_0),
+					'custom_label_1'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_1),
+					'custom_label_2'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_2),
+					'custom_label_3'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_3),
+					'custom_label_4'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_4),
 				];
 
 				$this->addCSVContent(array_values($data));
@@ -197,19 +229,11 @@ class GoogleShopping extends CSVGenerator
     /**
      * Get property.
      * @param  Record   $item
-     * @param  KeyValue $settings
      * @param  string   $property
      * @return string
      */
-    private function getProperty(Record $item, KeyValue $settings, string $property):string
+    private function getProperty(Record $item, string $property):string
     {
-        $variationAttributes = $this->getVariationAttributes($item, $settings);
-
-        if(array_key_exists($property, $variationAttributes))
-        {
-            return $variationAttributes[$property];
-        }
-
         $itemPropertyList = $this->getItemPropertyList($item);
 
         switch ($property)
@@ -425,28 +449,64 @@ class GoogleShopping extends CSVGenerator
     }
 
     /**
-     * Get variation attributes.
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @return array<string,string>
-     */
-    private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+	 * Get variation attributes.
+	 * @param  Record   $item
+	 * @return array<string,string>
+	 */
+    private function getVariationAttributes(Record $item):array<string,string>
     {
-        $variationAttributes = [];
+		$variationAttributes = [];
 
-        foreach($item->variationAttributeValueList as $variationAttribute)
-        {
-            $attributeValueName = $this->attributeValueNameRepository->findOne($variationAttribute->attributeValueId, $settings->get('lang'));
+		foreach($item->variationAttributeValueList as $variationAttribute)
+		{
+			if(array_key_exists($variationAttribute->attributeId, $this->linkedAttributeList) && strlen($this->linkedAttributeList[$variationAttribute->attributeId]) > 0)
+			{
+				if (strlen($this->attributeValueCache[$variationAttribute->attributeValueId]) > 0)
+				{
+					$variationAttributes[$this->linkedAttributeList[$variationAttribute->attributeId]][] = $this->attributeValueCache[$variationAttribute->attributeValueId];
+				}
+			}
+		}
 
-            if($attributeValueName instanceof AttributeValueName)
-            {
-                if($attributeValueName->attributeValue->attribute->googleproductsVariation)
-                {
-                    $variationAttributes[$attributeValueName->attributeValue->attribute->googleproductsVariation][] = $attributeValueName->name;
-                }
-            }
-        }
+		return $variationAttributes;
+	}
 
-        return $variationAttributes;
-    }
+	/**
+	 * Get google linkes attribute list.
+	 * @param  KeyValue $settings
+	 * @return array<string,string>
+	 */
+	private function loadLinkedAttributeList(KeyValue $settings):void
+	{
+		$attributeRepositoryList = $this->attributeRepository->all();
+
+		if (count($attributeRepositoryList) > 0)
+		{
+			foreach ($attributeRepositoryList as $attributeRepository)
+			{
+				if($attributeRepository instanceof Attribute)
+				{
+					if (strlen($attributeRepository->googleproductsVariation) > 0)
+					{
+						$this->linkedAttributeList[$attributeRepository->id] = $attributeRepository->googleproductsVariation;
+
+						$attributeValueList = $this->attributeValueRepository->findByAttributeId($attributeRepository->id);
+
+						if (count($attributeValueList) > 0)
+						{
+							foreach ($attributeValueList as $attributeValue)
+							{
+								$attributeValueName = $this->attributeValueNameRepository->findOne($attributeValue->id, $settings->get('lang'));
+
+								if($attributeValueName instanceof AttributeValueName)
+								{
+									$this->attributeValueCache[$attributeValue->id] = $attributeValueName->name;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
