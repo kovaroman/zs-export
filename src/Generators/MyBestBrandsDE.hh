@@ -48,8 +48,8 @@ class MyBestBrandsDE extends CSVGenerator
      * @param PropertySelectionRepositoryContract $propertySelectionRepository
      */
     public function __construct(
-    	ElasticExportHelper $elasticExportHelper, 
-    	ArrayHelper $arrayHelper, 
+    	ElasticExportHelper $elasticExportHelper,
+    	ArrayHelper $arrayHelper,
     	AttributeValueNameRepositoryContract $attributeValueNameRepository,
     	PropertySelectionRepositoryContract $propertySelectionRepository
     )
@@ -122,16 +122,16 @@ class MyBestBrandsDE extends CSVGenerator
 						switch($key)
 						{
 							case 'color':
-								$rows[$item->itemBase->id]['Color'] = array_unique(array_push($rows[$item->itemBase->id]['Color'], $value));								
+								$rows[$item->itemBase->id]['Color'] = array_unique(array_push($rows[$item->itemBase->id]['Color'], $value));
 								break;
 
 							case 'available_sizes':
-								$rows[$item->itemBase->id]['AvailableSizes'] = array_unique(array_push($rows[$item->itemBase->id]['AvailableSizes'], $value));								
+								$rows[$item->itemBase->id]['AvailableSizes'] = array_unique(array_push($rows[$item->itemBase->id]['AvailableSizes'], $value));
 								break;
 						}
-					}				
+					}
 				}
-			}			
+			}
 
 			foreach($rows as $data)
 			{
@@ -146,7 +146,7 @@ class MyBestBrandsDE extends CSVGenerator
 				}
 
 				$this->addCSVContent(array_values($data));
-			}			
+			}
 		}
 	}
 
@@ -160,8 +160,8 @@ class MyBestBrandsDE extends CSVGenerator
 	{
 		$itemPropertyList = $this->getItemPropertyList($item);
 
-		$productName = array_key_exists('itemName', $itemPropertyList) && strlen((string) $itemPropertyList['itemName']) ? 
-							$this->elasticExportHelper->cleanName((string) $itemPropertyList['itemName'], $settings->get('nameMaxLength')) : 
+		$productName = array_key_exists('itemName', $itemPropertyList) && strlen((string) $itemPropertyList['itemName']) ?
+							$this->elasticExportHelper->cleanName((string) $itemPropertyList['itemName'], $settings->get('nameMaxLength')) :
 							$this->elasticExportHelper->getName($item, $settings);
 
 		$data = [
@@ -202,10 +202,10 @@ class MyBestBrandsDE extends CSVGenerator
 
 			if($attributeValueName instanceof AttributeValueName)
 			{
-				$amazonVariation = $attributeValueName->attributeValue->attribute->amazon_variation == 'Color';
-				if($attributeValueName->attributeValue->attribute->amazon_variation)
+				$amazonVariation = $attributeValueName->attributeValue->attribute->amazonVariation == 'Color';
+				if($attributeValueName->attributeValue->attribute->amazonVariation)
 				{
-					$variationAttributes[$attributeValueName->attributeValue->attribute->amazon_variation][] = $attributeValueName->name;
+					$variationAttributes[$attributeValueName->attributeValue->attribute->amazonVariation][] = $attributeValueName->name;
 				}
 			}
 		}
@@ -214,7 +214,7 @@ class MyBestBrandsDE extends CSVGenerator
 	}
 
 	/**
-	 * Get item properties. 
+	 * Get item properties.
 	 * @param 	Record $item
 	 * @return array<string,string>
 	 */
@@ -237,21 +237,21 @@ class MyBestBrandsDE extends CSVGenerator
 							$propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterValue'], 'de');
 							if($propertySelection instanceof PropertySelection)
 							{
-								$list[(string) $data['externalComponent']] = (string) $propertySelection->name;			
+								$list[(string) $data['externalComponent']] = (string) $propertySelection->name;
 							}
 						}
 						else
 						{
-							$list[(string) $data['externalComponent']] = (string) $data['characterValue'];	
+							$list[(string) $data['externalComponent']] = (string) $data['characterValue'];
 						}
-						
-					}					
+
+					}
 				}
-			}	
+			}
 
 			$this->itemPropertyCache[$item->itemBase->id] = $list;
 		}
-		
+
 		return $this->itemPropertyCache[$item->itemBase->id];
 	}
 }
