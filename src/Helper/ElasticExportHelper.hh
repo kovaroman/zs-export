@@ -807,17 +807,17 @@ class ElasticExportHelper
      * @param  KeyValue $settings
      * @return string
      */
-    public function getMainImage(Record $item, KeyValue $settings):string
+    public function getMainImage(Record $item, KeyValue $settings, string $imageType = 'normal'):string
     {
         foreach($item->variationImageList as $image)
         {
             if($settings->get('imagePosition') == self::IMAGE_FIRST)
             {
-                return $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), 'normal', $image->fileType, $image->type == 'external');
+                return $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
             }
             elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image->position == 0)
             {
-                return $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), 'normal', $image->fileType, $image->type == 'external');
+                return $this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
             }
         }
 
