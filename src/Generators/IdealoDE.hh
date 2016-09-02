@@ -352,7 +352,7 @@ class IdealoDE extends CSVGenerator
 		return implode(' ', $freeText);
 	}
 
-	/*
+	/**
      * Get images.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -360,7 +360,7 @@ class IdealoDE extends CSVGenerator
      * @param  string   $imageType  = 'normal'
      * @return string
      */
-	/*
+	
     private function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
     {
         $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
@@ -372,7 +372,7 @@ class IdealoDE extends CSVGenerator
 
         return '';
     }
-    */
+
 	/**
 	 * Get payment method name.
 	 * @param  PaymentMethod $paymentMethod
