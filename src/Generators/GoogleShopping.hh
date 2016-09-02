@@ -205,7 +205,7 @@ class GoogleShopping extends CSVGenerator
 					'age_group'					=> $this->getProperty($item, self::CHARACTER_TYPE_AGE_GROUP),
 					'excluded_destination'		=> $this->getProperty($item, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getProperty($item, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
-					'identifier_exists'			=> $this->getIdentifierExists($item),
+					'identifier_exists'			=> $this->getIdentifierExists($item, $settings),
 					'unit_pricing_measure'		=> '', // $this->getUnitPricingMeasure($item, $settings),
 					'unit_pricing_base_measure'	=> '', // $this->getUnitPricingBaseMeasure($item, $settings),
 					'energy_efficiency_class'	=> $this->getProperty($item, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
@@ -378,7 +378,7 @@ class GoogleShopping extends CSVGenerator
      * @param Record $item
      * @return string
      */
-    private function getIdentifierExists(Record $item):string
+    private function getIdentifierExists(Record $item, KeyValue $settings):string
     {
         $count = 0;
         if (strlen($item->variationBase->model) > 0)
@@ -386,7 +386,8 @@ class GoogleShopping extends CSVGenerator
             $count++;
         }
 
-        if (strlen($item->variationBarcode->code) > 0)
+        if (    strlen($this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode'))) > 0 ||
+                strlen($this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN)) > 0 )
         {
             $count++;
         }
