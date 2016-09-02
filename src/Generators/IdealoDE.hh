@@ -238,8 +238,8 @@ class IdealoDE extends CSVGenerator
 			'category5' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
 			'category6' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
 			'category_concat' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-			'image_url_preview' => $this->getImages($item, $settings, ';', 'preview'),
-			'image_url' 		=> $this->getImages($item, $settings, ';', 'normal'),
+			'image_url_preview' => $this->elasticExportHelper->getMainImage($item, $settings, 'preview'),
+			'image_url' 		=> $this->elasticExportHelper->getMainImage($item, $settings, 'normal'),
 			'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 			'free_text_field'   => $this->getFreeText($item),
 			'checkoutApproved'	=> $checkoutApproved,
@@ -352,7 +352,7 @@ class IdealoDE extends CSVGenerator
 		return implode(' ', $freeText);
 	}
 
-	/**
+	/*
      * Get images.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -360,6 +360,7 @@ class IdealoDE extends CSVGenerator
      * @param  string   $imageType  = 'normal'
      * @return string
      */
+	/*
     private function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
     {
         $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
@@ -371,7 +372,7 @@ class IdealoDE extends CSVGenerator
 
         return '';
     }
-
+    */
 	/**
 	 * Get payment method name.
 	 * @param  PaymentMethod $paymentMethod
