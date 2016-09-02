@@ -360,7 +360,6 @@ class IdealoDE extends CSVGenerator
      * @param  string   $imageType  = 'normal'
      * @return string
      */
-	
     private function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
     {
         $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
