@@ -635,21 +635,48 @@ class ElasticExportHelper
      * @param  KeyValue $settings
      * @return string
      */
-    public function getAttributeName(Record $item, KeyValue $settings):string
+    public function getAttributeName(Record $item, KeyValue $settings, ?array<int> $attributeCombination = null):string
     {
         $values = [];
 
         if($item->variationBase->attributeValueSetId)
         {
-            foreach($item->variationAttributeValueList as $attribute)
+            /*
+             * Use the delivered attribute combination.
+             */
+            if(!is_null($attributeCombination) && count($attributeCombination) > 0)
             {
-                $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                $unsortedValues = [];
 
-                if($attributeName instanceof AttributeName)
+                foreach($item->variationAttributeValueList as $attribute)
                 {
-                    $values[] = $attributeName->name;
+                    $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                    if($attributeName instanceof AttributeName)
+                    {
+                        $unsortedValues[$attribute->attributeId] = $attributeName->name;
+                    }
                 }
 
+                foreach($attributeCombination as $attributeValueId)
+                {
+                    if(array_key_exists($attributeValueId, $unsortedValues))
+                    {
+                        $values[] = $unsortedValues[$attributeValueId];
+                    }
+                }
+            }
+            else
+            {
+                foreach($item->variationAttributeValueList as $attribute)
+                {
+                    $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                    if($attributeName instanceof AttributeName)
+                    {
+                        $values[] = $attributeName->name;
+                    }
+                }
             }
         }
 

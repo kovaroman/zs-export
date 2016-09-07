@@ -25,6 +25,7 @@ class RakutenDE extends CSVGenerator
 	 */
 	private ArrayHelper $arrayHelper;
 
+	private array<int, array<int>> $attributeCombinations;
 	/**
 	 * Rakuten constructor.
 	 * @param ElasticExportHelper $elasticExportHelper
@@ -110,10 +111,33 @@ class RakutenDE extends CSVGenerator
 
 			$previousItemId = 0;
             $attributeName = array();
+			$this->attributeCombinations = array();
+
+			foreach ($resultData as $item)
+			{
+				/**
+				 * Select and save the attributes combination for each item.
+				 */
+				if(count($item->variationAttributeValueList) > 0)
+				{
+					foreach ($item->variationAttributeValueList as $attribute)
+					{
+						$this->attributeCombinations[$item->itemBase->id][] = $attribute->attributeId;
+					}
+				}
+			}
+
             foreach($resultData as $item)
             {
-                $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
+				if($item->itemBase->id != $previousItemId)
+				{
+					$attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
+				}
+
+				$previousItemId = $item->itemBase->id;
             }
+
+			$previousItemId = 0;
 
 			foreach($resultData as $item)
 			{
