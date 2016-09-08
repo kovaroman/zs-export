@@ -631,8 +631,9 @@ class ElasticExportHelper
 
     /**
      * Get the attributeNames
-     * @param  Record   $item
-     * @param  KeyValue $settings
+     * @param Record   $item
+     * @param KeyValue $settings
+     * @param array<int> $attributeCombination | null
      * @return string
      */
     public function getAttributeName(Record $item, KeyValue $settings, ?array<int> $attributeCombination = null):string
@@ -646,24 +647,16 @@ class ElasticExportHelper
              */
             if(!is_null($attributeCombination) && count($attributeCombination) > 0)
             {
-                $unsortedValues = [];
-
+                $i = 0;
                 foreach($item->variationAttributeValueList as $attribute)
                 {
-                    $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                    $attributeName = $this->attributeNameRepository->findOne($attributeCombination[$i], $settings->get('lang') ? $settings->get('lang') : 'de');
 
                     if($attributeName instanceof AttributeName)
                     {
-                        $unsortedValues[$attribute->attributeId] = $attributeName->name;
+                        $values[$attributeCombination[$i]] = $attributeName->name;
                     }
-                }
-
-                foreach($attributeCombination as $attributeValueId)
-                {
-                    if(array_key_exists($attributeValueId, $unsortedValues))
-                    {
-                        $values[] = $unsortedValues[$attributeValueId];
-                    }
+                    $i++;
                 }
             }
             else
