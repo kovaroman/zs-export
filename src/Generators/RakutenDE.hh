@@ -115,7 +115,8 @@ class RakutenDE extends CSVGenerator
             foreach ($resultData as $item)
  			{
             /**
-             * Select and save the attributes combination for each item.
+             * Select and save the attribute name order for the first variation of each item with attributes,
+             * if the variation has attributes
              */
  			if(count($item->variationAttributeValueList) > 0 && $item->itemBase->id != $previousItemId)
  				{
@@ -140,6 +141,11 @@ class RakutenDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
+
+                /**
+                 * gets the attribute value name of each attribute value which is linked with the variation in a specific order,
+                 * which depends on the $attributeNameCombination
+                 */
                 $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|', $attributeNameCombination[$item->itemBase->id]);
 
                 /**

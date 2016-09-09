@@ -680,6 +680,10 @@ class ElasticExportHelper
                     $i++;
                 }
             }
+
+            /**
+             * sort the attribute value names depending on the order of the $attributeNameCombination
+             */
             if(is_array($attributeNameCombination) && count($attributeNameCombination) > 0)
             {
                 $j = 0;
