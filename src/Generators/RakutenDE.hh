@@ -110,15 +110,43 @@ class RakutenDE extends CSVGenerator
 
 			$previousItemId = 0;
             $attributeName = array();
+			$attributeNameCombination = array();
+
+            foreach ($resultData as $item)
+ 			{
+            /**
+             * Select and save the attribute name order for the first variation of each item with attributes,
+             * if the variation has attributes
+             */
+ 			if(count($item->variationAttributeValueList) > 0 && $item->itemBase->id != $previousItemId)
+ 				{
+ 					foreach ($item->variationAttributeValueList as $attribute)
+ 					{
+ 						$attributeNameCombination[$item->itemBase->id][] = $attribute->attributeId;
+ 					}
+                    $previousItemId = $item->itemBase->id;
+				}
+ 			}
+            $previousItemId = 0;
+
             foreach($resultData as $item)
             {
+                if(array_key_exists($item->itemBase->id, $attributeName) && strlen($attributeName[$item->itemBase->id]) > 0)
+                {
+                    continue;
+                }
                 $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
             }
 
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
-                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
+
+                /**
+                 * gets the attribute value name of each attribute value which is linked with the variation in a specific order,
+                 * which depends on the $attributeNameCombination
+                 */
+                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|', $attributeNameCombination[$item->itemBase->id]);
 
                 /**
                  * Case of an item with more variation

@@ -631,8 +631,8 @@ class ElasticExportHelper
 
     /**
      * Get the attributeNames
-     * @param  Record   $item
-     * @param  KeyValue $settings
+     * @param Record   $item
+     * @param KeyValue $settings
      * @return string
      */
     public function getAttributeName(Record $item, KeyValue $settings):string
@@ -644,12 +644,10 @@ class ElasticExportHelper
             foreach($item->variationAttributeValueList as $attribute)
             {
                 $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
-
                 if($attributeName instanceof AttributeName)
                 {
                     $values[] = $attributeName->name;
                 }
-
             }
         }
 
@@ -661,23 +659,44 @@ class ElasticExportHelper
      * @param  Record   $item
      * @param  KeyValue $settings
      * @param  string $delimiter
+     * @param  array<int, int> $attributeNameCombination | null
      * @return string
      */
-    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', '):string
+    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', ', ?array<int, int>$attributeNameCombination = null):string
     {
         $values = [];
+        $unsortedValues = [];
 
         if($item->variationBase->attributeValueSetId)
         {
+            $i = 0;
             foreach($item->variationAttributeValueList as $attribute)
             {
                 $attributeValueName = $this->attributeValueNameRepository->findOne($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
                 if($attributeValueName instanceof AttributeValueName)
                 {
-                    $values[] = $attributeValueName->name;
+                    $unsortedValues[$attribute->attributeId] = $attributeValueName->name;
+                    $i++;
                 }
+            }
 
+            /**
+             * sort the attribute value names depending on the order of the $attributeNameCombination
+             */
+            if(is_array($attributeNameCombination) && count($attributeNameCombination) > 0)
+            {
+                $j = 0;
+                while($i > 0)
+                {
+                    $values[] = $unsortedValues[$attributeNameCombination[$j]];
+                    $j++;
+                    $i--;
+                }
+            }
+            else
+            {
+                $values = $unsortedValues;
             }
         }
 
