@@ -110,33 +110,37 @@ class RakutenDE extends CSVGenerator
 
 			$previousItemId = 0;
             $attributeName = array();
-			$attributeCombinations = array();
+			$attributeNameCombination = array();
 
-			foreach ($resultData as $item)
-			{
-				/**
-				 * Select and save the attributes combination for each item.
-				 */
-				if(count($item->variationAttributeValueList) > 0 && $item->itemBase->id != $previousItemId)
-				{
-					foreach ($item->variationAttributeValueList as $attribute)
-					{
-						$attributeCombinations[$item->itemBase->id][] = $attribute->attributeId;
-					}
+            foreach ($resultData as $item)
+ 			{
+            /**
+             * Select and save the attributes combination for each item.
+             */
+ 			if(count($item->variationAttributeValueList) > 0 && $item->itemBase->id != $previousItemId)
+ 				{
+ 					foreach ($item->variationAttributeValueList as $attribute)
+ 					{
+ 						$attributeNameCombination[$item->itemBase->id][] = $attribute->attributeId;
+ 					}
                     $previousItemId = $item->itemBase->id;
 				}
-			}
+ 			}
             $previousItemId = 0;
 
             foreach($resultData as $item)
             {
-                $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings, $attributeCombinations[$item->itemBase->id]);
+                if(array_key_exists($item->itemBase->id, $attributeName) && strlen($attributeName[$item->itemBase->id]) > 0)
+                {
+                    continue;
+                }
+                $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
             }
 
 			foreach($resultData as $item)
 			{
 				$currentItemId = $item->itemBase->id;
-                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|');
+                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|', $attributeNameCombination[$item->itemBase->id]);
 
                 /**
                  * Case of an item with more variation
