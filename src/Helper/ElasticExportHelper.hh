@@ -574,7 +574,7 @@ class ElasticExportHelper
             }
         }
 
-        return (float) NULL;
+        return 0.0;
     }
 
     /**
