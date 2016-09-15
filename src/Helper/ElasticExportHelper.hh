@@ -555,23 +555,26 @@ class ElasticExportHelper
             return (float) $settings->get('shippingCostFlat');
         }
 
-        $defaultShipping = $this->getDefaultShipping($settings);
-
-        if( $defaultShipping instanceof DefaultShipping &&
-            $defaultShipping->shippingDestinationId)
+        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
         {
-            $paymentMethodId = $defaultShipping->paymentMethod2;
+            $defaultShipping = $this->getDefaultShipping($settings);
 
-            // 0 - is always "payment in advance" so we use always the second and third payment methods from the default shipping
-            if($settings->get('shippingCostMethodOfPayment') == 2)
+            if( $defaultShipping instanceof DefaultShipping &&
+                $defaultShipping->shippingDestinationId)
             {
-                $paymentMethodId = $defaultShipping->paymentMethod3;
-            }
+                $paymentMethodId = $defaultShipping->paymentMethod2;
 
-            return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethodId);
+                // 0 - is always "payment in advance" so we use always the second and third payment methods from the default shipping
+                if($settings->get('shippingCostMethodOfPayment') == 2)
+                {
+                    $paymentMethodId = $defaultShipping->paymentMethod3;
+                }
+
+                return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+            }
         }
 
-        return (float) $item->itemBase->defaultShippingCost;
+        return 0.0;
     }
 
     /**
