@@ -120,7 +120,7 @@ class RakutenDE extends ResultFields
 
 			'variationImageList' => [
 				'params' => [
-					'type' => 'item_variation',
+					'type' => 'all',
 				],
 				'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				'fields' => [
