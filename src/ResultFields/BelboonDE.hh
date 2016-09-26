@@ -113,8 +113,13 @@ class BelboonDE extends ResultFields
             ],
 
             'variationRetailPrice' => [
-                'currency',
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId'),
+				],
+				'fields' => [
+					'currency',
+					'price',
+				],
             ],
 
             'variationStandardCategory' => [

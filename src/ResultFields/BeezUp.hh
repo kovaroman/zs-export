@@ -86,7 +86,12 @@ class BeezUp extends ResultFields
             ],
 
             'variationRetailPrice' => [
-                'price',
+                'params' => [
+                    'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 217,
+                ],
+                'fields' => [
+                    'price',
+                ],
             ],
 
             'variationImageList' => [

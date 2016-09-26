@@ -85,7 +85,12 @@ class FashionDE extends ResultFields
             ],
 
             'variationRecommendedRetailPrice' => [
-                'price', //[float]
+				'params' => [
+					'referrerId' => $settings->get('referrerId'),
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationBase' => [

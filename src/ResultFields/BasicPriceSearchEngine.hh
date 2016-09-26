@@ -77,13 +77,18 @@ private ArrayHelper $arrayHelper;
             ],
 
             'variationRetailPrice' => [
-                'price',
-                'retailPrice',
-                'retailPriceNet',
-                'basePrice',
-                'basePriceNet',
-                'unitPrice',
-                'unitPriceNet',
+                'params' => [
+					'referrerId' => $settings->get('referrerId'),
+				],
+				'fields' => [
+					'price',
+                    'retailPrice',
+                    'retailPriceNet',
+                    'basePrice',
+                    'basePriceNet',
+                    'unitPrice',
+                    'unitPriceNet',
+                ],
             ],
 
             'variationRecommendedRetailPrice' => [

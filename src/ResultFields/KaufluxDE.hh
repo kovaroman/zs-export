@@ -88,7 +88,12 @@ class KaufluxDE extends ResultFields
             ],
 
             'variationRecommendedRetailPrice' => [
-                'price', //[float]
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 116,
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationBase' => [
