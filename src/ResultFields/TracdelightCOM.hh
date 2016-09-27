@@ -85,7 +85,12 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
             ],
 
             'variationRecommendedRetailPrice' => [
-                'price', //[float]
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 130,
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationBase' => [

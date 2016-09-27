@@ -143,7 +143,12 @@ class RakutenDE extends ResultFields
 			],
 
 			'variationRecommendedRetailPrice' => [
-				'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+				],
+				'fields' => [
+					'price',
+				],
 			],
 
             'variationRetailPrice' => [

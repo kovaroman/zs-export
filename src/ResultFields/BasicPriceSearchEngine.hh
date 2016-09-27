@@ -77,7 +77,7 @@ private ArrayHelper $arrayHelper;
             ],
 
             'variationRetailPrice' => [
-                'params' => [
+				'params' => [
 					'referrerId' => $settings->get('referrerId'),
 				],
 				'fields' => [
@@ -92,7 +92,12 @@ private ArrayHelper $arrayHelper;
             ],
 
             'variationRecommendedRetailPrice' => [
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId'),
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationStandardCategory' => [

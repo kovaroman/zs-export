@@ -104,8 +104,12 @@ private ArrayHelper $arrayHelper;
 				],
             ],
 
-            'variationRecommendedRetailPrice' => [
-                'price',
+            'variationRecommendedRetailPrice' => ['params' => [
+				'referrerId' => $settings->get('referrerId'),
+			],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationStandardCategory' => [
