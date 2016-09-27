@@ -79,7 +79,7 @@ class PreisRoboterDE extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
                     'categoryId'

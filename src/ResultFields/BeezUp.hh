@@ -87,7 +87,7 @@ class BeezUp extends ResultFields
 
             'variationRetailPrice' => [
                 'params' => [
-                    'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 217,
+                    'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 127,
                 ],
                 'fields' => [
                     'price',
@@ -118,7 +118,7 @@ class BeezUp extends ResultFields
 
             'variationStandardCategory' => [
                 'params' => [
-                    'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+                    'plentyId' => $settings->get('plentyId'),
                 ],
                 'fields' => [
                     'categoryId'
