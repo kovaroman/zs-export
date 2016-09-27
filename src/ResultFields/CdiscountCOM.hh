@@ -66,7 +66,12 @@ private ArrayHelper $arrayHelper;
                 ],
 
                 'variationRetailPrice' => [
-                    'price',
+					'params' => [
+						'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 143,
+					],
+					'fields' => [
+						'price',
+					],
                 ],
 
                 'variationImageList' => [
@@ -93,7 +98,7 @@ private ArrayHelper $arrayHelper;
 
                 'variationStandardCategory' =>  [
                     'params'    =>  [
-                        'plentyId'  =>  $settings->get('plentyId') ? $settings->get('plentyId') : 1000
+                        'plentyId'  =>  $settings->get('plentyId')
                     ],
                     'fields'    =>  [
                         'categoryId',

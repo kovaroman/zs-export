@@ -87,7 +87,12 @@ class IdealoDE extends ResultFields
             ],
 
             'variationRecommendedRetailPrice' => [
-                'price', //[float]
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 121,
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationBase' => [
@@ -111,7 +116,12 @@ class IdealoDE extends ResultFields
             ],
 
             'variationRetailPrice' => [
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 121,
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationStandardCategory' => [

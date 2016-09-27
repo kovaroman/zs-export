@@ -89,7 +89,12 @@ class SchuheDE extends ResultFields
             ],
 
             'variationRecommendedRetailPrice' => [
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId'),
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationAttributeValueList' => [
@@ -136,7 +141,12 @@ class SchuheDE extends ResultFields
             ],
 
             'variationRetailPrice' => [
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId'),
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationStandardCategory' => [

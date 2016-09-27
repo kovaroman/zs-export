@@ -97,7 +97,12 @@ class Check24DE extends ResultFields
             ],
 
             'variationRetailPrice' => [
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 150,
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
             'variationStandardCategory' => [

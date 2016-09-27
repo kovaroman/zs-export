@@ -143,20 +143,35 @@ class RakutenDE extends ResultFields
 			],
 
 			'variationRecommendedRetailPrice' => [
-				'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+				],
+				'fields' => [
+					'price',
+				],
 			],
 
             'variationRetailPrice' => [
-                'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+				],
+				'fields' => [
+					'price',
+				],
             ],
 
 			'variationSpecialOfferRetailPrice' => [
-			'retailPrice',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+				],
+				'fields' => [
+					'retailPrice',
+				],
 			],
 
 			'variationStandardCategory' => [
 				'params' => [
-					'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+					'plentyId' => $settings->get('plentyId'),
 				],
 				'fields' => [
 					'categoryId',

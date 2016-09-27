@@ -108,30 +108,39 @@ class GoogleShopping extends ResultFields
 				'weightG',
 			],
 
-			'variationSpecialOfferRetailPrice' => array(
-					'retailPriceId', //[integer]
-					'retailPrice', //[float]
-					'retailPriceNet', //[float]
-					'basePrice', //[float]
-					'basePriceNet', //[float]
-					'unitPrice', //[float]
-					'unitPriceNet', //[float]
-					'orderParamsMarkup', //[float]
-					'orderParamsMarkupNet', //[float]
-					'vatId', //[integer]
-					'vatValue', //[float]
-					'currency', //[mixed]
-					'exchangeRatio', //[float]
-					'lastUpdateTimestamp' //[mixed]
-
-			),
+			'variationSpecialOfferRetailPrice' => [
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
+				],
+				'fields' => [
+					'retailPriceId',
+					'retailPrice',
+					'retailPriceNet',
+					'basePrice',
+					'basePriceNet',
+					'unitPrice',
+					'unitPriceNet',
+					'orderParamsMarkup',
+					'orderParamsMarkupNet',
+					'vatId',
+					'vatValue',
+					'currency',
+					'exchangeRatio',
+					'lastUpdateTimestamp'
+				],
+			],
 			'variationRetailPrice' => [
-				'price',
+				'params' => [
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
+				],
+				'fields' => [
+					'price',
+				],
 			],
 
 			'variationStandardCategory' => [
 				'params' => [
-					'plentyId' => $settings->get('plentyId') ? $settings->get('plentyId') : 1000,
+					'plentyId' => $settings->get('plentyId'),
 				],
 				'fields' => [
 					'categoryId',
