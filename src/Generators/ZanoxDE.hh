@@ -76,41 +76,20 @@ private ArrayHelper $arrayHelper;
                     'category'              => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'prod_description'      => strip_tags(html_entity_decode($this->elasticExportHelper->getPreviewText($item, $settings, 256))),
                     'prod_description_long' => strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings, 256))),
-                    'img_small'             => $this->getImages($item, $settings, ';', 'preview'),
-                    'img_medium'            => $this->getImages($item, $settings, ';', 'middle'),
-                    'img_large'             => $this->getImages($item, $settings, ';', 'normal'),
+                    'img_small'             => $this->elasticExportHelper->getMainImage($item, $settings, 'preview'),
+                    'img_medium'            => $this->elasticExportHelper->getMainImage($item, $settings, 'middle'),
+                    'img_large'             => $this->elasticExportHelper->getMainImage($item, $settings, 'normal'),
                     'manufacturer'          => $item->itemBase->producer,
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'prod_ean'              => $item->variationBarcode->code,
                     'shipping_costs'        => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
-                    'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings),
+                    'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings, '/', false, true, '', 0.0, false),
                     'base_price_amount'     => $basePriceList['lot'],
                     'base_price_unit'       => $basePriceList['unit']
-
 				];
 
 				$this->addCSVContent(array_values($data));
 			}
         }
-    }
-
-    /**
-     * Get images.
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @param  string   $separator  = ','
-     * @param  string   $imageType  = 'normal'
-     * @return string
-     */
-    public function getImages(Record $item, KeyValue $settings, string $separator = ',', string $imageType = 'normal'):string
-    {
-        $list = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
-
-        if(count($list))
-        {
-            return implode($separator, $list);
-        }
-
-        return '';
     }
 }
