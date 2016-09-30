@@ -83,7 +83,7 @@ private ArrayHelper $arrayHelper;
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'prod_ean'              => $item->variationBarcode->code,
                     'shipping_costs'        => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
-                    'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings, '/', false, true, '', 0.0, true),
+                    'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings, '/', false, true, '', 0.0, false),
                     'base_price_amount'     => $basePriceList['lot'],
                     'base_price_unit'       => $basePriceList['unit']
 				];

@@ -726,7 +726,7 @@ class ElasticExportHelper
         bool $dotPrice = false,
         string $currency = '',
         float $price = 0.0,
-        bool $onlyBasePrice = false
+        bool $addUnit = true
     ):string
 	{
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
@@ -761,7 +761,7 @@ class ElasticExportHelper
 			$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, ',', '');
 		}
 
-		if ($onlyBasePrice == false)
+		if ($addUnit == true)
         {
             if ($compact == true)
             {
