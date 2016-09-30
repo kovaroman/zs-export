@@ -715,6 +715,7 @@ class ElasticExportHelper
      * @param  bool     $dotPrice          =             false
      * @param  string   $currency          =             ''
      * @param  float    $price             =             0.0
+     * @param  bool     $onlyBasePrice     =             false
      * @return string
      */
     public function getBasePrice(
@@ -724,7 +725,8 @@ class ElasticExportHelper
         bool $compact = false,
         bool $dotPrice = false,
         string $currency = '',
-        float $price = 0.0
+        float $price = 0.0,
+        bool $onlyBasePrice = false
     ):string
 	{
         $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
@@ -759,14 +761,21 @@ class ElasticExportHelper
 			$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, ',', '');
 		}
 
-		if ($compact == true)
-		{
-			return	'(' . (string) $basePriceDetails['price'] . $currency . $separator . (string) $basePriceDetails['lot'] . $unitShortcut . ')';
-		}
-		else
-		{
-			return	(string) $basePriceDetails['price'] . ' ' . $currency . $separator . (string) $basePriceDetails['lot'] . ' ' . $unitName;
-		}
+		if ($onlyBasePrice == false)
+        {
+            if ($compact == true)
+            {
+                return	'(' . (string) $basePriceDetails['price'] . $currency . $separator . (string) $basePriceDetails['lot'] . $unitShortcut . ')';
+            }
+            else
+            {
+                return	(string) $basePriceDetails['price'] . ' ' . $currency . $separator . (string) $basePriceDetails['lot'] . ' ' . $unitName;
+            }
+        }
+        else
+        {
+            return	(string) $basePriceDetails['price'];
+        }
 	}
 
 	/**
