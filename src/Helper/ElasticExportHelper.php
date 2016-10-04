@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Helper;
 
 use Plenty\Modules\Category\Contracts\CategoryBranchMarketplaceRepositoryContract;
@@ -18,7 +19,7 @@ use Plenty\Modules\Category\Contracts\CategoryRepository;
 use Plenty\Modules\Category\Models\Category;
 use Plenty\Modules\Item\Property\Contracts\PropertyMarketComponentRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertyMarketComponent;
-use Plenty\Modules\Item\DataLayer\Models\ItemCharacter;
+use Plenty\Modules\Item\DataLayer\Models\ItemProperty;
 use Plenty\Modules\Order\Shipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Contracts\PaymentMethodRepositoryContract;
 use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
@@ -41,109 +42,109 @@ use Plenty\Modules\Item\Attribute\Contracts\AttributeNameRepositoryContract;
  */
 class ElasticExportHelper
 {
-    const string SHIPPING_COST_TYPE_FLAT = 'flat';
-    const string SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+    const SHIPPING_COST_TYPE_FLAT = 'flat';
+    const SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
 
-    const string IMAGE_POSITION0 = 'position0';
-    const string IMAGE_FIRST = 'firstImage';
+    const IMAGE_POSITION0 = 'position0';
+    const IMAGE_FIRST = 'firstImage';
 
-    const int REMOVE_HTML_TAGS = 1;
-    const int KEEP_HTML_TAGS = 0;
+    const REMOVE_HTML_TAGS = 1;
+    const KEEP_HTML_TAGS = 0;
 
-    const int ITEM_URL_NO = 0;
-    const int ITEM_URL_YES = 1;
+    const ITEM_URL_NO = 0;
+    const ITEM_URL_YES = 1;
 
-    const int TRANSFER_ITEM_AVAILABILITY_NO = 0;
-    const int TRANSFER_ITEM_AVAILABILITY_YES = 1;
+    const TRANSFER_ITEM_AVAILABILITY_NO = 0;
+    const TRANSFER_ITEM_AVAILABILITY_YES = 1;
 
-    const int TRANSFER_OFFER_PRICE_NO = 0;
-    const int TRANSFER_OFFER_PRICE_YES = 1;
+    const TRANSFER_OFFER_PRICE_NO = 0;
+    const TRANSFER_OFFER_PRICE_YES = 1;
 
-    const int TRANSFER_RRP_YES = 1;
-    const int TRANSFER_RRP_NO = 0;
+    const TRANSFER_RRP_YES = 1;
+    const TRANSFER_RRP_NO = 0;
 
-    const string BARCODE_EAN = 'EAN_13';
-    const string BARCODE_ISBN = 'ISBN';
+    const BARCODE_EAN = 'EAN_13';
+    const BARCODE_ISBN = 'ISBN';
 
     /**
      * CategoryBranchRepositoryContract $categoryBranchRepository
      */
-    private CategoryBranchRepositoryContract $categoryBranchRepository;
+    private $categoryBranchRepository;
 
     /**
      * UnitNameRepositoryContract $unitNameRepository
      */
-    private UnitNameRepositoryContract $unitNameRepository;
+    private $unitNameRepository;
 
 	/**
 	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+    private $attributeValueNameRepository;
 
     /**
      * AttributeNameRepositoryContract $attributeNameRepository
      */
-    private AttributeNameRepositoryContract $attributeNameRepository;
+    private $attributeNameRepository;
 
     /**
      * PropertyItemNameRepositoryContract $propertyItemNameRepository
      */
-    private PropertyItemNameRepositoryContract $propertyItemNameRepository;
+    private $propertyItemNameRepository;
 
     /**
      * CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      */
-    private CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository;
+    private $categoryBranchMarketplaceRepository;
 
     /**
      * UrlBuilderRepositoryContract $urlBuilderRepository
      */
-    private UrlBuilderRepositoryContract $urlBuilderRepository;
+    private $urlBuilderRepository;
 
     /**
      * CategoryRepository $categoryRepository
      */
-    private CategoryRepository $categoryRepository;
+    private $categoryRepository;
 
     /**
      * PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository;s
      */
-    private PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository;
+    private $propertyMarketComponentRepository;
 
     /**
      * @var PaymentMethodRepositoryContract $paymentMethodRepository
      */
-    private PaymentMethodRepositoryContract $paymentMethodRepository;
+    private $paymentMethodRepository;
 
     /**
      * @var DefaultShippingCostRepositoryContract $defaultShippingCostRepository
      */
-    private DefaultShippingCostRepositoryContract $defaultShippingCostRepository;
+    private $defaultShippingCostRepository;
 
     /**
      * ConfigRepository $configRepository
      */
-    private ConfigRepository $configRepository;
+    private $configRepository;
 
     /**
      * CountryRepositoryContract $countryRepository
      */
-    private CountryRepositoryContract $countryRepository;
+    private $countryRepository;
 
     /**
      * WebstoreRepositoryContract $webstoreRepository
      */
-    private WebstoreRepositoryContract $webstoreRepository;
+    private $webstoreRepository;
 
     /**
      * VariationSkuRepositoryContract $variationSkuRepository
      */
-    private VariationSkuRepositoryContract $variationSkuRepository;
+    private $variationSkuRepository;
 
     /**
      * AvailabilityRepositoryContract $availabilityRepositoryContract
      */
-    private AvailabilityRepositoryContract $availabilityRepository;
+    private $availabilityRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -246,8 +247,8 @@ class ElasticExportHelper
 
     /**
      * Clean name to a defined length. If maxLength is 0 than named is returned intact.
-     * @param  string name
-     * @param  int maxLength
+     * @param  string 	$name
+     * @param  int 		$maxLength
      * @return string
      */
     public function cleanName(string $name, int $maxLength = 0):string
@@ -362,6 +363,7 @@ class ElasticExportHelper
 	 * Get variation availability days.
 	 * @param  Record   $item
 	 * @param  KeyValue $settings
+	 * @param  bool 	$returnAvailabilityName = true
 	 * @return mixed
 	 */
 	public function getAvailability(Record $item, KeyValue $settings, bool $returnAvailabilityName = true):mixed
@@ -415,9 +417,9 @@ class ElasticExportHelper
      * Get the item URL.
      * @param  Record $item
      * @param  KeyValue $settings
-     * @param  ?bool $addReferrer = true  Choose if referrer id should be added as parameter.
-     * @param  ?bool $useIntReferrer = false Choose if referrer id should be used as integer.
-     * @param  ?bool $useHttps = true Choose if https protocol should be used.
+     * @param  bool $addReferrer = true  Choose if referrer id should be added as parameter.
+     * @param  bool $useIntReferrer = false Choose if referrer id should be used as integer.
+     * @param  bool $useHttps = true Choose if https protocol should be used.
      * @return string Item url.
      */
     public function getUrl(Record $item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false, bool $useHttps = true):string
@@ -662,10 +664,10 @@ class ElasticExportHelper
      * @param  Record   $item
      * @param  KeyValue $settings
      * @param  string $delimiter
-     * @param  array<int, int> $attributeNameCombination | null
+     * @param  array $attributeNameCombination
      * @return string
      */
-    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', ', ?array<int, int>$attributeNameCombination = null):string
+    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', ', ?array $attributeNameCombination = null):string
     {
         $values = [];
         $unsortedValues = [];
@@ -710,12 +712,12 @@ class ElasticExportHelper
      * Get base price.
      * @param  Record   $item
      * @param  KeyValue $settings
-     * @param  string   $separator         =             '/'
-     * @param  bool     $compact           =             false
-     * @param  bool     $dotPrice          =             false
-     * @param  string   $currency          =             ''
-     * @param  float    $price             =             0.0
-     * @param  bool     $onlyBasePrice     =             false
+     * @param  string   $separator	= '/'
+     * @param  bool     $compact    = false
+     * @param  bool     $dotPrice   = false
+     * @param  string   $currency   = ''
+     * @param  float    $price      = 0.0
+     * @param  bool     $addUnit    = true
      * @return string
      */
     public function getBasePrice(
@@ -783,9 +785,9 @@ class ElasticExportHelper
 	 *
 	 * @param  Record   $item
 	 * @param  KeyValue $settings
-	 * @return Map
+	 * @return array
 	 */
-	public function getBasePriceList(Record $item, KeyValue $settings):Map<string,mixed>
+	public function getBasePriceList(Record $item, KeyValue $settings):array
 	{
 		$price = (float)$item->variationRetailPrice->price;
 		$lot = (int)$item->variationBase->content;
@@ -806,7 +808,11 @@ class ElasticExportHelper
 
 		$basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
 
-        return Map{'lot' => (int)$basePriceDetails['lot'], 'price' => (float)$basePriceDetails['price'], 'unit' => (string)$unitName};
+        return [
+        	'lot' => (int)$basePriceDetails['lot'],
+			'price' => (float)$basePriceDetails['price'],
+			'unit' => (string)$unitName
+		];
 	}
 
     /**
@@ -836,6 +842,7 @@ class ElasticExportHelper
      * Get main image.
      * @param  Record   $item
      * @param  KeyValue $settings
+	 * @param  string 	$imageType
      * @return string
      */
     public function getMainImage(Record $item, KeyValue $settings, string $imageType = 'normal'):string
@@ -860,9 +867,9 @@ class ElasticExportHelper
      * @param Record $item
      * @param KeyValue $settings
      * @param string $imageType = 'normal'
-     * @return array<mixed>
+     * @return array
      */
-    public function getImageList(Record $item, KeyValue $settings, string $imageType = 'normal'):array<string>
+    public function getImageList(Record $item, KeyValue $settings, string $imageType = 'normal'):array
     {
         $list = [];
 
@@ -899,17 +906,17 @@ class ElasticExportHelper
     /**
      * Get item characters that match referrer from settings and a given component id.
      * @param  Record   $item
-     * @param  float      $marketId
+     * @param  float    $marketId
      * @param  ?int     $componentId  = null
-     * @return array<int, mixed>
+     * @return array
      */
-    public function getItemCharactersByComponent(Record $item, float $marketId, ?int $componentId = null):Vector<array<string,mixed>>
+    public function getItemCharactersByComponent(Record $item, float $marketId, ?int $componentId = null):array //	Vector<array<string,mixed>>
     {
         $propertyList = $item->itemPropertyList;
 
         $propertyMarketComponents = $this->propertyMarketComponentRepository->getPropertyMarketComponents($marketId, !is_null($componentId) ? $componentId : null);
 
-        $list = Vector{};
+        $list = array();
 
         foreach($propertyList as $property)
 		{
@@ -918,14 +925,14 @@ class ElasticExportHelper
                 if($propertyMarketComponent instanceof PropertyMarketComponent && $propertyMarketComponent->propertyItemId == $property->propertyId)
                 {
                     $list[] = [
-                        'itemCharacterId' => $property->itemPropertyId,
-                        'characterId' => $property->propertyId,
-                        'characterValue' => $property->propertyValue,
+                        'itemCharacterId' 	 => $property->itemPropertyId,
+                        'characterId' 		 => $property->propertyId,
+                        'characterValue' 	 => $property->propertyValue,
                         'characterValueType' => $property->propertyValueType,
-                        'characterItemId' => $propertyMarketComponent->propertyItemId,
-                        'componentId' => $propertyMarketComponent->componentId,
-                        'referrerId' => $propertyMarketComponent->marketReference,
-                        'externalComponent' => $propertyMarketComponent->externalComponent,
+                        'characterItemId' 	 => $propertyMarketComponent->propertyItemId,
+                        'componentId' 		 => $propertyMarketComponent->componentId,
+                        'referrerId' 		 => $propertyMarketComponent->marketReference,
+                        'externalComponent'  => $propertyMarketComponent->externalComponent,
 					];
                 }
             }
@@ -940,7 +947,7 @@ class ElasticExportHelper
      * @param  string   $barcodeType
      * @return string
      */
-    public function getBarcodeByType(Record $item,string $barcodeType):string
+    public function getBarcodeByType(Record $item, string $barcodeType):string
     {
         foreach($item->variationBarcodeList as $variationBarcode)
         {
@@ -958,9 +965,9 @@ class ElasticExportHelper
      * @param  int    $lot
      * @param  float  $price
      * @param  string $unit
-     * @return Map
+     * @return array
      */
-    public function getBasePriceDetails(int $lot, float $price, string $unit):Map<string,mixed>
+    public function getBasePriceDetails(int $lot, float $price, string $unit):array // Map<string,mixed>
     {
         $lot = $lot == 0 ? 1 : $lot; // TODO  PlentyStringUtils::numberFormatLot($lot, true);
 		$basePrice = 0;
@@ -994,7 +1001,11 @@ class ElasticExportHelper
 
 		$endLot = ($basePriceLot/$lot);
 
-		return Map{'lot' => (int) $basePriceLot, 'price' => (float) $price * $factor * $endLot, 'unit' => (string) $basePriceUnit};
+		return [
+			'lot' => (int) $basePriceLot,
+			'price' => (float) $price * $factor * $endLot,
+			'unit' => (string) $basePriceUnit
+		];
     }
 
     /**
@@ -1016,13 +1027,13 @@ class ElasticExportHelper
     /**
      * Get list of payment methods.
      * @param KeyValue $settings
-     * @return Map<int,PaymentMethod>
+     * @return array
      */
-    public function getPaymentMethods(KeyValue $settings):Map<int,PaymentMethod>
+    public function getPaymentMethods(KeyValue $settings):array		//	Map<int,PaymentMethod>
     {
         $paymentMethods = $this->paymentMethodRepository->getPaymentMethods($settings->get('destination'), $settings->get('plentyId'), $settings->get('lang'));
 
-        $list = Map{};
+        $list = array();
 
         foreach($paymentMethods as $paymentMethod)
         {
@@ -1058,7 +1069,7 @@ class ElasticExportHelper
      * @param  mixed $default = null
      * @return T
      */
-    public function getConfig<T>(string $key, mixed $default = null):T
+    public function getConfig<T is >(string $key, mixed $default = null):T
     {
         return $this->configRepository->get($key, $default);
     }
@@ -1097,7 +1108,7 @@ class ElasticExportHelper
      * @param null|string $sku
      * @param int $accountId
      * @param bool $setLastExportedTimestamp
-     * return string
+     * @return string
      */
     public function generateSku(Record $item, int $marketId, ?string $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):string
     {

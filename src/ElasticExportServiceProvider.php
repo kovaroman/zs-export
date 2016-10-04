@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport;
 
 use Plenty\Modules\DataExchange\Services\ExportPresetContainer;
