@@ -885,7 +885,7 @@ class ElasticExportHelper
     {
         foreach($item->itemPropertyList as $itemProperty)
         {
-            $propertyItemName = $this->propertyItemNameRepository->findOne($itemProperty->itemPropertyId, $settings->get('lang')? $settings->get('lang') : 'de');
+            $propertyItemName = $this->propertyItemNameRepository->findOne($itemProperty->propertyId, $settings->get('lang')? $settings->get('lang') : 'de');
 
             if($propertyItemName->name == $backendName)
             {
