@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -15,31 +16,31 @@ use Plenty\Modules\Item\Property\Models\PropertySelection;
 
 class TracdelightCOM extends CSVGenerator
 {
-    const string DELIMITER = ';';
+    const DELIMITER = ';';
     /*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
     /**
      * AttributeValueNameRepositoryContract $attributeValueNameRepository
      */
-    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+    private $attributeValueNameRepository;
 
     /**
      * PropertySelectionRepositoryContract $propertySelectionRepository
      */
-    private PropertySelectionRepositoryContract $propertySelectionRepository;
+    private $propertySelectionRepository;
 
     /*
      * @var ArrayHelper
      */
-    private ArrayHelper $arrayHelper;
+    private $arrayHelper;
 
     /**
      * @var array<int,mixed>
      */
-    private array<int,array<string,string>>$itemPropertyCache = [];
+    private $itemPropertyCache = [];
 
     /**
      * TracdelightCOM constructor.
@@ -60,7 +61,7 @@ class TracdelightCOM extends CSVGenerator
     /**
      * @param mixed $resultData
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -185,7 +186,7 @@ class TracdelightCOM extends CSVGenerator
      * @param  KeyValue $settings
      * @return array<string,string>
      */
-    private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+    private function getVariationAttributes(Record $item, KeyValue $settings):array
     {
         $variationAttributes = [];
 
@@ -250,7 +251,7 @@ class TracdelightCOM extends CSVGenerator
      * @param   KeyValue $settings
      * @return array<string,string>
      */
-	protected function getItemPropertyList(Record $item, KeyValue $settings):array<string,string>
+	protected function getItemPropertyList(Record $item, KeyValue $settings):array
 	{
         $list = [];
 

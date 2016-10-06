@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -13,33 +14,32 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
 
-
 class Shopping24DE extends CSVGenerator
 {
     /*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
     /*
      * @var ArrayHelper
      */
-    private ArrayHelper $arrayHelper;
+    private $arrayHelper;
 
     /**
      * AttributeValueNameRepositoryContract $attributeValueNameRepository
      */
-    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+    private $attributeValueNameRepository;
 
     /**
      * PropertySelectionRepositoryContract $propertySelectionRepository
      */
-    private PropertySelectionRepositoryContract $propertySelectionRepository;
+    private $propertySelectionRepository;
 
     /**
      * @var array<int,mixed>
      */
-    private array<int,array<string,string>>$itemPropertyCache = [];
+    private $itemPropertyCache = [];
 
     /**
      * Shopping24DE constructor.
@@ -61,8 +61,9 @@ class Shopping24DE extends CSVGenerator
 
     /**
      * @param mixed $resultData
+	 * @param array $formatSettings
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
         if($resultData instanceof RecordList)
 		{
@@ -140,7 +141,7 @@ class Shopping24DE extends CSVGenerator
      * @param  KeyValue $settings
      * @return array<string,mixed>
      */
-    private function getMain(Record $item, KeyValue $settings):array<string,mixed>
+    private function getMain(Record $item, KeyValue $settings):array
 	{
         $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
@@ -175,7 +176,7 @@ class Shopping24DE extends CSVGenerator
      * @param  KeyValue $settings
      * @return array<string,string>
      */
-	private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+	private function getVariationAttributes(Record $item, KeyValue $settings):array
 	{
         $variationAttributes = [];
 
@@ -200,7 +201,7 @@ class Shopping24DE extends CSVGenerator
      * @param 	Record $item
      * @return array<string,string>
      */
-	protected function getItemPropertyList(Record $item):array<string,string>
+	protected function getItemPropertyList(Record $item):array
 	{
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
@@ -236,5 +237,4 @@ class Shopping24DE extends CSVGenerator
 
         return $this->itemPropertyCache[$item->itemBase->id];
     }
-
 }

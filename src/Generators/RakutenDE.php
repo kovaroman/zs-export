@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -11,19 +12,19 @@ use Plenty\Modules\Helper\Models\KeyValue;
 
 class RakutenDE extends CSVGenerator
 {
-	const string CHARACTER_TYPE_ENERGY_CLASS		= 'energie_klasse';
-	const string CHARACTER_TYPE_ENERGY_CLASS_GROUP	= 'energie_klassen_gruppe';
-	const string CHARACTER_TYPE_ENERGY_CLASS_UNTIL	= 'energie_klasse_bis';
+	const CHARACTER_TYPE_ENERGY_CLASS		= 'energie_klasse';
+	const CHARACTER_TYPE_ENERGY_CLASS_GROUP	= 'energie_klassen_gruppe';
+	const CHARACTER_TYPE_ENERGY_CLASS_UNTIL	= 'energie_klasse_bis';
 
 	/*
 	 * @var ElasticExportHelper
 	 */
-	private ElasticExportHelper $elasticExportHelper;
+	private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * Rakuten constructor.
@@ -38,8 +39,9 @@ class RakutenDE extends CSVGenerator
 
 	/**
 	 * @param mixed $resultData
+	 * @param array $formatSettings
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -200,7 +202,7 @@ class RakutenDE extends CSVGenerator
 	 * @param KeyValue $settings
 	 * @return void
 	 */
-	private function buildParentWithoutChildrenRow(Record $item, KeyValue $settings):void
+	private function buildParentWithoutChildrenRow(Record $item, KeyValue $settings)
 	{
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{
@@ -369,7 +371,7 @@ class RakutenDE extends CSVGenerator
      * @param array $attributeName
 	 * @return void
 	 */
-	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array<int, mixed> $attributeName):void
+	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array $attributeName)
 	{
         $vat = $item->variationBase->vatId;
         if($vat == '19')
@@ -481,7 +483,7 @@ class RakutenDE extends CSVGenerator
      * @param string $attributeValue
 	 * @return void
 	 */
-	private function buildChildRow(Record $item, KeyValue $settings, string $attributeValue = ''):void
+	private function buildChildRow(Record $item, KeyValue $settings, string $attributeValue = '')
 	{
 		if($item->variationBase->limitOrderByStockSelect == 2)
 		{

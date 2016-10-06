@@ -1,4 +1,4 @@
-<?hh // strict
+<?php
 
 namespace ElasticExport\Generators;
 
@@ -16,41 +16,41 @@ use Plenty\Modules\Item\Property\Models\PropertySelection;
 
 class CdiscountCOM extends CSVGenerator
 {
-    const string CHARACTER_TYPE_DESCRIPTION					=   'description';
-    const string CHARACTER_TYPE_GENDER                      =   'gender';
-    const string CHARACTER_TYPE_TYPE_OF_PUBLIC              =   'type_of_public';
-    const string CHARACTER_TYPE_SPORTS                      =   'sports';
-    const string CHARACTER_TYPE_WARNINGS                    =   'warnings';
-    const string CHARACTER_TYPE_COMMENT                     =   'comment';
-    const string CHARACTER_TYPE_MAIN_COLOR                  =   'main_color';
-    const string CHARACTER_TYPE_MARKETING_DESCRIPTION       =   'marketing_description';
-    const string CHARACTER_TYPE_MARKETING_COLOR             =   'marketing_color';
-    const string CHARACTER_TYPE_SIZE                        =   'size';
-    /*
+    const CHARACTER_TYPE_DESCRIPTION					=   'description';
+    const CHARACTER_TYPE_GENDER                      =   'gender';
+    const CHARACTER_TYPE_TYPE_OF_PUBLIC              =   'type_of_public';
+    const CHARACTER_TYPE_SPORTS                      =   'sports';
+    const CHARACTER_TYPE_WARNINGS                    =   'warnings';
+    const CHARACTER_TYPE_COMMENT                     =   'comment';
+    const CHARACTER_TYPE_MAIN_COLOR                  =   'main_color';
+    const CHARACTER_TYPE_MARKETING_DESCRIPTION       =   'marketing_description';
+    const CHARACTER_TYPE_MARKETING_COLOR             =   'marketing_color';
+    const CHARACTER_TYPE_SIZE                        =   'size';
+
+	/*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
-        /*
-         * @var ArrayHelper
-         */
-    private ArrayHelper $arrayHelper;
+	/*
+	 * @var ArrayHelper
+	 */
+    private $arrayHelper;
 
-        /**
-         * AttributeValueNameRepositoryContract $AttributeValueNameRepository
-         */
-    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+	/**
+	 * AttributeValueNameRepositoryContract $AttributeValueNameRepository
+	 */
+    private $attributeValueNameRepository;
 
-        /**
-         * PropertySelectionRepositoryContract $propertySelectionRepository
-         */
-    private PropertySelectionRepositoryContract $propertySelectionRepository;
+	/**
+	 * PropertySelectionRepositoryContract $propertySelectionRepository
+	 */
+    private $propertySelectionRepository;
 
-        /**
-         * @var array<int,mixed>
-         */
-    private array<int, array<string, string>>$itemPropertyCache = [];
-
+	/**
+	 * @var array<int,mixed>
+	 */
+    private $itemPropertyCache = [];
 
     /**
      * Geizhals constructor.
@@ -75,7 +75,7 @@ class CdiscountCOM extends CSVGenerator
     /**
      * @param mixed $resultData
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -238,7 +238,7 @@ class CdiscountCOM extends CSVGenerator
      * @param 	Record $item
      * @return array<string,string>
      */
-    private function getItemPropertyList(Record $item):array<string,string>
+    private function getItemPropertyList(Record $item):array
     {
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
@@ -299,7 +299,7 @@ class CdiscountCOM extends CSVGenerator
      * @param  KeyValue $settings
      * @return array<string,string>
      */
-    private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+    private function getVariationAttributes(Record $item, KeyValue $settings):array
     {
         $variationAttributes = [];
 
@@ -319,12 +319,12 @@ class CdiscountCOM extends CSVGenerator
         return $variationAttributes;
     }
 
-        /**
-         * @param Record $item
-         * @param KeyValue $settings
-         * @param int $number
-         * @return string
-         */
+	/**
+	 * @param Record $item
+	 * @param KeyValue $settings
+	 * @param int $number
+	 * @return string
+	 */
     private function getImageByNumber(Record $item, KeyValue $settings, int $number):string
     {
         $imageList = $this->elasticExportHelper->getImageList($item, $settings);

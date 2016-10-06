@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -16,17 +17,17 @@ class FashionDE extends CSVGenerator
     /*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-	private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+	private $attributeValueNameRepository;
 
 
 	/**
@@ -45,7 +46,7 @@ class FashionDE extends CSVGenerator
 	/**
 	 * @param mixed $resultData
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
         if($resultData instanceof RecordList)
 		{
@@ -121,7 +122,7 @@ class FashionDE extends CSVGenerator
 	 * @param  KeyValue $settings
 	 * @return array<string,mixed>
 	 */
-	private function getMain(Record $item, KeyValue $settings):array<string,mixed>
+	private function getMain(Record $item, KeyValue $settings):array
 	{
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
@@ -153,7 +154,7 @@ class FashionDE extends CSVGenerator
 	 * @param  KeyValue $settings
 	 * @return array<string,string>
 	 */
-	private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+	private function getVariationAttributes(Record $item, KeyValue $settings):array
 	{
 		$variationAttributes = [];
 

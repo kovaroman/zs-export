@@ -1,4 +1,4 @@
-<?hh // strict
+<?php
 
 namespace ElasticExport\Generators;
 
@@ -14,26 +14,26 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 
 class BeezUp extends CSVGenerator
 {
-    const string PROPERTY_TYPE_DESCRIPTION					= 'description';
+    const PROPERTY_TYPE_DESCRIPTION = 'description';
         /*
          * @var ElasticExportHelper
          */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
         /*
          * @var ArrayHelper
          */
-    private ArrayHelper $arrayHelper;
+    private $arrayHelper;
 
         /**
          * AttributeValueNameRepositoryContract $attributeValueNameRepository
          */
-    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+    private $attributeValueNameRepository;
 
         /**
          * @var array<int,mixed>
          */
-    private array<int, array<string, string>>$itemPropertyCache = [];
+    private $itemPropertyCache = [];
 
 
     /**
@@ -56,7 +56,7 @@ class BeezUp extends CSVGenerator
     /**
      * @param mixed $resultData
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -139,34 +139,34 @@ class BeezUp extends CSVGenerator
 
 				$this->addCSVContent(array_values($data));
 			}
-        }
-    }
+}
+}
 
-    /**
-     * Get item description.
-     * @param Record $item
-     * @param KeyValue $settings
-     * @return string
-     */
-    private function getDescription(Record $item, KeyValue $settings):string
-    {
-        $description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::PROPERTY_TYPE_DESCRIPTION);
+/**
+ * Get item description.
+ * @param Record $item
+ * @param KeyValue $settings
+ * @return string
+ */
+private function getDescription(Record $item, KeyValue $settings):string
+{
+	$description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::PROPERTY_TYPE_DESCRIPTION);
 
-        if (strlen($description) <= 0)
-        {
-            $description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
-        }
+	if (strlen($description) <= 0)
+	{
+		$description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
+	}
 
-        return $description;
-    }
+	return $description;
+}
 
-    /**
-     * Get variation attributes.
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @return array<string,string>
-     */
-    private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+/**
+ * Get variation attributes.
+ * @param  Record   $item
+ * @param  KeyValue $settings
+ * @return array<string,string>
+ */
+private function getVariationAttributes(Record $item, KeyValue $settings):array
     {
         $variationAttributes = [];
 

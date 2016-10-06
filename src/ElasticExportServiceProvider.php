@@ -7,11 +7,11 @@ use Plenty\Plugin\DataExchangeServiceProvider;
 
 class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
-	public function register():void
+	public function register()
 	{
 	}
 
-	public function exports(ExportPresetContainer $container):void
+	public function exports(ExportPresetContainer $container)
 	{
 		$formats = [
 			'CdiscountCOM',

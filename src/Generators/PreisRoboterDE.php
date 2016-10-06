@@ -1,4 +1,4 @@
-<?hh // strict
+<?php
 namespace ElasticExport\Generators;
 
 use ElasticExport\Helper\ElasticExportHelper;
@@ -17,12 +17,12 @@ class PreisRoboterDE extends CSVGenerator
     /*
      * @var
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
     /*
      * @var ArrayHelper
      */
-    private ArrayHelper $arrayHelper;
+    private $arrayHelper;
 
     /**
      * IdealoGenerator constructor.
@@ -41,7 +41,7 @@ class PreisRoboterDE extends CSVGenerator
      * @param mixed $resultData
      * @param array $formatSettings
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
     {
         if($resultData instanceof RecordList)
 		{

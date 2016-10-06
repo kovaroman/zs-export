@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\XMLGenerator;
@@ -19,47 +20,47 @@ class TreepodiaCOM extends XMLGenerator
 	/**
 	 * @var string
 	 */
-	protected string $version = '1.0';
+	protected $version = '1.0';
 
 	/**
 	 * @var string
 	 */
-	protected string $encoding = 'UTF-8';
+	protected $encoding = 'UTF-8';
 
 	/**
 	 * @var bool
 	 */
-	protected bool $formatOutput = true;
+	protected $formatOutput = true;
 
 	/**
 	 * @var bool
 	 */
-	protected bool $preserveWhiteSpace = true;
+	protected $preserveWhiteSpace = true;
 
 	/*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
      * CategoryBranchRepositoryContract $categoryBranchRepository
      */
-    private CategoryBranchRepositoryContract $categoryBranchRepository;
+    private $categoryBranchRepository;
 
 	/**
      * CategoryRepository $categoryRepository
      */
-    private CategoryRepository $categoryRepository;
+    private $categoryRepository;
 
     /**
      * ManufacturerRepositoryContract $manufacturerRepository
      */
-    private ManufacturerRepositoryContract $manufacturerRepository;
+    private $manufacturerRepository;
 
 	/**
      * TreepodiaDE constructor.
@@ -88,8 +89,9 @@ class TreepodiaCOM extends XMLGenerator
 
 	/**
 	 * @param mixed $resultData
+	 * @param array $formatSettings
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -188,11 +190,11 @@ class TreepodiaCOM extends XMLGenerator
 
 	/**
 	 * Get the top level category.
-	 * @param Record item
-	 * @param KeyValue settings
-	 * @return ?Category
+	 * @param Record $item
+	 * @param KeyValue $settings
+	 * @return Category
 	 */
-	public function getTopLevelCategory(Record $item, KeyValue $settings):?Category
+	public function getTopLevelCategory(Record $item, KeyValue $settings):Category
 	{
 		$lang = $settings->get('lang') ? $settings->get('lang') : 'de';
 
@@ -200,18 +202,26 @@ class TreepodiaCOM extends XMLGenerator
 
 		if(!is_null($categoryBranch))
 		{
-			$categoryList = ImmVector{
+			$list = [
 				$categoryBranch->plenty_category_branch_category6_id,
 				$categoryBranch->plenty_category_branch_category5_id,
 				$categoryBranch->plenty_category_branch_category4_id,
 				$categoryBranch->plenty_category_branch_category3_id,
 				$categoryBranch->plenty_category_branch_category2_id,
 				$categoryBranch->plenty_category_branch_category1_id
-			};
+			];
 
-			$categoryId = $categoryList
-						->filter($catId ==> $catId > 0)
-						->firstValue();
+			$categoryList = [];
+
+			foreach($list AS $category)
+			{
+				if($category > 0)
+				{
+					$categoryList[] = $category;
+				}
+			}
+
+			$categoryId = $categoryList[0];
 
 			return $this->categoryRepository->get((int) $categoryId, $lang);
 		}
@@ -234,26 +244,37 @@ class TreepodiaCOM extends XMLGenerator
 	 * @param Record $item
 	 * @return array<string>
 	 */
-	private function getCatchPhraseList(Record $item):array<string>
+	private function getCatchPhraseList(Record $item):array										// TODO
 	{
-		$list = ImmVector{
+		$list = [
 			$item->itemBase->free1,
 			$item->itemBase->free2,
 			$item->itemBase->free3,
 			$item->itemBase->free4,
-		};
+		];
 
-		return $list
-				->filter(($free) ==> strlen($free) > 0)
-				->toArray();
+		$filteredList = [];
+
+		foreach($list AS $value)
+		{
+			if(strlen($value) > 0)
+			{
+				$filteredList[] = $value;
+			}
+		}
+
+		return $filteredList;
+//				->filter(($free) ==> strlen($free) > 0)
+//				->toArray();
 	}
 
 	/**
 	 * Get keywords.
 	 * @param Record $item
+	 * @param KeyValue $settings
 	 * @return array<string>
 	 */
-	public function getKeywords(Record $item, KeyValue $settings):array<string>
+	public function getKeywords(Record $item, KeyValue $settings):array
 	{
 		$list = explode(',', $item->itemDescription->keywords);
 

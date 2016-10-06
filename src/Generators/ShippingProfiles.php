@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -13,17 +14,17 @@ class ShippingProfiles extends CSVGenerator
 	/*
      * @var ElasticExportHelper
      */
-	private ElasticExportHelper $elasticExportHelper;
+	private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * @var int
 	 */
-	private int $columns = 5;
+	private $columns = 5;
 
 	/**
 	 * ShippingProfiles constructor.
@@ -41,8 +42,9 @@ class ShippingProfiles extends CSVGenerator
 
 	/**
 	 * @param mixed $resultData
+	 * @param array $formatSettings
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -80,7 +82,7 @@ class ShippingProfiles extends CSVGenerator
 	 * Get the head row.
 	 * @return array<mixed>
 	 */
-	private function head():array<mixed>
+	private function head():array
 	{
 		$row = ['item_id'];
 
@@ -97,7 +99,7 @@ class ShippingProfiles extends CSVGenerator
 	 * @param  <array<string,mixed> $row
 	 * @return array<mixed>
 	 */
-	private function row(array<mixed> $row):array<mixed>
+	private function row(array $row):array
 	{
 		for($i = count($row); $i <= $this->columns; $i++)
 		{
@@ -112,7 +114,7 @@ class ShippingProfiles extends CSVGenerator
 	 * @param  Record $item
 	 * @return array<int,int>
 	 */
-	private function getShippingSupportIds(Record $item):array<int>
+	private function getShippingSupportIds(Record $item):array
 	{
 		$ids = [];
 
@@ -128,9 +130,10 @@ class ShippingProfiles extends CSVGenerator
 
 	/**
 	 * Update maximum number of available columns.
+	 * @param int $columns
 	 * @return void
 	 */
-	private function maxColumns(int $columns):void
+	private function maxColumns(int $columns)
 	{
 		$this->columns = $columns > $this->columns ? $columns : $this->columns;
 	}

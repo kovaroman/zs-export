@@ -667,7 +667,7 @@ class ElasticExportHelper
      * @param  array $attributeNameCombination
      * @return string
      */
-    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', ', ?array $attributeNameCombination = null):string
+    public function getAttributeValueSetShortFrontendName(Record $item, KeyValue $settings, string $delimiter = ', ', array $attributeNameCombination = null):string
     {
         $values = [];
         $unsortedValues = [];
@@ -907,10 +907,10 @@ class ElasticExportHelper
      * Get item characters that match referrer from settings and a given component id.
      * @param  Record   $item
      * @param  float    $marketId
-     * @param  ?int     $componentId  = null
+     * @param  int     $componentId  = null
      * @return array
      */
-    public function getItemCharactersByComponent(Record $item, float $marketId, ?int $componentId = null):array //	Vector<array<string,mixed>>
+    public function getItemCharactersByComponent(Record $item, float $marketId, int $componentId = null):array //	Vector<array<string,mixed>>
     {
         $propertyList = $item->itemPropertyList;
 
@@ -1048,7 +1048,7 @@ class ElasticExportHelper
 	 * @param  KeyValue $settings
 	 * @return DefaultShipping|null
 	 */
-	public function getDefaultShipping(KeyValue $settings):?DefaultShipping
+	public function getDefaultShipping(KeyValue $settings):DefaultShipping
 	{
         $defaultShippingProfiles = $this->getConfig('plenty.order.shipping.default_shipping');
 
@@ -1067,9 +1067,9 @@ class ElasticExportHelper
      * Get custom configuration.
      * @param  string $key
      * @param  mixed $default = null
-     * @return T
+     * @return mixed
      */
-    public function getConfig<T is >(string $key, mixed $default = null):T
+    public function getConfig(string $key, mixed $default = null):mixed
     {
         return $this->configRepository->get($key, $default);
     }
@@ -1110,7 +1110,7 @@ class ElasticExportHelper
      * @param bool $setLastExportedTimestamp
      * @return string
      */
-    public function generateSku(Record $item, int $marketId, ?string $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):string
+    public function generateSku(Record $item, int $marketId, string $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):string
     {
         $sku = $this->variationSkuRepository
             ->generateSku($item->variationBase->id, $marketId, $accountId, $sku, $setLastExportedTimestamp);

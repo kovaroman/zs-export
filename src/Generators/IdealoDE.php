@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -19,36 +20,37 @@ use Plenty\Modules\Item\Property\Models\PropertySelection;
  */
 class IdealoDE extends CSVGenerator
 {
-	const string DEFAULT_PAYMENT_METHOD = 'vorkasse';
+	const DEFAULT_PAYMENT_METHOD = 'vorkasse';
 
-	const string SHIPPING_COST_TYPE_FLAT = 'flat';
-    const string SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+	const SHIPPING_COST_TYPE_FLAT = 'flat';
+    const SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
 
 	/**
      * @var ElasticExportHelper $elasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 
 	/**
 	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private PropertySelectionRepositoryContract $propertySelectionRepository;
+	private $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
 	 */
-	private array<int,array<string,string>>$itemPropertyCache = [];
+	private $itemPropertyCache = [];
 
 	/**
 	 * @var ArrayHelper $arrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * @var Map<int,PaymentMethod> $usedPaymentMethods
 	 */
-	private Map<int,PaymentMethod> $usedPaymentMethods = Map{};
+//	private Map<int,PaymentMethod> $usedPaymentMethods = Map{};
+	private $usedPaymentMethods = [];
 
     /**
      * IdealoGenerator constructor.
@@ -67,7 +69,7 @@ class IdealoDE extends CSVGenerator
 		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
     {
         if($resultData instanceof RecordList)
 		{
@@ -89,7 +91,7 @@ class IdealoDE extends CSVGenerator
 		}
     }
 
-	private function head(KeyValue $settings):array<string>
+	private function head(KeyValue $settings):array
 	{
 		$data = [
 			'article_id',
@@ -159,7 +161,7 @@ class IdealoDE extends CSVGenerator
 	 * @param KeyValue $settings
 	 * @return array<string>
 	 */
-	private function row(Record $item, KeyValue $settings):array<mixed>
+	private function row(Record $item, KeyValue $settings):array
 	{
 		$price = $this->elasticExportHelper->getPrice($item) <= 0 ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) <= $price ? 0 : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
@@ -205,7 +207,7 @@ class IdealoDE extends CSVGenerator
 		}
 
 		$checkoutApproved = $this->getProperty($item, 'CheckoutApproved');
-		if(is_null($checkoutApproved))
+		if(is_null($checkoutApproved) || strlen($checkoutApproved) <= 0)
 		{
 			$checkoutApproved = 'false';
 		}
@@ -259,23 +261,25 @@ class IdealoDE extends CSVGenerator
 		{
 			$data['itemsInStock'] = $stock;
 			$fulfillmentType = $this->getProperty($item, 'FulfillmentType:Spedition');
-			if(!is_null($fulfillmentType))
+
+			if(!is_null($fulfillmentType) || strlen($fulfillmentType) > 0)
 			{
 				$fulfillmentType = 'Spedition';
 			}
 			else
 			{
-				$fulfillmentType = is_null($this->getProperty($item, 'FulfillmentType:Paketdienst')) ? '' : 'Paketdienst';
+				$full = $this->getProperty($item, 'FulfillmentType:Paketdienst');
+				$fulfillmentType = is_null($full) || strlen($full) <= 0 ? '' : 'Paketdienst';
 			}
 			$data['fulfillmentType'] = $fulfillmentType;
 			if($data['fulfillmentType'] == 'Spedition')
 			{
 				$twoManHandling = $this->getProperty($item, 'TwoManHandlingPrice');
 				$twoManHandling = str_replace(",", '.', $twoManHandling);
-				$twoManHandling = number_format($twoManHandling, 2, ',', '');
+				$twoManHandling = number_format((float)$twoManHandling, 2, ',', '');
 				$disposal = $this->getProperty($item, 'DisposalPrice');
 				$disposal = str_replace(",", '.', $disposal);
-				$disposal = number_format($disposal, 2, ',', '');
+				$disposal = number_format((float)$disposal, 2, ',', '');
 
 				$twoManHandling > 0 ?
 					$data['twoManHandlingPrice'] = $twoManHandling : $data['twoManHandlingPrice'] = '';
@@ -396,7 +400,7 @@ class IdealoDE extends CSVGenerator
 		 * @param  string   $property
 		 * @return string|null
 		 */
-    private function getProperty(Record $item, string $property):?string
+    private function getProperty(Record $item, string $property):string
 	{
 		$itemPropertyList = $this->getItemPropertyList($item, 121.00);
 
@@ -405,7 +409,7 @@ class IdealoDE extends CSVGenerator
 			return $itemPropertyList[$property];
 		}
 
-		return null;
+		return '';
 	}
 
     /**
@@ -414,7 +418,7 @@ class IdealoDE extends CSVGenerator
 	 * @param   float $marketId
 	 * @return  array<string,string>
 	 */
-    private function getItemPropertyList(Record $item, float $marketId):array<string,string>
+    private function getItemPropertyList(Record $item, float $marketId):array
     {
 		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
 		{

@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -12,20 +13,20 @@ use Plenty\Modules\Helper\Models\KeyValue;
 
 class BelboonDE extends CSVGenerator
 {
-	const string DELIMITER = ';';
+	const DELIMITER = ';';
 
-    const string IMAGE_SIZE_WIDTH = 'width';
-    const string IMAGE_SIZE_HEIGHT = 'height';
+    const IMAGE_SIZE_WIDTH = 'width';
+    const IMAGE_SIZE_HEIGHT = 'height';
 
     /*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
   	/*
   	 * @var ArrayHelper
   	 */
-  	private ArrayHelper $arrayHelper;
+  	private $arrayHelper;
 
 	  /**
      * BelboonDE constructor.
@@ -41,7 +42,7 @@ class BelboonDE extends CSVGenerator
 	/**
 	 * @param mixed $resultData
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -105,7 +106,7 @@ class BelboonDE extends CSVGenerator
 		}
 	}
 
-	private function getImageInformation(Record $item, KeyValue $settings, string $imageType):array<string, mixed>
+	private function getImageInformation(Record $item, KeyValue $settings, string $imageType):array
 	{
 		$imageList = $this->elasticExportHelper->getImageList($item, $settings, $imageType);
 

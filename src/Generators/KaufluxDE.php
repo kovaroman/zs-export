@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -17,44 +18,54 @@ use Plenty\Modules\Item\Property\Models\PropertySelection;
  */
 class KaufluxDE extends CSVGenerator
 {
-	const int STATUS_VISIBLE = 0;
-	const int STATUS_LOCKED = 1;
-	const int STATUS_HIDDEN = 2;
+	const STATUS_VISIBLE = 0;
+	const STATUS_LOCKED = 1;
+	const STATUS_HIDDEN = 2;
 
 	/*
      * @var
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private PropertySelectionRepositoryContract $propertySelectionRepository;
+	private $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
 	 */
-	private array<int,array<string>>$itemPropertyCache = [];
+	private $itemPropertyCache = [];
 
 	/**
 	 * @var array<int>
 	 */
-	private array<int> $addedItems = [];
+	private $addedItems = [];
 
 	/**
 	 * @var ImmMap<int,string>
 	 */
-	private ImmMap<int,string> $flags = ImmMap{
+//	private ImmMap<int,string> $flags = ImmMap{
+//		0 => '',
+//		1 => 'Sonderangebot',
+//		2 => 'Neuheit',
+//		3 => 'Top Artikel',
+//	};
+
+	/**
+	 * @var array
+	 */
+	private $flags = [
 		0 => '',
 		1 => 'Sonderangebot',
 		2 => 'Neuheit',
 		3 => 'Top Artikel',
-	};
+	];
 
     /**
      * IdealoGenerator constructor.
@@ -65,7 +76,7 @@ class KaufluxDE extends CSVGenerator
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		PropertySelectionRepositoryContract $propertySelectionRepository,
+		PropertySelectionRepositoryContract $propertySelectionRepository
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
@@ -73,7 +84,7 @@ class KaufluxDE extends CSVGenerator
 		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
     {
         if($resultData instanceof RecordList)
 		{
@@ -148,7 +159,7 @@ class KaufluxDE extends CSVGenerator
 					'MwSt' 				=> $item->variationRetailPrice->vatValue,
 					'UVP' 				=> $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings),
 					'Katalog1' 			=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('lang'), $settings->get('plentyId')),
-					'Flags' 			=> $this->flags->get($item->itemBase->storeSpecial),
+					'Flags' 			=> in_array($item->itemBase->storeSpecial, $this->flags) ? $this->flags[$item->itemBase->storeSpecial] : '',
 					'LinkXS' 			=> implode(', ', $this->getCrossSellingItems($item)),
 					'ExtLinkDetail' 	=> $this->elasticExportHelper->getUrl($item, $settings),
 					'Status' 			=> $this->getStatus($item),
@@ -191,7 +202,7 @@ class KaufluxDE extends CSVGenerator
 	 * @param 	Record $item
 	 * @return array<string,string>
 	 */
-	private function getItemPropertyList(Record $item):array<string>
+	private function getItemPropertyList(Record $item):array
 	{
 		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
 		{
@@ -253,7 +264,7 @@ class KaufluxDE extends CSVGenerator
 	 * @param Record $item
 	 * @return array<string>
 	 */
-	private function getCrossSellingItems(Record $item):array<string>
+	private function getCrossSellingItems(Record $item):array
 	{
 		$list = [];
 

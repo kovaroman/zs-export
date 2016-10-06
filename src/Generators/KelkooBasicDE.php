@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -9,20 +10,20 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 
 
-class KelkooPremiumDE extends CSVGenerator
+class KelkooBasicDE extends CSVGenerator
 {
     /*
      * @var ElasticExportHelper
      */
-private ElasticExportHelper $elasticExportHelper;
+	private $elasticExportHelper;
 
     /*
      * @var ArrayHelper
      */
-private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
     /**
-     * KelkooPremiumDE constructor.
+     * KelkooBasicDE constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      */
@@ -35,7 +36,7 @@ private ArrayHelper $arrayHelper;
     /**
      * @param mixed $resultData
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -44,36 +45,36 @@ private ArrayHelper $arrayHelper;
 			$this->setDelimiter(" ");
 
 			$this->addCSVContent([
-					'category',
-                    'marke',
+					'url',
                     'title',
                     'description',
                     'price',
-                    'deliverycost',
-                    'url',
+                    'offerid',
                     'image',
                     'availability',
-                    'offerid',
+                    'deliverycost',
+                    'deliveryTime',
                     'unitaryPrice',
                     'ean',
+                    'ecotax',
 
 			]);
 
 			foreach($resultData as $item)
 			{
 				$data = [
-                    'category'      => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-                    'marke'         => $item->itemBase->producer,
-                    'title' 		=> $this->elasticExportHelper->getName($item, $settings),
-                    'description'   => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
-                    'deliverycost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
                     'url' 		    => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-                    'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),
-                    'availability'  => $this->elasticExportHelper->getAvailability($item, $settings),
+                    'title' 		=> $this->elasticExportHelper->getName($item, $settings, 80),
+                    'description'   => $this->elasticExportHelper->getDescription($item, $settings, 160),
+                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
                     'offerid'       => $item->variationBase->id,
+                    'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),
+                    'availability'  => $this->elasticExportHelper->getAvailability($item, $settings, false),
+					'deliverycost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+                    'deliveryTime' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
                     'unitaryPrice'  => $this->elasticExportHelper->getBasePrice($item, $settings),
                     'ean'           => $item->variationBarcode->code,
+                    'ecotax'        => ''
 				];
 
 				$this->addCSVContent(array_values($data));

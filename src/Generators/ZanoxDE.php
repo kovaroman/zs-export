@@ -1,4 +1,4 @@
-<?hh // strict
+<?php
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -15,12 +15,12 @@ class ZanoxDE extends CSVGenerator
     /*
      * @var ElasticExportHelper
      */
-private ElasticExportHelper $elasticExportHelper;
+private $elasticExportHelper;
 
     /*
      * @var ArrayHelper
      */
-private ArrayHelper $arrayHelper;
+private $arrayHelper;
 
     /**
      * ZanoxDE constructor.
@@ -36,7 +36,7 @@ private ArrayHelper $arrayHelper;
     /**
      * @param mixed $resultData
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{

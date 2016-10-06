@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -17,76 +18,75 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValue;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
 
-
 class GoogleShopping extends CSVGenerator
 {
-    const string CHARACTER_TYPE_GENDER						= 'gender';
-    const string CHARACTER_TYPE_AGE_GROUP					= 'age_group';
-    const string CHARACTER_TYPE_SIZE_TYPE					= 'size_type';
-    const string CHARACTER_TYPE_SIZE_SYSTEM					= 'size_system';
-    const string CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS		= 'energy_efficiency_class';
-    const string CHARACTER_TYPE_EXCLUDED_DESTINATION		= 'excluded_destination';
-    const string CHARACTER_TYPE_ADWORDS_REDIRECT			= 'adwords_redirect';
-    const string CHARACTER_TYPE_MOBILE_LINK					= 'mobile_link';
-    const string CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE	= 'sale_price_effective_date';
-    const string CHARACTER_TYPE_CUSTOM_LABEL_0				= 'custom_label_0';
-    const string CHARACTER_TYPE_CUSTOM_LABEL_1				= 'custom_label_1';
-    const string CHARACTER_TYPE_CUSTOM_LABEL_2				= 'custom_label_2';
-    const string CHARACTER_TYPE_CUSTOM_LABEL_3				= 'custom_label_3';
-    const string CHARACTER_TYPE_CUSTOM_LABEL_4				= 'custom_label_4';
-    const string CHARACTER_TYPE_DESCRIPTION					= 'description';
-    const string CHARACTER_TYPE_COLOR						= 'color';
-    const string CHARACTER_TYPE_SIZE						= 'size';
-    const string CHARACTER_TYPE_PATTERN						= 'pattern';
-    const string CHARACTER_TYPE_MATERIAL					= 'material';
+    const CHARACTER_TYPE_GENDER						= 'gender';
+    const CHARACTER_TYPE_AGE_GROUP					= 'age_group';
+    const CHARACTER_TYPE_SIZE_TYPE					= 'size_type';
+    const CHARACTER_TYPE_SIZE_SYSTEM					= 'size_system';
+    const CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS		= 'energy_efficiency_class';
+    const CHARACTER_TYPE_EXCLUDED_DESTINATION		= 'excluded_destination';
+    const CHARACTER_TYPE_ADWORDS_REDIRECT			= 'adwords_redirect';
+    const CHARACTER_TYPE_MOBILE_LINK					= 'mobile_link';
+    const CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE	= 'sale_price_effective_date';
+    const CHARACTER_TYPE_CUSTOM_LABEL_0				= 'custom_label_0';
+    const CHARACTER_TYPE_CUSTOM_LABEL_1				= 'custom_label_1';
+    const CHARACTER_TYPE_CUSTOM_LABEL_2				= 'custom_label_2';
+    const CHARACTER_TYPE_CUSTOM_LABEL_3				= 'custom_label_3';
+    const CHARACTER_TYPE_CUSTOM_LABEL_4				= 'custom_label_4';
+    const CHARACTER_TYPE_DESCRIPTION					= 'description';
+    const CHARACTER_TYPE_COLOR						= 'color';
+    const CHARACTER_TYPE_SIZE						= 'size';
+    const CHARACTER_TYPE_PATTERN						= 'pattern';
+    const CHARACTER_TYPE_MATERIAL					= 'material';
 
-    const string ISO_CODE_2                                 = 'isoCode2';
-    const string ISO_CODE_3                                 = 'isoCode3';
+    const ISO_CODE_2                                 = 'isoCode2';
+    const ISO_CODE_3                                 = 'isoCode3';
 
 	/*
 	 * @var ElasticExportHelper
 	 */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-    private ArrayHelper $arrayHelper;
+    private $arrayHelper;
 
 	/**
 	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-    private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+    private $attributeValueNameRepository;
 
 	/**
 	 * AttributeRepositoryContract $attributeRepository
 	 */
-	private AttributeRepositoryContract $attributeRepository;
+	private $attributeRepository;
 
 	/**
 	 * AttributeValueRepositoryContract $attributeValueRepository
 	 */
-	private AttributeValueRepositoryContract $attributeValueRepository;
+	private $attributeValueRepository;
 
     /**
      * PropertySelectionRepositoryContract $propertySelectionRepository
      */
-    private PropertySelectionRepositoryContract $propertySelectionRepository;
+    private $propertySelectionRepository;
 
     /**
      * @var array<int,mixed>
      */
-    private array<int,array<string,string>>$itemPropertyCache = [];
+    private $itemPropertyCache = [];
 
 	/**
 	 * @var array<int,string>
 	 */
-	private array<int,string>$attributeValueCache = [];
+	private $attributeValueCache = [];
 
 	/**
 	 * @var array<int,string>
 	 */
-	private array<int,string>$linkedAttributeList = [];
+	private $linkedAttributeList = [];
 
 	/**
 	 * GoogleShopping constructor.
@@ -115,7 +115,7 @@ class GoogleShopping extends CSVGenerator
     /**
      * @param mixed $resultData
      */
-    protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+    protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -311,7 +311,7 @@ class GoogleShopping extends CSVGenerator
      * @param 	Record $item
      * @return array<string,string>
      */
-    private function getItemPropertyList(Record $item):array<string,string>
+    private function getItemPropertyList(Record $item):array
 	{
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
@@ -454,7 +454,7 @@ class GoogleShopping extends CSVGenerator
 	 * @param  Record   $item
 	 * @return array<string,string>
 	 */
-    private function getVariationAttributes(Record $item):array<string,string>
+    private function getVariationAttributes(Record $item):array
     {
 		$variationAttributes = [];
 
@@ -477,7 +477,7 @@ class GoogleShopping extends CSVGenerator
 	 * @param  KeyValue $settings
 	 * @return array<string,string>
 	 */
-	private function loadLinkedAttributeList(KeyValue $settings):void
+	private function loadLinkedAttributeList(KeyValue $settings)
 	{
 		$attributeRepositoryList = $this->attributeRepository->all();
 

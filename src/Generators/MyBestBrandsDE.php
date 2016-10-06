@@ -1,4 +1,5 @@
-<?hh // strict
+<?php
+
 namespace ElasticExport\Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
@@ -18,27 +19,27 @@ class MyBestBrandsDE extends CSVGenerator
 	/*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-	private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+	private $attributeValueNameRepository;
 
 	/**
 	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private PropertySelectionRepositoryContract $propertySelectionRepository;
+	private $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
 	 */
-	private array<int,array<string,string>>$itemPropertyCache = [];
+	private $itemPropertyCache = [];
 
 	/**
      * Geizhals constructor.
@@ -63,7 +64,7 @@ class MyBestBrandsDE extends CSVGenerator
 	/**
 	 * @param mixed $resultData
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -122,11 +123,13 @@ class MyBestBrandsDE extends CSVGenerator
 						switch($key)
 						{
 							case 'color':
-								$rows[$item->itemBase->id]['Color'] = array_unique(array_push($rows[$item->itemBase->id]['Color'], $value));
+								array_push($rows[$item->itemBase->id]['Color'], $value);
+								$rows[$item->itemBase->id]['Color'] = array_unique($rows[$item->itemBase->id]['Color']);
 								break;
 
 							case 'available_sizes':
-								$rows[$item->itemBase->id]['AvailableSizes'] = array_unique(array_push($rows[$item->itemBase->id]['AvailableSizes'], $value));
+								array_push($rows[$item->itemBase->id]['AvailableSizes'], $value);
+								$rows[$item->itemBase->id]['AvailableSizes'] = array_unique($rows[$item->itemBase->id]['AvailableSizes']);
 								break;
 						}
 					}
@@ -156,7 +159,7 @@ class MyBestBrandsDE extends CSVGenerator
 	 * @param  KeyValue $settings
 	 * @return array<string,mixed>
 	 */
-	private function getMain(Record $item, KeyValue $settings):array<string,mixed>
+	private function getMain(Record $item, KeyValue $settings):array
 	{
 		$itemPropertyList = $this->getItemPropertyList($item);
 
@@ -192,7 +195,7 @@ class MyBestBrandsDE extends CSVGenerator
 	 * @param  KeyValue $settings
 	 * @return array<string,string>
 	 */
-	private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+	private function getVariationAttributes(Record $item, KeyValue $settings):array
 	{
 		$variationAttributes = [];
 
@@ -218,7 +221,7 @@ class MyBestBrandsDE extends CSVGenerator
 	 * @param 	Record $item
 	 * @return array<string,string>
 	 */
-	protected function getItemPropertyList(Record $item):array<string,string>
+	protected function getItemPropertyList(Record $item):array
 	{
 		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
 		{

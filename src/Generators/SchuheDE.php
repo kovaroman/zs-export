@@ -1,4 +1,4 @@
-<?hh // strict
+<?php
 
 namespace ElasticExport\Generators;
 
@@ -19,32 +19,37 @@ class SchuheDE extends CSVGenerator
 	/*
      * @var ElasticExportHelper
      */
-    private ElasticExportHelper $elasticExportHelper;
+    private $elasticExportHelper;
 
 	/*
 	 * @var ArrayHelper
 	 */
-	private ArrayHelper $arrayHelper;
+	private $arrayHelper;
 
 	/**
 	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
 	 */
-	private AttributeValueNameRepositoryContract $attributeValueNameRepository;
+	private $attributeValueNameRepository;
 
 	/**
 	 * PropertySelectionRepositoryContract $propertySelectionRepository
 	 */
-	private PropertySelectionRepositoryContract $propertySelectionRepository;
+	private $propertySelectionRepository;
 
 	/**
 	 * @var array<int,mixed>
 	 */
-	private array<int,array<string,string>>$itemPropertyCache = [];
+	private $itemPropertyCache = [];
 
 	/**
 	 * @var Map<int, array<int, string>>
 	 */
-	private Vector<string> $variations = Vector{};
+//	private Vector<string> $variations = Vector{};
+
+	/**
+	 * @var array
+	 */
+	private $variations = [];
 
 	/**
      * Geizhals constructor.
@@ -68,8 +73,9 @@ class SchuheDE extends CSVGenerator
 
 	/**
 	 * @param mixed $resultData
+	 * @param array $formatSettings
 	 */
-	protected function generateContent(mixed $resultData, array<FormatSetting> $formatSettings = []):void
+	protected function generateContent(mixed $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
@@ -229,7 +235,7 @@ class SchuheDE extends CSVGenerator
 	 * @param 	Record $item
 	 * @return array<string,string>
 	 */
-	private function getItemPropertyList(Record $item):array<string,string>
+	private function getItemPropertyList(Record $item):array
 	{
 		if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
 		{
@@ -308,7 +314,7 @@ class SchuheDE extends CSVGenerator
 	 * @param  KeyValue $settings
 	 * @return array<string,string>
 	 */
-	private function getVariationAttributes(Record $item, KeyValue $settings):array<string,string>
+	private function getVariationAttributes(Record $item, KeyValue $settings)
 	{
 		$variationAttributes = [];
 
@@ -349,16 +355,16 @@ class SchuheDE extends CSVGenerator
 	 * @param  array<string,string>$variationAttributes
 	 * @return bool
 	 */
-	private function handled(int $itemId, array<string,string>$variationAttributes):bool
+	private function handled(int $itemId, array $variationAttributes):bool
 	{
 		$attributes = $this->hashAttributes($itemId, $variationAttributes);
 
-		if(in_array($attributes, $this->variations->toArray()))
+		if(in_array($attributes, $this->variations))
 		{
 			return true;
 		}
 
-		$this->variations->add($attributes);
+		$this->variations[] = $attributes;
 
 		return false;
 	}
@@ -369,7 +375,7 @@ class SchuheDE extends CSVGenerator
 	 * @param  array<string,string>$variationAttributes
 	 * @return string
 	 */
-	private function hashAttributes(int $itemId, array<string,string>$variationAttributes):string
+	private function hashAttributes(int $itemId, array $variationAttributes):string
 	{
 		$attributes = (string) $itemId;
 
