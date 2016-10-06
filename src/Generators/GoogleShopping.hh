@@ -487,9 +487,9 @@ class GoogleShopping extends CSVGenerator
 			{
 				if($attributeRepository instanceof Attribute)
 				{
-					if (strlen($attributeRepository->googleproductsVariation) > 0)
+					if (strlen($attributeRepository->googleShoppingAttribute) > 0)
 					{
-						$this->linkedAttributeList[$attributeRepository->id] = $attributeRepository->googleproductsVariation;
+						$this->linkedAttributeList[$attributeRepository->id] = $attributeRepository->googleShoppingAttribute;
 
 						$attributeValueList = $this->attributeValueRepository->findByAttributeId($attributeRepository->id);
 
