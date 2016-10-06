@@ -195,9 +195,9 @@ class TracdelightCOM extends CSVGenerator
 
             if($attributeValueName instanceof AttributeValueName)
             {
-                if($attributeValueName->attributeValue->tracdelightMap)
+                if($attributeValueName->attributeValue->tracdelightValue)
                 {
-                    $variationAttributes[$attributeValueName->attributeValue->tracdelightMap][] = $attributeValueName->name;
+                    $variationAttributes[$attributeValueName->attributeValue->tracdelightValue][] = $attributeValueName->name;
                 }
             }
         }
