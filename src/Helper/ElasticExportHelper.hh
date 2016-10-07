@@ -459,45 +459,57 @@ class ElasticExportHelper
      */
     public function getCategory(int $categoryId, string $lang, int $plentyId, string $separator = ' > '):string
 	{
-        $categoryBranch = $this->categoryBranchRepository->find($categoryId);
+        $categoryBranchList = array();
+        if(strlen($categoryId) > 0)
+        {
+            $categoryBranch = $this->categoryBranchRepository->find($categoryId);
 
-        if(!is_null($categoryBranch))
-		{
-            $category1 = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
-            $category2 = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
-            $category3 = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
-            $category4 = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
-            $category5 = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
-            $category6 = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
-
-            if($category1 instanceof Category &&
-                $category2 instanceof Category &&
-                $category3 instanceof Category &&
-                $category4 instanceof Category &&
-                $category5 instanceof Category &&
-                $category6 instanceof Category)
+            if(!is_null($categoryBranch))
             {
-                $category1Details = $category1->details[0];
-                $category2Details = $category1->details[0];
-                $category3Details = $category1->details[0];
-                $category4Details = $category1->details[0];
-                $category5Details = $category1->details[0];
-                $category6Details = $category1->details[0];
+                $category1 = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
+                $category2 = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
+                $category3 = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
+                $category4 = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
+                $category5 = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
+                $category6 = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
 
-                $categoryBranchList = [
-                    $category1Details->name,
-                    $category2Details->name,
-                    $category3Details->name,
-                    $category4Details->name,
-                    $category5Details->name,
-                    $category6Details->name,
-                ];
-
-                return implode($separator, $categoryBranchList);
+                if($category1 instanceof Category)
+                {
+                    $category1Details = $category1->details[0];
+                    $categoryBranchList[] = $category1Details->name;
+                }
+                if($category2 instanceof Category)
+                {
+                    $category2Details = $category2->details[0];
+                    $categoryBranchList[] = $category2Details->name;
+                }
+                if($category3 instanceof Category)
+                {
+                    $category3Details = $category3->details[0];
+                    $categoryBranchList[] = $category3Details->name;
+                }
+                if($category4 instanceof Category)
+                {
+                    $category4Details = $category4->details[0];
+                    $categoryBranchList[] = $category4Details->name;
+                }
+                if($category5 instanceof Category)
+                {
+                    $category5Details = $category5->details[0];
+                    $categoryBranchList[] = $category5Details->name;
+                }
+                if($category6 instanceof Category)
+                {
+                    $category6Details = $category6->details[0];
+                    $categoryBranchList[] = $category6Details->name;
+                }
+                if(is_array($categoryBranchList) && count($categoryBranchList) > 0)
+                {
+                    return implode($separator, $categoryBranchList);
+                }
             }
-		}
-
-		return '';
+        }
+        return '';
 	}
 
     public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
