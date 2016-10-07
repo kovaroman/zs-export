@@ -8,6 +8,8 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
+use ElasticExport\Helper\ItemVariationGrouper;
+use Plenty\Plugin\Application;
 
 class RakutenDE extends CSVGenerator
 {
@@ -25,15 +27,22 @@ class RakutenDE extends CSVGenerator
 	 */
 	private ArrayHelper $arrayHelper;
 
+    /**
+     * Application $app
+     */
+    private Application $app;
+
 	/**
 	 * Rakuten constructor.
 	 * @param ElasticExportHelper $elasticExportHelper
 	 * @param ArrayHelper $arrayHelper
+     * @param Application $app
 	 */
-	public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper)
+	public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper, Application $app)
 	{
 		$this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
+        $this->app = $app;
 	}
 
 	/**
@@ -112,86 +121,58 @@ class RakutenDE extends CSVGenerator
             $attributeName = array();
 			$attributeNameCombination = array();
 
-            foreach ($resultData as $item)
- 			{
-            /**
-             * Select and save the attribute name order for the first variation of each item with attributes,
-             * if the variation has attributes
-             */
- 			if(count($item->variationAttributeValueList) > 0 && $item->itemBase->id != $previousItemId)
- 				{
- 					foreach ($item->variationAttributeValueList as $attribute)
- 					{
- 						$attributeNameCombination[$item->itemBase->id][] = $attribute->attributeId;
- 					}
-                    $previousItemId = $item->itemBase->id;
-				}
- 			}
-            $previousItemId = 0;
-
-            foreach($resultData as $item)
+            $itemVariationGrouper = $this->app->make(ItemVariationGrouper::class, ['0' => $resultData]);
+            if($itemVariationGrouper instanceof ItemVariationGrouper)
             {
-                if(array_key_exists($item->itemBase->id, $attributeName) && strlen($attributeName[$item->itemBase->id]) > 0)
+                while($itemVariationGrouper->hasNext())
                 {
-                    continue;
+                    $variations = $itemVariationGrouper->getNextGroup();
+                    if (is_array($variations) && count($variations) > 0)
+                    {
+
+                        foreach($variations as $key => $item)
+                        {
+                            /**
+                             * Select and save the attribute name order for the first variation of each item with attributes,
+                             * if the variation has attributes
+                             */
+                            if (count($item->variationAttributeValueList) > 0
+                                && !array_key_exists($item->itemBase->id, $attributeName)
+                                && !array_key_exists($item->itemBase->id, $attributeNameCombination))
+                            {
+                                $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
+                                foreach ($item->variationAttributeValueList as $attribute)
+                                {
+                                    $attributeNameCombination[$item->itemBase->id][] = $attribute->attributeId;
+                                    break;
+                                }
+                            }
+
+                        }
+                        foreach($variations as $key => $item)
+                        {
+                            /**
+                             * gets the attribute value name of each attribute value which is linked with the variation in a specific order,
+                             * which depends on the $attributeNameCombination
+                             */
+                            $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|', $attributeNameCombination[$item->itemBase->id]);
+
+                            if(count($variations) == 1)
+                            {
+                                $this->buildParentWithoutChildrenRow($item, $settings);
+                            }
+                            elseif($item->variationBase->primaryVariation === true)
+                            {
+                                $this->buildParentWithChildrenRow($item, $settings, $attributeName);
+                            }
+                            else
+                            {
+                                $this->buildChildRow($item, $settings, $attributeValue);
+                            }
+                        }
+                    }
                 }
-                $attributeName[$item->itemBase->id] = $this->elasticExportHelper->getAttributeName($item, $settings);
             }
-
-			foreach($resultData as $item)
-			{
-				$currentItemId = $item->itemBase->id;
-
-                /**
-                 * gets the attribute value name of each attribute value which is linked with the variation in a specific order,
-                 * which depends on the $attributeNameCombination
-                 */
-                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, '|', $attributeNameCombination[$item->itemBase->id]);
-
-                /**
-                 * Case of an item with more variation
-                 */
-                if ($previousItemId != $currentItemId && $item->itemBase->variationCount > 1)
-				{
-                    /**
-                     * The item has multiple active variations with attributes
-                     */
-                    if(strlen($attributeName[$item->itemBase->id]) > 0)
-                    {
-                        $this->buildParentWithChildrenRow($item, $settings, $attributeName);
-                    }
-                    /**
-                     * The item has only inactive variations
-                     */
-                    else
-                    {
-                        $this->buildParentWithoutChildrenRow($item, $settings);
-                    }
-                    /**
-                     * This will only be triggered if the main variation also has a attribute value
-                     */
-					if(strlen($attributeValue) > 0)
-					{
-						$this->buildChildRow($item, $settings, $attributeValue);
-					}
-					$previousItemId = $currentItemId;
-				}
-                /**
-                 * Case item has only the main variation
-                 */
-				elseif($previousItemId != $currentItemId && $item->itemBase->variationCount == 1 && $item->itemBase->hasAttribute == false)
-				{
-					$this->buildParentWithoutChildrenRow($item, $settings);
-					$previousItemId = $currentItemId;
-				}
-                /**
-                 * The parent is already in the csv
-                 */
-				elseif(strlen($attributeValue) > 0)
-				{
-					$this->buildChildRow($item, $settings, $attributeValue);
-				}
-			}
 		}
 	}
 
