@@ -34,14 +34,7 @@ class RakutenDE extends ResultFields
 	{
 		$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        if($settings->get('variations') == 'mainVariations')
-        {
-            $this->setGroupByList(['groupBy.itemIdGetPrimaryVariation']);
-        }
-		else
-		{
-			$this->setOrderByList(['orderBy.itemId' => 'asc']);
-		}
+        $this->setOrderByList(['orderBy.itemId' => 'asc']);
 
 
         $itemDescriptionFields = ['urlContent'];
@@ -140,6 +133,7 @@ class RakutenDE extends ResultFields
 				'model',
 				'unitId',
 				'vatId',
+                'primaryVariation',
 			],
 
 			'variationRecommendedRetailPrice' => [
