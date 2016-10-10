@@ -205,10 +205,10 @@ class MyBestBrandsDE extends CSVGenerator
 
 			if($attributeValueName instanceof AttributeValueName)
 			{
-				$amazonVariation = $attributeValueName->attributeValue->attribute->amazonVariation == 'Color';
-				if($attributeValueName->attributeValue->attribute->amazonVariation)
+				$amazonAttribute = $attributeValueName->attributeValue->attribute->amazonAttribute == 'Color';
+				if($attributeValueName->attributeValue->attribute->amazonAttribute)
 				{
-					$variationAttributes[$attributeValueName->attributeValue->attribute->amazonVariation][] = $attributeValueName->name;
+					$variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute][] = $attributeValueName->name;
 				}
 			}
 		}

@@ -10,7 +10,7 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
-use Plenty\Modules\Category\Contracts\CategoryRepository;
+use Plenty\Modules\Category\Contracts\CategoryRepositoryContract;
 use Plenty\Modules\Item\Manufacturer\Contracts\ManufacturerRepositoryContract;
 use Plenty\Modules\Item\Manufacturer\Models\Manufacturer;
 use Plenty\Modules\Category\Models\Category;
@@ -53,7 +53,7 @@ class TreepodiaCOM extends XMLGenerator
     private $categoryBranchRepository;
 
 	/**
-     * CategoryRepository $categoryRepository
+     * CategoryRepositoryContract $categoryRepository
      */
     private $categoryRepository;
 
@@ -67,14 +67,14 @@ class TreepodiaCOM extends XMLGenerator
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
-     * @param CategoryRepository $categoryRepository
+     * @param CategoryRepositoryContract $categoryRepository
      * @param ManufacturerRepositoryContract $manufacturerRepository
      */
     public function __construct(
     	ElasticExportHelper $elasticExportHelper,
     	ArrayHelper $arrayHelper,
     	CategoryBranchRepositoryContract $categoryBranchRepository,
-    	CategoryRepository $categoryRepository,
+    	CategoryRepositoryContract $categoryRepository,
     	ManufacturerRepositoryContract $manufacturerRepository
     )
     {
@@ -198,17 +198,17 @@ class TreepodiaCOM extends XMLGenerator
 	{
 		$lang = $settings->get('lang') ? $settings->get('lang') : 'de';
 
-		$categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
+		$categoryBranch = $this->categoryBranchRepository->find($item->variationStandardCategory->categoryId);
 
 		if(!is_null($categoryBranch))
 		{
 			$list = [
-				$categoryBranch->plenty_category_branch_category6_id,
-				$categoryBranch->plenty_category_branch_category5_id,
-				$categoryBranch->plenty_category_branch_category4_id,
-				$categoryBranch->plenty_category_branch_category3_id,
-				$categoryBranch->plenty_category_branch_category2_id,
-				$categoryBranch->plenty_category_branch_category1_id
+				$categoryBranch->category6Id,
+				$categoryBranch->category5Id,
+				$categoryBranch->category4Id,
+				$categoryBranch->category3Id,
+				$categoryBranch->category2Id,
+				$categoryBranch->category1Id
 			];
 
 			$categoryList = [];

@@ -324,12 +324,12 @@ class SchuheDE extends CSVGenerator
 
 			if($attributeValueName instanceof AttributeValueName)
 			{
-				if($attributeValueName->attributeValue->attribute->amazonVariation == 'Color')
+				if($attributeValueName->attributeValue->attribute->amazonAttribute == 'Color')
 				{
 					$variationAttributes['color'][] = $attributeValueName->name;
 				}
 
-				if($attributeValueName->attributeValue->attribute->amazonVariation == 'Size')
+				if($attributeValueName->attributeValue->attribute->amazonAttribute == 'Size')
 				{
 					$variationAttributes['size'][] = $attributeValueName->name;
 				}

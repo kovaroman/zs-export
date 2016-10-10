@@ -176,9 +176,9 @@ private function getVariationAttributes(Record $item, KeyValue $settings):array
 
             if($attributeValueName instanceof AttributeValueName)
             {
-                if($attributeValueName->attributeValue->attribute->amazonVariation)
+                if($attributeValueName->attributeValue->attribute->amazonAttribute)
                 {
-                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazonVariation][] = $attributeValueName->name;
+                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute][] = $attributeValueName->name;
                 }
             }
         }

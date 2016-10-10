@@ -15,7 +15,7 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 use Plenty\Modules\Item\Attribute\Models\AttributeName;
 use Plenty\Modules\Item\Property\Contracts\PropertyItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
-use Plenty\Modules\Category\Contracts\CategoryRepository;
+use Plenty\Modules\Category\Contracts\CategoryRepositoryContract;
 use Plenty\Modules\Category\Models\Category;
 use Plenty\Modules\Item\Property\Contracts\PropertyMarketComponentRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertyMarketComponent;
@@ -102,7 +102,7 @@ class ElasticExportHelper
     private $urlBuilderRepository;
 
     /**
-     * CategoryRepository $categoryRepository
+     * CategoryRepositoryContract $categoryRepository
      */
     private $categoryRepository;
 
@@ -156,7 +156,7 @@ class ElasticExportHelper
      * @param PropertyItemNameRepositoryContract $propertyItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
-     * @param CategoryRepository $categoryRepository
+     * @param CategoryRepositoryContract $categoryRepository
      * @param PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository
      * @param PaymentMethodRepositoryContract $paymentMethodRepository
      * @param ConfigRepository $configRepository
@@ -172,7 +172,7 @@ class ElasticExportHelper
                                 PropertyItemNameRepositoryContract $propertyItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
-                                CategoryRepository $categoryRepository,
+                                CategoryRepositoryContract $categoryRepository,
                                 PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository,
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
                                 DefaultShippingCostRepositoryContract $defaultShippingCostRepository,
@@ -461,50 +461,91 @@ class ElasticExportHelper
      */
     public function getCategory(int $categoryId, string $lang, int $plentyId, string $separator = ' > '):string
 	{
-        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($categoryId, $lang, $plentyId);
+        $categoryBranchList = array();
+        if(strlen($categoryId) > 0)
+        {
+            $categoryBranch = $this->categoryBranchRepository->find($categoryId);
 
-        if(!is_null($categoryBranch) && is_array($categoryBranch->branchName) && count($categoryBranch->branchName))
-		{
-			return implode($separator, $categoryBranch->branchName);
-		}
+            if(!is_null($categoryBranch))
+            {
+                $category1 = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
+                $category2 = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
+                $category3 = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
+                $category4 = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
+                $category5 = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
+                $category6 = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
 
-		return '';
+                if($category1 instanceof Category)
+                {
+                    $category1Details = $category1->details[0];
+                    $categoryBranchList[] = $category1Details->name;
+                }
+                if($category2 instanceof Category)
+                {
+                    $category2Details = $category2->details[0];
+                    $categoryBranchList[] = $category2Details->name;
+                }
+                if($category3 instanceof Category)
+                {
+                    $category3Details = $category3->details[0];
+                    $categoryBranchList[] = $category3Details->name;
+                }
+                if($category4 instanceof Category)
+                {
+                    $category4Details = $category4->details[0];
+                    $categoryBranchList[] = $category4Details->name;
+                }
+                if($category5 instanceof Category)
+                {
+                    $category5Details = $category5->details[0];
+                    $categoryBranchList[] = $category5Details->name;
+                }
+                if($category6 instanceof Category)
+                {
+                    $category6Details = $category6->details[0];
+                    $categoryBranchList[] = $category6Details->name;
+                }
+                if(is_array($categoryBranchList) && count($categoryBranchList) > 0)
+                {
+                    return implode($separator, $categoryBranchList);
+                }
+            }
+        }
+        return '';
 	}
 
     public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
     {
-        $categoryBranch = $this->categoryBranchRepository->findCategoryBranch($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId'));
-
+        $categoryBranch = $this->categoryBranchRepository->find($item->variationStandardCategory->categoryId);
         $category = null;
-
         $lang = $settings->get('lang') ? $settings->get('lang') : 'de';
 
-        if(!is_null($categoryBranch) && is_array($categoryBranch->branch) && count($categoryBranch->branch))
+        if(!is_null($categoryBranch))
         {
             switch($categoryLevel)
             {
                 case 1:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category1_id, $lang);
+                    $category = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
                     break;
 
                 case 2:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category2_id, $lang);
+                    $category = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
                     break;
 
                 case 3:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category3_id, $lang);
+                    $category = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
                     break;
 
                 case 4:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category4_id, $lang);
+                    $category = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
                     break;
 
                 case 5:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category5_id, $lang);
+                    $category = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
                     break;
 
                 case 6:
-                    $category = $this->categoryRepository->get($categoryBranch->plenty_category_branch_category6_id, $lang);
+                    $category = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
                     break;
             }
         }
@@ -892,7 +933,7 @@ class ElasticExportHelper
     {
         foreach($item->itemPropertyList as $itemProperty)
         {
-            $propertyItemName = $this->propertyItemNameRepository->findOne($itemProperty->itemPropertyId, $settings->get('lang')? $settings->get('lang') : 'de');
+            $propertyItemName = $this->propertyItemNameRepository->findOne($itemProperty->propertyId, $settings->get('lang')? $settings->get('lang') : 'de');
 
             if($propertyItemName->name == $backendName)
             {
