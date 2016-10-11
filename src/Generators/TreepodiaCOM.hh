@@ -1,6 +1,7 @@
 <?hh // strict
 namespace ElasticExport\Generators;
 
+use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\DataExchange\Contracts\XMLGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
@@ -196,9 +197,14 @@ class TreepodiaCOM extends XMLGenerator
 	{
 		$lang = $settings->get('lang') ? $settings->get('lang') : 'de';
 
+		if(is_null($item->variationStandardCategory->categoryId))
+		{
+			return null;
+		}
+
 		$categoryBranch = $this->categoryBranchRepository->find($item->variationStandardCategory->categoryId);
 
-		if(!is_null($categoryBranch))
+		if(!is_null($categoryBranch) && $categoryBranch instanceof CategoryBranch)
 		{
 			$categoryList = ImmVector{
 				$categoryBranch->category6Id,
