@@ -464,7 +464,7 @@ class ElasticExportHelper
         {
             $categoryBranch = $this->categoryBranchRepository->find($categoryId);
 
-            if(!is_null($categoryBranch))
+            if(!is_null($categoryBranch) && $categoryBranch instanceof CategoryBranch)
             {
                 $category1 = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
                 $category2 = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
@@ -509,16 +509,22 @@ class ElasticExportHelper
                 }
             }
         }
+
         return '';
 	}
 
     public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
     {
+		if($item->variationStandardCategory->categoryId <= 0)
+		{
+			return '';
+		}
+
         $categoryBranch = $this->categoryBranchRepository->find($item->variationStandardCategory->categoryId);
         $category = null;
         $lang = $settings->get('lang') ? $settings->get('lang') : 'de';
 
-        if(!is_null($categoryBranch))
+        if(!is_null($categoryBranch) && $categoryBranch instanceof CategoryBranch)
         {
             switch($categoryLevel)
             {
