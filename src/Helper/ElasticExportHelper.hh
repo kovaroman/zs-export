@@ -588,9 +588,9 @@ class ElasticExportHelper
      * @param  Record   $item
      * @param  KeyValue $settings
      * @param  int|null  $mobId
-     * @return float
+     * @return float|null
      */
-    public function getShippingCost(Record $item, KeyValue $settings, ?int $mopId = null):float
+    public function getShippingCost(Record $item, KeyValue $settings, ?int $mopId = null):?float
     {
         if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
         {
@@ -634,7 +634,7 @@ class ElasticExportHelper
                 }
             }
         }
-        return 0.00;
+        return null;
     }
 
     /**

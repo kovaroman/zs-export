@@ -62,6 +62,16 @@ class ShoppingCOM extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($deliveryCost))
+                {
+                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                }
+                else
+                {
+                    $deliveryCost = '';
+                }
+
 				$data = [
 					'Händler-SKU' 			=> $item->itemBase->id,
 					'Hersteller' 			=> $item->itemBase->producer,
@@ -74,7 +84,7 @@ class ShoppingCOM extends CSVGenerator
 					'Kategorie'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Verfügbar' 			=> 'Ja',
 					'Verfügbarkeitdetails' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
-	                'Versand: Landtarif' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+	                'Versand: Landtarif' 	=> $deliveryCost,
                     'Produktgewicht'        => $item->variationBase->weightG,
 	                'Produkttyp' 			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, 'product_type'),
 					'Grundpreis' 			=> $this->elasticExportHelper->getBasePrice($item, $settings),

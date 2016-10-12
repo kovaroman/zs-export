@@ -126,6 +126,12 @@ class FashionDE extends CSVGenerator
 		$price = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getPrice($item) : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
 
+        $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+        if(is_null($shippingCost))
+        {
+            $shippingCost = '';
+        }
+
 		$data = [
 			'art_nr' 			=> $item->itemBase->id,
 			'art_name' 			=> $this->elasticExportHelper->getName($item, $settings),
@@ -138,7 +144,7 @@ class FashionDE extends CSVGenerator
 			'art_marke'			=> substr(trim($item->itemBase->producer), 0, 20),
 			'art_farbe' 		=> [],
 			'art_groesse'		=> [],
-			'art_versand'		=> $this->elasticExportHelper->getShippingCost($item, $settings),
+			'art_versand'		=> $shippingCost,
 			'art_sale_preis' 	=> number_format($rrp, 2, ',', ''),
 			'art_geschlecht' 	=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, 'article_gender'),
 			'art_grundpreis'	=> $this->elasticExportHelper->getBasePrice($item, $settings, '/', false, false, '', $rrp > 0 ? $rrp : $price),

@@ -168,8 +168,15 @@ class TreepodiaCOM extends XMLGenerator
 					$product->appendChild($this->createElement('catch-phrase', htmlspecialchars($catchPhrase)));
 				}
 
+                $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(is_null($deliveryCost))
+                {
+                    $deliveryCost = 0.00;
+                }
+
+
 				// free-shipping
-				if($this->elasticExportHelper->getShippingCost($item, $settings) <= 0.00)
+				if($deliveryCost <= 0.00)
 				{
 					$product->appendChild($this->createElement('free-shipping', 1));
 				}

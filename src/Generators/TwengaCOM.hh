@@ -75,6 +75,16 @@ private ArrayHelper $arrayHelper;
 			{
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
+                $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shippingCost))
+                {
+                    $shippingCost = number_format($shippingCost, 2, '.', '');
+                }
+                else
+                {
+                    $shippingCost = '';
+                }
+
 				$data = [
                     'product_url'       => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'designation'       => $this->elasticExportHelper->getName($item, $settings),
@@ -83,7 +93,7 @@ private ArrayHelper $arrayHelper;
                     'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
                     'description'       => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'regular_price'     => $rrp,
-                    'shipping_cost'     => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
+                    'shipping_cost'     => $shippingCost,
                     'merchant_id'       => $item->variationBase->customNumber,
                     'manufacturer_id'   => $item->variationBase->model,
                     'in_stock'          => $item->variationStock->stockNet > 0 ? 'Y' : 'N',

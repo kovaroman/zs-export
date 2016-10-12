@@ -143,6 +143,16 @@ class SchuheDE extends CSVGenerator
 
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
 
+                $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($deliveryCost))
+                {
+                    $deliveryCost = number_format($deliveryCost, 2, '.', '');
+                }
+                else
+                {
+                    $deliveryCost = '';
+                }
+
 				$data = [
 					'Identnummer'					=> $item->variationBase->id,
 					'Artikelnummer'					=> $item->variationBase->customNumber,
@@ -162,7 +172,7 @@ class SchuheDE extends CSVGenerator
 					'Saison'						=> $this->getProperty($item, $settings, 'season'),
 					'EAN'							=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'Währung'						=> $settings->get('currency'),
-					'Versandkosten'					=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
+					'Versandkosten'					=> $deliveryCost,
 					'Info Versandkosten'			=> $this->getProperty($item, $settings, 'shipping_costs_info'),
 					'Preis' . ' (UVP)'				=> number_format($rrp, 2, '.', ''),
 					'reduzierter Preis'				=> number_format($price, 2, '.', ''),

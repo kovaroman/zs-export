@@ -67,6 +67,26 @@ class GeizhalsDE extends CSVGenerator
                 }
 
 				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
+                $paymentInAdvance = $this->elasticExportHelper->getShippingCost($item, $settings, 0);
+                $cashOnDelivery = $this->elasticExportHelper->getShippingCost($item, $settings, 1);
+
+                if(!is_null($paymentInAdvance))
+                {
+                    $paymentInAdvance = number_format($paymentInAdvance + $this->getPaymentShippingExtraCharge($item, $settings, 0), 2, '.', '');
+                }
+                else
+                {
+                    $paymentInAdvance = '';
+                }
+
+                if(!is_null($cashOnDelivery))
+                {
+                    $cashOnDelivery = number_format($cashOnDelivery + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', '');
+                }
+                else
+                {
+                    $cashOnDelivery = '';
+                }
 
 				$data = [
 					'Hersteller' 		=> $item->itemBase->producer,
@@ -74,22 +94,14 @@ class GeizhalsDE extends CSVGenerator
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'Deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'Vorkasse' 			=> number_format($this->elasticExportHelper->getShippingCost($item, $settings, 0) + $this->getPaymentShippingExtraCharge($item, $settings, 0), 2, '.', ''),
-					'Nachnahme' 		=> number_format($this->elasticExportHelper->getShippingCost($item, $settings, 1) + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', ''),
+					'Vorkasse' 			=> $paymentInAdvance,
+					'Nachnahme' 		=> $cashOnDelivery,
 					'Verfügbarkeit' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 					'Herstellercode' 	=> $item->variationBase->model,
 					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
-                if($data['Vorkasse'] <= '0')
-                {
-                    $data['Vorkasse'] = '';
-                }
-                if($data['Nachnahme'] <= '0')
-                {
-                    $data['Nachnahme'] = '';
-                }
 
 				$this->addCSVContent(array_values($data));
 			}
