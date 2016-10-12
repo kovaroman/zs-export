@@ -643,9 +643,9 @@ class ElasticExportHelper
      * @param int $shippingDestinationId
      * @param float $referrerId
      * @param int $paymentMethodId
-     * @return float
+     * @return float|null
      */
-    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):float
+    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):?float
     {
         return $this->defaultShippingCostRepository->findShippingCost($itemId, $referrerId, $shippingDestinationId, $paymentMethodId);
     }
