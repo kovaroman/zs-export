@@ -3,9 +3,7 @@ namespace ElasticExport\Helper;
 
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\Item\DataLayer\Models\Record;
-/**
- * @author mbrueschke
- */
+
 class ItemVariationGrouper
 {
     /**
