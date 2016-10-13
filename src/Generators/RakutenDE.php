@@ -149,8 +149,9 @@ class RakutenDE extends CSVGenerator
                                     break;
                                 }
                             }
-
                         }
+
+                        $i = 1;
                         foreach($variations as $key => $item)
                         {
                             /**
@@ -163,6 +164,11 @@ class RakutenDE extends CSVGenerator
                             {
                                 $this->buildParentWithoutChildrenRow($item, $settings);
                             }
+                            elseif($item->variationBase->primaryVariation === false && $i == 1)
+                            {
+                                $this->buildParentWithChildrenRow($item, $settings, $attributeName);
+                                $this->buildChildRow($item, $settings, $attributeValue);
+                            }
                             elseif($item->variationBase->primaryVariation === true)
                             {
                                 $this->buildParentWithChildrenRow($item, $settings, $attributeName);
@@ -171,6 +177,8 @@ class RakutenDE extends CSVGenerator
                             {
                                 $this->buildChildRow($item, $settings, $attributeValue);
                             }
+
+                            $i++;
                         }
                     }
                 }
