@@ -31,7 +31,7 @@ class RakutenDE extends CSVGenerator
     /**
      * Application $app
      */
-    private Application $app;
+    private $app;
 
 	/**
 	 * Rakuten constructor.

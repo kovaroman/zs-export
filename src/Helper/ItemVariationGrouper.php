@@ -1,17 +1,16 @@
-<?hh //strict
+<?php
+
 namespace ElasticExport\Helper;
 
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\Item\DataLayer\Models\Record;
-/**
- * @author mbrueschke
- */
+
 class ItemVariationGrouper
 {
     /**
      * RecordList $list
      */
-    private RecordList $list;
+    private $list;
 
 
     /**
@@ -42,7 +41,7 @@ class ItemVariationGrouper
      * returns a group of variations with same itemId
      * @return array<mixed, mixed>
      */
-    public function getNextGroup():array<mixed, mixed>
+    public function getNextGroup():array
     {
         $variationList = array();
         $currentItemId = null;
