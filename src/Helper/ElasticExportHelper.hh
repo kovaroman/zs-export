@@ -460,7 +460,8 @@ class ElasticExportHelper
     public function getCategory(int $categoryId, string $lang, int $plentyId, string $separator = ' > '):string
 	{
         $categoryBranchList = array();
-        if(strlen($categoryId) > 0)
+
+        if($categoryId > 0)
         {
             $categoryBranch = $this->categoryBranchRepository->find($categoryId);
 
