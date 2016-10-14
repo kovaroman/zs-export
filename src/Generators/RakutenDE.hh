@@ -144,7 +144,6 @@ class RakutenDE extends CSVGenerator
                                 foreach ($item->variationAttributeValueList as $attribute)
                                 {
                                     $attributeNameCombination[$item->itemBase->id][] = $attribute->attributeId;
-                                    break;
                                 }
                             }
                         }
