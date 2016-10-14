@@ -35,7 +35,7 @@ class BilligerDE extends CSVGenerator
 	/**
 	 * @param mixed $resultData
 	 */
-	protected function generateContent(mixed $resultData, array $formatSettings = [])
+	protected function generateContent($resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
