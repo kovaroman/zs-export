@@ -2,18 +2,21 @@
 
 namespace ElasticExport\Generators;
 
-use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
-use Plenty\Modules\Helper\Services\ArrayHelper;
-use Plenty\Modules\Item\DataLayer\Models\Record;
-use Plenty\Modules\Item\DataLayer\Models\RecordList;
-use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
+use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
 use Plenty\Modules\Helper\Models\KeyValue;
+use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
+use Plenty\Modules\Item\DataLayer\Models\Record;
+use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
 
+/**
+ * Class CdiscountCOM
+ * @package ElasticExport\Generators
+ */
 class CdiscountCOM extends CSVGenerator
 {
     const CHARACTER_TYPE_DESCRIPTION					=   'description';
@@ -71,11 +74,12 @@ class CdiscountCOM extends CSVGenerator
         $this->attributeValueNameRepository = $attributeValueNameRepository;
         $this->propertySelectionRepository = $propertySelectionRepository;
     }
-
+    
     /**
-     * @param mixed $resultData
+     * @param $resultData
+     * @param array $formatSettings
      */
-    protected function generateContent(mixed $resultData, array $formatSettings = [])
+    protected function generateContent($resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{
