@@ -226,23 +226,25 @@ class ElasticExportHelper
      */
     public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 0):string
 	{
+		$name = '';
+
 		switch($settings->get('nameId'))
 		{
 			case 3:
-				$name = $item->itemDescription->name3;
+				$name = (string)$item->itemDescription->name3;
                 break;
 
 			case 2:
-				$name = $item->itemDescription->name2;
+				$name = (string)$item->itemDescription->name2;
                 break;
 
 			case 1:
 			default:
-				$name = $item->itemDescription->name1;
+				$name = (string)$item->itemDescription->name1;
                 break;
 		}
 
-        return $this->cleanName($name, $settings->get('nameMaxLength') ? $settings->get('nameMaxLength') : $defaultNameLength);
+        return $this->cleanName($name, (int)$settings->get('nameMaxLength') ? (int)$settings->get('nameMaxLength') : (int)$defaultNameLength);
     }
 
     /**
@@ -364,15 +366,15 @@ class ElasticExportHelper
 	 * @param  Record   $item
 	 * @param  KeyValue $settings
 	 * @param  bool 	$returnAvailabilityName = true
-	 * @return mixed
+	 * @return string
 	 */
-	public function getAvailability(Record $item, KeyValue $settings, bool $returnAvailabilityName = true):mixed
+	public function getAvailability(Record $item, KeyValue $settings, bool $returnAvailabilityName = true):string
 	{
         if($settings->get('transferItemAvailability') == self::TRANSFER_ITEM_AVAILABILITY_YES)
 		{
             $availabilityIdString = 'itemAvailability' . $item->variationBase->availability;
 
-		    return $settings->get($availabilityIdString);
+		    return (string)$settings->get($availabilityIdString);
 		}
 
         $availability = $this->availabilityRepository->findAvailability($item->variationBase->availability < 0 ? 10 : (int) $item->variationBase->availability);
@@ -383,11 +385,11 @@ class ElasticExportHelper
 
             if($returnAvailabilityName && strlen($name) > 0)
             {
-                return $name;
+                return (string) $name;
             }
             elseif(!$returnAvailabilityName && $availability->averageDays > 0)
             {
-                return (int) $availability->averageDays;
+                return (string) $availability->averageDays;
             }
         }
 
@@ -958,7 +960,7 @@ class ElasticExportHelper
      * @param  int     $componentId  = null
      * @return array
      */
-    public function getItemCharactersByComponent(Record $item, float $marketId, int $componentId = null):array //	Vector<array<string,mixed>>
+    public function getItemCharactersByComponent(Record $item, float $marketId, int $componentId = null):array
     {
         $propertyList = $item->itemPropertyList;
 
@@ -1015,7 +1017,7 @@ class ElasticExportHelper
      * @param  string $unit
      * @return array
      */
-    public function getBasePriceDetails(int $lot, float $price, string $unit):array // Map<string,mixed>
+    public function getBasePriceDetails(int $lot, float $price, string $unit):array
     {
         $lot = $lot == 0 ? 1 : $lot; // TODO  PlentyStringUtils::numberFormatLot($lot, true);
 		$basePrice = 0;
@@ -1115,9 +1117,9 @@ class ElasticExportHelper
      * Get custom configuration.
      * @param  string $key
      * @param  mixed $default = null
-     * @return mixed
+     * @return array
      */
-    public function getConfig(string $key, mixed $default = null):mixed
+    public function getConfig(string $key, $default = null):array
     {
         return $this->configRepository->get($key, $default);
     }

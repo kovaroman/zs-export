@@ -158,7 +158,7 @@ class KaufluxDE extends CSVGenerator
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'MwSt' 				=> $item->variationRetailPrice->vatValue,
 					'UVP' 				=> $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings),
-					'Katalog1' 			=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('lang'), $settings->get('plentyId')),
+					'Katalog1' 			=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), 0, $settings->get('plentyId')),
 					'Flags' 			=> in_array($item->itemBase->storeSpecial, $this->flags) ? $this->flags[$item->itemBase->storeSpecial] : '',
 					'LinkXS' 			=> implode(', ', $this->getCrossSellingItems($item)),
 					'ExtLinkDetail' 	=> $this->elasticExportHelper->getUrl($item, $settings),
