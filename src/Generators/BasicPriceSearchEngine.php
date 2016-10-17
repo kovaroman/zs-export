@@ -35,10 +35,10 @@ class BasicPriceSearchEngine extends CSVGenerator
     }
 
     /**
-     * @param mixed $resultData
+     * @param RecordList $resultData
 	 * @param array $formatSettings
      */
-    protected function generateContent($resultData, array $formatSettings = [])
+    protected function generateContent( $resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{

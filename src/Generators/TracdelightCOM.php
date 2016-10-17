@@ -114,7 +114,7 @@ class TracdelightCOM extends CSVGenerator
                     'Währung'               => $item->variationRetailPrice->currency,
                     'Marke'                 => $item->itemBase->producer,
                     'Versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
-                    'Geschlecht'            => $this->getProperty($item, $settings, 'size')?$this->getProperty($item, $settings, 'size'):$this->getStandardGender($settings->get('gender')), // only mandatory for chlotes
+                    'Geschlecht'            => $this->getProperty($item, $settings, 'size') ? $this->getProperty($item, $settings, 'size') : $this->getStandardGender((string)$settings->get('gender')), // only mandatory for chlotes
                     'Grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings), // only mandatory for cosmetics
                     // Optional fields
                     'Streichpreis'          => $rrp,
@@ -284,11 +284,11 @@ class TracdelightCOM extends CSVGenerator
         //check gender string
         if (strlen($list['gender']) == 0)
         {
-            $this->itemPropertyCache[$item->itemBase->id]['gender'] = $this->getStandardGender($settings->get('gender'));
+            $this->itemPropertyCache[$item->itemBase->id]['gender'] = $this->getStandardGender((string)$settings->get('gender'));
         }
         else
         {
-            $this->itemPropertyCache[$item->itemBase->id]['gender'] = $this->getStandardGender($this->itemPropertyCache[$item->itemBase->id]['gender']);
+            $this->itemPropertyCache[$item->itemBase->id]['gender'] = $this->getStandardGender((string)$this->itemPropertyCache[$item->itemBase->id]['gender']);
         }
 
         return $list;

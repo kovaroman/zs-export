@@ -234,7 +234,7 @@ class TreepodiaCOM extends XMLGenerator
 	 * @param int $manufacturerId
 	 * @return Manufacturer
 	 */
-	public function getProducer(int $manufacturerId):mixed
+	public function getProducer(int $manufacturerId):Manufacturer
 	{
 		return $this->manufacturerRepository->findById($manufacturerId);
 	}
