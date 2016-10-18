@@ -101,7 +101,7 @@ private ArrayHelper $arrayHelper;
                     'condition'         => $itemCondition[(int)$item->itemBase->condition],
                     'upc_ean'           => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
                     'isbn'              => $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
-                    'brand'             => $item->itemBase->producer
+                    'brand'             => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)
 				];
 
 				$this->addCSVContent(array_values($data));

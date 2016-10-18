@@ -119,7 +119,7 @@ class BeezUp extends CSVGenerator
                     'Artikel Nr'            =>  $item->variationBase->customNumber,
                     'MPN'                   =>  $item->variationBase->model,
                     'EAN'                   =>  $item->variationBarcode->code,
-                    'Marke'                 =>  $item->itemBase->producer,
+                    'Marke'                 =>  $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
                     'Preis inkl. MwSt.'     =>  number_format($this->elasticExportHelper->getPrice($item), 2, '.', '')  ,

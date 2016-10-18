@@ -168,7 +168,7 @@ class CdiscountCOM extends CSVGenerator
                     // Mandatory data
                     'Your reference'                        =>  $item->variationMarketStatus->sku,
                     'EAN'                                   =>  $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-                    'Brand'                                 =>  $item->itemBase->producer,
+                    'Brand'                                 =>  $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'Nature of product'                     =>  strlen($color) || strlen($size) ? 'variante' : 'standard',
                     'Category code'                         =>  $item->variationStandardCategory->categoryId,
                     'Basket short wording'                  =>  $this->elasticExportHelper->getName($item, $settings, 256),

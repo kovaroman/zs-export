@@ -62,7 +62,7 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

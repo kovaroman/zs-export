@@ -141,7 +141,7 @@ class FashionDE extends CSVGenerator
 			'art_img_url' 		=> $this->elasticExportHelper->getMainImage($item, $settings),
 			'waehrung' 			=> $this->elasticExportHelper->getDefaultCurrency(),
 			'art_preis' 		=> number_format($price, 2, ',', ''),
-			'art_marke'			=> substr(trim($item->itemBase->producer), 0, 20),
+			'art_marke'			=> substr(trim($this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)), 0, 20),
 			'art_farbe' 		=> [],
 			'art_groesse'		=> [],
 			'art_versand'		=> $shippingCost,

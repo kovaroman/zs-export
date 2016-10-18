@@ -62,7 +62,7 @@ class GeizhalsDE extends ResultFields
         $fields = [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

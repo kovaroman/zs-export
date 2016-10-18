@@ -200,7 +200,7 @@ class GoogleShopping extends CSVGenerator
 					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'price'						=> $variationPrice,
 					'sale_price'				=> $salePrice,
-					'brand'						=> $item->itemBase->producer,
+					'brand'						=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'gtin'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'isbn'						=> $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
 					'mpn'						=> $item->variationBase->model,

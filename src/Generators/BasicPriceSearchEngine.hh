@@ -99,7 +99,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'short_description'     => $item->itemDescription->shortDescription,
                     'description'           => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'article_no'            => $item->variationBase->customNumber,
-                    'producer'              => $item->itemBase->producer,
+                    'producer'              => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'model'                 => $item->variationBase->model,
                     'availability'          => $this->elasticExportHelper->getAvailability($item, $settings),
                     'ean'                   => $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_EAN),

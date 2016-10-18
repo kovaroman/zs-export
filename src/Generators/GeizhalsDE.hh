@@ -89,7 +89,7 @@ class GeizhalsDE extends CSVGenerator
                 }
 
 				$data = [
-					'Hersteller' 		=> $item->itemBase->producer,
+					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'Produktcode' 		=> $item->itemBase->id,
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),

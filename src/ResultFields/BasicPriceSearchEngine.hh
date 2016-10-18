@@ -37,7 +37,7 @@ private ArrayHelper $arrayHelper;
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
                 'fedas'
             ],
 

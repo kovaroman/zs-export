@@ -62,7 +62,7 @@ class SchuheDE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

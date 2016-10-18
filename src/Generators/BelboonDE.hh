@@ -91,7 +91,7 @@ class BelboonDE extends CSVGenerator
 		            'Merchant_ProductNumber'      => $item->itemBase->id,
 		            'EAN_Code'                    => $item->variationBarcode->code,
 		            'Product_Title'               => $this->elasticExportHelper->getName($item, $settings, 256),
-		            'Brand'                       => $item->itemBase->producer,
+		            'Brand'                       => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 		            'Price'                       => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
 		            'Currency'                    => $item->variationRetailPrice->currency,
 		            'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
