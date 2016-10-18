@@ -64,7 +64,17 @@ class Check24DE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 				$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
-				
+
+                $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shippingCost))
+                {
+                    $shippingCost = number_format($shippingCost, 2, ',', '');
+                }
+                else
+                {
+                    $shippingCost = '';
+                }
+
 				$data = [
 					'id' 				=> $this->getSku($item),
 					'manufacturer' 		=> $item->itemBase->producer,
@@ -78,7 +88,7 @@ class Check24DE extends CSVGenerator
 					'link' 				=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_url'			=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'delivery_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings, false),
-					'dellvery_cost' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+					'delivery_cost' 	=> $shippingCost,
 					'pzn' 				=> '',
 					'stock' 			=> $item->variationStock->stockNet,
 					'weight' 			=> $item->variationBase->weightG,	

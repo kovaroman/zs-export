@@ -72,6 +72,16 @@ private ArrayHelper $arrayHelper;
 			{
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
+                $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($deliveryCost))
+                {
+                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                }
+                else
+                {
+                    $deliveryCost = '';
+                }
+
 				$data = [
                     'prod_number'           => $item->itemBase->id,
                     'prod_name'             => $this->elasticExportHelper->getName($item, $settings),
@@ -89,7 +99,7 @@ private ArrayHelper $arrayHelper;
                     'img_medium'            => $this->getImages($item, $settings, ';', 'middle'),
                     'img_large'             => $this->getImages($item, $settings, ';', 'normal'),
                     'ean_code'              => $item->variationBarcode->code,
-                    'versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+                    'versandkosten'         => $deliveryCost,
                     'lieferzeit'            => $this->elasticExportHelper->getAvailability($item, $settings),
                     'platform'              => '',
                     'grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings),

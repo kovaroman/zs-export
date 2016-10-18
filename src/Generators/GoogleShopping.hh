@@ -178,6 +178,16 @@ class GoogleShopping extends CSVGenerator
                     $salePrice = '';
                 }
 
+                $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shippingCost))
+                {
+                    $shippingCost = number_format($shippingCost, 2, '.', '');
+                }
+                else
+                {
+                    $shippingCost = '';
+                }
+
 				$data = [
 					'id' 						=> $item->variationBase->id,
 					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 256),
@@ -199,7 +209,7 @@ class GoogleShopping extends CSVGenerator
 					'material'					=> $variationAttributes['material'][0],
 					'pattern'					=> $variationAttributes['pattern'][0],
 					'item_group_id'				=> $item->itemBase->id,
-					'shipping'					=> $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
+					'shipping'					=> $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.$shippingCost,
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
 					'gender'					=> $this->getProperty($item, self::CHARACTER_TYPE_GENDER),
 					'age_group'					=> $this->getProperty($item, self::CHARACTER_TYPE_AGE_GROUP),

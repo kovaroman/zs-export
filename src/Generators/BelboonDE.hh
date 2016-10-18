@@ -77,6 +77,16 @@ class BelboonDE extends CSVGenerator
 				$previewImageInformation = $this->getImageInformation($item, $settings, 'preview');
 				$largeImageInformation = $this->getImageInformation($item, $settings, 'normal');
 
+                $shipping = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shipping))
+                {
+                    $shipping = number_format($shipping, 2, ',', '');
+                }
+                else
+                {
+                    $shipping = '';
+                }
+
 		        $data = [
 		            'Merchant_ProductNumber'      => $item->itemBase->id,
 		            'EAN_Code'                    => $item->variationBarcode->code,
@@ -95,7 +105,7 @@ class BelboonDE extends CSVGenerator
 		            'Keywords'                    => $item->itemDescription->keywords,
 		            'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
 		            'Product_Description_Long'    => $this->elasticExportHelper->getDescription($item, $settings, 256),
-		            'Shipping'                    => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+		            'Shipping'                    => $shipping,
 		            'Availability'                => $this->elasticExportHelper->getAvailability($item, $settings, false),
 		            'Unit_Price'                  => $this->elasticExportHelper->getBasePrice($item, $settings),
 		        ];

@@ -594,9 +594,10 @@ class ElasticExportHelper
      * Get shipping cost.
      * @param  Record   $item
      * @param  KeyValue $settings
-     * @return float
+     * @param  int|null  $mobId
+     * @return float|null
      */
-    public function getShippingCost(Record $item, KeyValue $settings):float
+    public function getShippingCost(Record $item, KeyValue $settings, ?int $mopId = null):?float
     {
         if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
         {
@@ -610,6 +611,16 @@ class ElasticExportHelper
             if( $defaultShipping instanceof DefaultShipping &&
                 $defaultShipping->shippingDestinationId)
             {
+                if(!is_null($mopId) && $mopId == $defaultShipping->paymentMethod2)
+                {
+                    $paymentMethodId = $defaultShipping->paymentMethod2;
+                    return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                }
+                if(!is_null($mopId) && $mopId == $defaultShipping->paymentMethod3)
+                {
+                    $paymentMethodId = $defaultShipping->paymentMethod3;
+                    return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                }
                 $paymentMethodId = $defaultShipping->paymentMethod2;
 
                 // 0 - is always "payment in advance" so we use always the second and third payment methods from the default shipping
@@ -617,12 +628,20 @@ class ElasticExportHelper
                 {
                     $paymentMethodId = $defaultShipping->paymentMethod3;
                 }
-
-                return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                if(!is_null($mopId) && $mopId >= 0)
+                {
+                    if($mopId == $paymentMethodId)
+                    {
+                        return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                    }
+                }
+                elseif(is_null($mopId))
+                {
+                    return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                }
             }
         }
-
-        return 0.0;
+        return null;
     }
 
     /**
@@ -631,9 +650,9 @@ class ElasticExportHelper
      * @param int $shippingDestinationId
      * @param float $referrerId
      * @param int $paymentMethodId
-     * @return float
+     * @return float|null
      */
-    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):float
+    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):?float
     {
         return $this->defaultShippingCostRepository->findShippingCost($itemId, $referrerId, $shippingDestinationId, $paymentMethodId);
     }

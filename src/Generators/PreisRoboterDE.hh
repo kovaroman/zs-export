@@ -68,6 +68,16 @@ class PreisRoboterDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+			    if(!is_null($deliveryCost))
+                {
+                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                }
+                else
+                {
+                    $deliveryCost = '';
+                }
+
 				$row = [
 					'art_number' 		    => $item->itemBase->id,
 					'art_name' 		        => $this->elasticExportHelper->getName($item, $settings, 256),
@@ -75,7 +85,7 @@ class PreisRoboterDE extends CSVGenerator
 					'art_url' 		        => $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'art_img_url' 	        => $this->elasticExportHelper->getMainImage($item, $settings),
 					'art_description' 	    => $this->elasticExportHelper->getDescription($item, $settings, 256),
-					'art_versandkosten'     => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+					'art_versandkosten'     => $deliveryCost,
 	                'art_lieferzeit' 	    => $this->elasticExportHelper->getAvailability($item, $settings),
 					'art_ean_code'		    => $item->variationBarcode->code,
 					'art_pzn' 	            => '',

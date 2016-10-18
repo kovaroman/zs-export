@@ -63,6 +63,16 @@ class ShopzillaDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($deliveryCost))
+                {
+                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                }
+                else
+                {
+                    $deliveryCost = '';
+                }
+
 				$data = [
 					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Hersteller' 		=> $item->itemBase->producer,
@@ -74,7 +84,7 @@ class ShopzillaDE extends CSVGenerator
 					'Bestand' 			=> 'Auf Lager',
 					'Versandgewicht' 	=> $item->variationBase->weightG,
 					'Zustand' 			=> 'Neu',
-					'Versandkosten' 	=> number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+					'Versandkosten' 	=> $deliveryCost,
 					'Gebot' 			=> '',
 					'Werbetext' 		=> '2',
 					'EAN' 				=> $item->variationBarcode->code,
