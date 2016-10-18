@@ -62,7 +62,7 @@ class BilligerDE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

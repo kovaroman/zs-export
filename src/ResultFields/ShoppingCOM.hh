@@ -63,7 +63,7 @@ class ShoppingCOM extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

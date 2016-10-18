@@ -74,7 +74,7 @@ class ShoppingCOM extends CSVGenerator
 
 				$data = [
 					'Händler-SKU' 			=> $item->itemBase->id,
-					'Hersteller' 			=> $item->itemBase->producer,
+					'Hersteller' 			=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'EAN' 					=> $item->variationBarcode->code,
 					'Produktname' 			=> $this->elasticExportHelper->getName($item, $settings),
 					'Produktbeschreibung' 	=> $this->elasticExportHelper->getDescription($item, $settings),

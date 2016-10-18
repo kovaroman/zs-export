@@ -73,7 +73,7 @@ private ArrayHelper $arrayHelper;
 
 				$data = [
                     'category'      => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-                    'marke'         => $item->itemBase->producer,
+                    'marke'         => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'title' 		=> $this->elasticExportHelper->getName($item, $settings),
                     'description'   => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),

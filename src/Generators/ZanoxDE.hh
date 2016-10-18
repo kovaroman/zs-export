@@ -89,7 +89,7 @@ private ArrayHelper $arrayHelper;
                     'img_small'             => $this->elasticExportHelper->getMainImage($item, $settings, 'preview'),
                     'img_medium'            => $this->elasticExportHelper->getMainImage($item, $settings, 'middle'),
                     'img_large'             => $this->elasticExportHelper->getMainImage($item, $settings, 'normal'),
-                    'manufacturer'          => $item->itemBase->producer,
+                    'manufacturer'          => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'prod_ean'              => $item->variationBarcode->code,
                     'shipping_costs'        => $shippingCost,

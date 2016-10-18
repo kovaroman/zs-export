@@ -168,7 +168,7 @@ class SchuheDE extends CSVGenerator
 					'Hersteller Farbbezeichnung'	=> $this->getProperty($item, $settings, 'producer_color'),
 					'GG Größengang'					=> $this->getProperty($item, $settings, 'size_range'),
 					'Größe'							=> $this->getProperty($item, $settings, 'size'),
-					'Marke'							=> $item->itemBase->producer,
+					'Marke'							=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'Saison'						=> $this->getProperty($item, $settings, 'season'),
 					'EAN'							=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'Währung'						=> $settings->get('currency'),

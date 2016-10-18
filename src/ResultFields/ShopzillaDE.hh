@@ -62,7 +62,7 @@ class ShopzillaDE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

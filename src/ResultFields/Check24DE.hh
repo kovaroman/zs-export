@@ -62,7 +62,7 @@ class Check24DE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

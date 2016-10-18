@@ -164,7 +164,7 @@ class Shopping24DE extends CSVGenerator
             'currency'          => $item->variationRetailPrice->currency,
             'delivery_costs'    => $deliveryCost,
             'category'          => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-            'brand'             => html_entity_decode($item->itemBase->producer),
+            'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)),
             'gender_age'        => $this->itemPropertyCache[$item->itemBase->id]['gender_age'],
             'ean'               => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
             'keywords'          => html_entity_decode($item->itemDescription->keywords),

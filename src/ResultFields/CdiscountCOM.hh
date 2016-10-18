@@ -38,7 +38,7 @@ private ArrayHelper $arrayHelper;
             [
                 'itemBase'  =>  [
                     'id',
-                    'producer',
+                    'producerId',
                 ],
 
                 'itemDescription'   =>  [

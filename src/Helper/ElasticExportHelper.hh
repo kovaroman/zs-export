@@ -7,6 +7,8 @@ use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
+use Plenty\Modules\Item\Manufacturer\Contracts\ManufacturerRepositoryContract;
+use Plenty\Modules\Item\Manufacturer\Models\Manufacturer;
 use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
@@ -145,6 +147,11 @@ class ElasticExportHelper
      */
     private AvailabilityRepositoryContract $availabilityRepository;
 
+	/**
+	 * ManufacturerRepositoryContract $manufacturerRepository
+	 */
+	private ManufacturerRepositoryContract $manufacturerRepository;
+
     /**
      * ElasticExportHelper constructor.
      *
@@ -179,7 +186,8 @@ class ElasticExportHelper
                                 CountryRepositoryContract $countryRepository,
                                 WebstoreRepositoryContract $webstoreRepository,
                                 VariationSkuRepositoryContract $variationSkuRepository,
-                                AvailabilityRepositoryContract $availabilityRepository
+                                AvailabilityRepositoryContract $availabilityRepository,
+								ManufacturerRepositoryContract $manufacturerRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -213,6 +221,8 @@ class ElasticExportHelper
         $this->variationSkuRepository = $variationSkuRepository;
 
         $this->availabilityRepository = $availabilityRepository;
+
+		$this->manufacturerRepository = $manufacturerRepository;
     }
 
     /**
@@ -1173,4 +1183,32 @@ class ElasticExportHelper
 
         return $sku;
     }
+
+    /**
+	 * Selects the external manufacturer name by id.
+	 *
+	 * @param int $manufacturerId
+	 * @return string
+	 */
+    public function getExternalManufacturerName(int $manufacturerId):string
+	{
+		if($manufacturerId > 0)
+		{
+			$manufacturer = $this->manufacturerRepository->findById($manufacturerId);
+
+			if($manufacturer instanceof Manufacturer)
+			{
+				if(strlen($manufacturer->externalName))
+				{
+					return $manufacturer->externalName;
+				}
+				elseif(strlen($manufacturer->name))
+				{
+					return $manufacturer->name;
+				}
+			}
+		}
+
+		return '';
+	}
 }

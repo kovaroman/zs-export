@@ -135,7 +135,7 @@ class KaufluxDE extends CSVGenerator
 					'GroupID' 			=> $item->itemBase->id,
 					'BestellNr' 		=> $this->elasticExportHelper->generateSku($item, 116, (string)$item->variationMarketStatus->sku),
 					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-					'Hersteller' 		=> $item->itemBase->producer,
+					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'BestandModus' 		=> $this->config('stockCondition'),
 					'BestandAbsolut' 	=> $this->getStock($item, $settings),
 					'Liefertyp' 		=> 'V',

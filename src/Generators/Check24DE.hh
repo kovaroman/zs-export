@@ -77,7 +77,7 @@ class Check24DE extends CSVGenerator
 
 				$data = [
 					'id' 				=> $this->getSku($item),
-					'manufacturer' 		=> $item->itemBase->producer,
+					'manufacturer' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'mpnr' 				=> $item->variationBase->model,
 					'ean' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),

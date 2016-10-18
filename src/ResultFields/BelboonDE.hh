@@ -65,7 +65,7 @@ class BelboonDE extends ResultFields
 		return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription' => [

@@ -75,7 +75,7 @@ class ShopzillaDE extends CSVGenerator
 
 				$data = [
 					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-					'Hersteller' 		=> $item->itemBase->producer,
+					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings, 256),
 					'Beschreibung' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),
 					'Artikel-URL' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),

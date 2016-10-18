@@ -121,7 +121,7 @@ class TracdelightCOM extends CSVGenerator
                     'Produkt-Beschreibung'  => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'Preis'                 => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'Währung'               => $item->variationRetailPrice->currency,
-                    'Marke'                 => $item->itemBase->producer,
+                    'Marke'                 => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'Versandkosten'         => $deliveryCost,
                     'Geschlecht'            => $this->getProperty($item, $settings, 'size')?$this->getProperty($item, $settings, 'size'):$this->getStandardGender($settings->get('gender')), // only mandatory for chlotes
                     'Grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings), // only mandatory for cosmetics
