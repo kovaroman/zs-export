@@ -65,7 +65,7 @@ class RakutenDE extends ResultFields
 		$fields = [
 			'itemBase'=> [
 				'id',
-				'producer',
+				'producerId',
 				'condition',
 				'free1',
 				'free2',
