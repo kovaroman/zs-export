@@ -68,6 +68,16 @@ private $arrayHelper;
 			{
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
 
+                $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shippingCost))
+                {
+                    $shippingCost = number_format($shippingCost, 2, '.', '');
+                }
+                else
+                {
+                    $shippingCost = '';
+                }
+
 				$data = [
                     'prod_number'           => $item->itemBase->id,
                     'prod_name'             => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings))),
@@ -79,10 +89,10 @@ private $arrayHelper;
                     'img_small'             => $this->elasticExportHelper->getMainImage($item, $settings, 'preview'),
                     'img_medium'            => $this->elasticExportHelper->getMainImage($item, $settings, 'middle'),
                     'img_large'             => $this->elasticExportHelper->getMainImage($item, $settings, 'normal'),
-                    'manufacturer'          => $item->itemBase->producer,
+                    'manufacturer'          => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'prod_ean'              => $item->variationBarcode->code,
-                    'shipping_costs'        => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, '.', ''),
+                    'shipping_costs'        => $shippingCost,
                     'base_price'            => $this->elasticExportHelper->getBasePrice($item, $settings, '/', false, true, '', 0.0, false),
                     'base_price_amount'     => $basePriceList['lot'],
                     'base_price_unit'       => $basePriceList['unit']

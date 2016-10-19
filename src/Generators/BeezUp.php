@@ -104,12 +104,22 @@ class BeezUp extends CSVGenerator
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 
+                $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shippingCost))
+                {
+                    $shippingCost = number_format($shippingCost, 2, ',', '');
+                }
+                else
+                {
+                    $shippingCost = '';
+                }
+
 				$data = [
 					'Produkt ID'            =>  $item->itemBase->id,
                     'Artikel Nr'            =>  $item->variationBase->customNumber,
                     'MPN'                   =>  $item->variationBase->model,
                     'EAN'                   =>  $item->variationBarcode->code,
-                    'Marke'                 =>  $item->itemBase->producer,
+                    'Marke'                 =>  $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
                     'Preis inkl. MwSt.'     =>  number_format($this->elasticExportHelper->getPrice($item), 2, '.', '')  ,
@@ -120,7 +130,7 @@ class BeezUp extends CSVGenerator
                     'Bild-URL3'             =>  $this->getImageByNumber($item, $settings, 3),
                     'Bild-URL4'             =>  $this->getImageByNumber($item, $settings, 4),
                     'Bild-URL5'             =>  $this->getImageByNumber($item, $settings, 5),
-                    'Lieferkosten'          =>  number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+                    'Lieferkosten'          =>  $shippingCost,
                     'Auf Lager'             =>  $item->variationStock->stockNet > 0 ? 'Y' : 'N',
                     'Lagerbestand'          =>  $item->variationStock->stockNet,
                     'Lieferfrist'           =>  $this->elasticExportHelper->getAvailability($item, $settings, false),

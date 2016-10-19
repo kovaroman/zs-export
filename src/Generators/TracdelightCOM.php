@@ -101,6 +101,16 @@ class TracdelightCOM extends CSVGenerator
 			{
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
+                $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($deliveryCost))
+                {
+                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                }
+                else
+                {
+                    $deliveryCost = '';
+                }
+
 				$data = [
 
                     // Mandatory fields
@@ -112,8 +122,8 @@ class TracdelightCOM extends CSVGenerator
                     'Produkt-Beschreibung'  => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'Preis'                 => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'Währung'               => $item->variationRetailPrice->currency,
-                    'Marke'                 => $item->itemBase->producer,
-                    'Versandkosten'         => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+                    'Marke'                 => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+                    'Versandkosten'         => $deliveryCost,
                     'Geschlecht'            => $this->getProperty($item, $settings, 'size') ? $this->getProperty($item, $settings, 'size') : $this->getStandardGender((string)$settings->get('gender')), // only mandatory for chlotes
                     'Grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings), // only mandatory for cosmetics
                     // Optional fields

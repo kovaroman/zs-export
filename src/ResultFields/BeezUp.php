@@ -54,7 +54,7 @@ class BeezUp extends ResultFields
         [
             'itemBase'  =>  [
                 'id',
-                'producer',
+                'producerId',
             ],
 
             'itemDescription'   =>  [

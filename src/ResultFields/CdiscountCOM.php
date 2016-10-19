@@ -38,7 +38,7 @@ class CdiscountCOM extends ResultFields
             [
                 'itemBase'  =>  [
                     'id',
-                    'producer',
+                    'producerId',
                 ],
 
                 'itemDescription'   =>  [

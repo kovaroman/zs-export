@@ -145,6 +145,16 @@ class Shopping24DE extends CSVGenerator
 	{
         $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
+        $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+        if(!is_null($deliveryCost))
+        {
+            $deliveryCost = number_format($deliveryCost, 2, ',', '');
+        }
+        else
+        {
+            $deliveryCost = '';
+        }
+
         $data = [
             'art_name'          => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings, 80))),
             'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings)))),
@@ -153,9 +163,9 @@ class Shopping24DE extends CSVGenerator
             'price'             => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
             'old_price'         => number_format($rrp, 2, ',',''),
             'currency'          => $item->variationRetailPrice->currency,
-            'delivery_costs'    => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+            'delivery_costs'    => $deliveryCost,
             'category'          => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-            'brand'             => html_entity_decode($item->itemBase->producer),
+            'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)),
             'gender_age'        => $this->itemPropertyCache[$item->itemBase->id]['gender_age'],
             'ean'               => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
             'keywords'          => html_entity_decode($item->itemDescription->keywords),

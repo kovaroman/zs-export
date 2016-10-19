@@ -63,7 +63,7 @@ class EcondaDE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
                 'condition'
             ],
 

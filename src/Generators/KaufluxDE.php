@@ -136,15 +136,21 @@ class KaufluxDE extends CSVGenerator
 				}
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
 
+                $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(is_null($shippingCost))
+                {
+                    $shippingCost = '';
+                }
+
 				$data = [
 					'GroupID' 			=> $item->itemBase->id,
 					'BestellNr' 		=> $this->elasticExportHelper->generateSku($item, 116, (string)$item->variationMarketStatus->sku),
 					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-					'Hersteller' 		=> $item->itemBase->producer,
+					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 					'BestandModus' 		=> $this->config('stockCondition'),
 					'BestandAbsolut' 	=> $this->getStock($item, $settings),
 					'Liefertyp' 		=> 'V',
-					'VersandKlasse' 	=> $this->elasticExportHelper->getShippingCost($item, $settings),
+					'VersandKlasse' 	=> $shippingCost,
 					'Lieferzeit' 		=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'Umtausch' 			=> $this->config('returnDays'),
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . ' ' . $item->variationBase->variationName,

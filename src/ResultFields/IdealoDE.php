@@ -64,7 +64,7 @@ class IdealoDE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
                 'variationCount'
             ],
 

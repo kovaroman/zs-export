@@ -62,7 +62,7 @@ class KaufluxDE extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
                 'storeSpecial',
                 'free1',
                 'free2',

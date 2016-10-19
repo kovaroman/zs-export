@@ -67,7 +67,7 @@ class MyBestBrandsDE extends ResultFields
         $fields = [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
                 'lastUpdateTimestamp',
                 'storeSpecial',
             ],

@@ -38,7 +38,7 @@ class BasicPriceSearchEngine extends ResultFields
         return [
             'itemBase'=> [
                 'id',
-                'producer',
+                'producerId',
                 'fedas'
             ],
 

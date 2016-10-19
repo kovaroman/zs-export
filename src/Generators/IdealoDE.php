@@ -223,7 +223,7 @@ class IdealoDE extends CSVGenerator
 			'short_description' => $this->elasticExportHelper->getPreviewText($item, $settings),
 			'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 			'article_no' 		=> $item->variationBase->customNumber,
-			'producer' 			=> $item->itemBase->producer,
+			'producer' 			=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 			'model' 			=> $item->variationBase->model,
 			'availability' 		=> $this->elasticExportHelper->getAvailability($item, $settings),
 			'ean'	 			=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),

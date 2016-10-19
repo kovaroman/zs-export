@@ -174,7 +174,7 @@ class MyBestBrandsDE extends CSVGenerator
 			'ProductName'			=> $productName,
 			'ImageUrl' 				=> $this->elasticExportHelper->getMainImage($item, $settings),
 			'ProductDescription' 	=> $this->elasticExportHelper->getDescription($item, $settings),
-			'BrandName'				=> $item->itemBase->producer,
+			'BrandName'				=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 			'Price'					=> number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
 			'PreviousPrice'			=> number_format($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : 0, 2, ',', ''),
 			'Tags'					=> $item->itemDescription->keywords,

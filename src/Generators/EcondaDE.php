@@ -84,7 +84,7 @@ class EcondaDE extends CSVGenerator
                     'New'               => $itemCondition[(int)$item->itemBase->condition],
                     'Stock'             => $item->variationStock->stockNet,
                     'EAN'               => $item->variationBarcode->code,
-                    'Brand'             => $item->itemBase->producer,
+                    'Brand'             => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'ProductCategory'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'Grundpreis'        => $this->elasticExportHelper->getBasePrice($item, $settings),
 				];

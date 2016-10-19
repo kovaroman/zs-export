@@ -83,6 +83,15 @@ class BasicPriceSearchEngine extends CSVGenerator
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
 
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
+                $shipmentAndHandling = $this->elasticExportHelper->getShippingCost($item, $settings);
+                if(!is_null($shipmentAndHandling))
+                {
+                    $shipmentAndHandling = number_format($shipmentAndHandling, 2, ',', '');
+                }
+                else
+                {
+                    $shipmentAndHandling = '';
+                }
 
 				$data = [
 					'article_id'            => $item->itemBase->id,
@@ -91,7 +100,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'short_description'     => $item->itemDescription->shortDescription,
                     'description'           => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'article_no'            => $item->variationBase->customNumber,
-                    'producer'              => $item->itemBase->producer,
+                    'producer'              => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
                     'model'                 => $item->variationBase->model,
                     'availability'          => $this->elasticExportHelper->getAvailability($item, $settings),
                     'ean'                   => $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_EAN),
@@ -110,7 +119,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'category_concat'       => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'image_url_preview'     => $this->getImages($item, $settings, ';', 'preview'),
                     'image_url'             => $this->elasticExportHelper->getMainImage($item, $settings),
-                    'shipment_and_handling' => number_format($this->elasticExportHelper->getShippingCost($item, $settings), 2, ',', ''),
+                    'shipment_and_handling' => $shipmentAndHandling,
                     'unit_price'            => $this->elasticExportHelper->getBasePrice($item, $settings),
                     'unit_price_value'      => $basePriceList['price'],
                     'unit_price_lot'        => $basePriceList['lot']
