@@ -89,7 +89,7 @@ class TreepodiaCOM extends XMLGenerator
     }
 
 	/**
-	 * @param mixed $resultData
+	 * @param $resultData
 	 * @param array $formatSettings
 	 */
 	protected function generateContent($resultData, array $formatSettings = [])

@@ -151,7 +151,7 @@ class ElasticExportHelper
 	/**
 	 * ManufacturerRepositoryContract $manufacturerRepository
 	 */
-	private ManufacturerRepositoryContract $manufacturerRepository;
+	private $manufacturerRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -611,7 +611,7 @@ class ElasticExportHelper
      * @param  int|null  $mobId
      * @return float|null
      */
-    public function getShippingCost(Record $item, KeyValue $settings, ?int $mopId = null):?float
+    public function getShippingCost(Record $item, KeyValue $settings, int $mopId = null):float
     {
         if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
         {
@@ -666,7 +666,7 @@ class ElasticExportHelper
      * @param int $paymentMethodId
      * @return float|null
      */
-    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):?float
+    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):float
     {
         return $this->defaultShippingCostRepository->findShippingCost($itemId, $referrerId, $shippingDestinationId, $paymentMethodId);
     }
@@ -992,9 +992,7 @@ class ElasticExportHelper
     public function getItemCharactersByComponent(Record $item, float $marketId, int $componentId = null):array
     {
         $propertyList = $item->itemPropertyList;
-
-        $propertyMarketComponents = $this->propertyMarketComponentRepository->getPropertyMarketComponents($marketId, !is_null($componentId) ? $componentId : null);
-
+        $propertyMarketComponents = $this->propertyMarketComponentRepository->getPropertyMarketComponents($marketId, $componentId);
         $list = array();
 
         foreach($propertyList as $property)
