@@ -713,10 +713,10 @@ class ElasticExportHelper
      * Get the attributeNames
      * @param Record    $item
      * @param KeyValue  $settings
-     * @param string    $delimeter
+     * @param string    $delimiter
      * @return string
      */
-    public function getAttributeName(Record $item, KeyValue $settings, string $delimeter = '|'):string
+    public function getAttributeName(Record $item, KeyValue $settings, string $delimiter = '|'):string
     {
         $values = [];
 
@@ -732,7 +732,7 @@ class ElasticExportHelper
             }
         }
 
-        return implode($delimeter, $values);
+        return implode($delimiter, $values);
     }
 
     /**

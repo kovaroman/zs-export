@@ -75,7 +75,6 @@ class BilligerDE extends CSVGenerator
                     continue;
                 }
 
-
                 $dlvCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($dlvCost))
                 {
