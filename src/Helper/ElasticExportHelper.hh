@@ -794,15 +794,27 @@ class ElasticExportHelper
     public function getAttributeNameAndValueCombination(string $attributeNames, string $attributeValues, string $delimiter = ','):string
     {
         $attributes='';
-        $attributeNameList = explode(',', $attributeNames);
-        $attributeValueList = explode(',',$attributeValues);
-        if (count($attributeNameList) > 0 && count($attributeValueList) > 0)
+        $attributeNameList = array();
+        $attributeValueList = array();
+
+        if (strlen($attributeNames) && strlen($attributeValues))
         {
-            $i=0;
-            foreach ($attributeNameList as $attributeName)
+            $attributeNameList = explode(',', $attributeNames);
+            $attributeValueList = explode(',', $attributeValues);
+        }
+
+        if (count($attributeNameList) && count($attributeValueList))
+        {
+            foreach ($attributeNameList as $index => $attributeName)
             {
-                $attributes .= $delimiter. ' ' . $attributeNameList[$i]. ': ' . $attributeValueList[$i];
-                $i++;
+                if ($index==0)
+                {
+                    $attributes .= $attributeNameList[$index]. ': ' . $attributeValueList[$index];
+                }
+                else
+                {
+                    $attributes .= $delimiter. ' ' . $attributeNameList[$index]. ': ' . $attributeValueList[$index];
+                }
             }
         }
 
