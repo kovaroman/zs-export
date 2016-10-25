@@ -63,6 +63,7 @@ class BilligerDE extends ResultFields
             'itemBase'=> [
                 'id',
                 'producerId',
+                'variationCount',
             ],
 
             'itemDescription' => [
@@ -86,6 +87,7 @@ class BilligerDE extends ResultFields
             ],
 
             'variationBase' => [
+                'id',
                 'availability',
                 'attributeValueSetId',
                 'model',
@@ -124,12 +126,9 @@ class BilligerDE extends ResultFields
                 ]
             ],
 
-            'variationBarcodeList' => [
-                'variationId',
-                'code',
-                'barcodeId',
-                'barcodeType',
-                'barcodeName',
+            'variationAttributeValueList' => [
+                'attributeId',
+                'attributeValueId',
             ],
         ];
     }

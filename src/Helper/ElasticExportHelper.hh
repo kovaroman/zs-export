@@ -711,11 +711,12 @@ class ElasticExportHelper
 
     /**
      * Get the attributeNames
-     * @param Record   $item
-     * @param KeyValue $settings
+     * @param Record    $item
+     * @param KeyValue  $settings
+     * @param string    $delimeter
      * @return string
      */
-    public function getAttributeName(Record $item, KeyValue $settings):string
+    public function getAttributeName(Record $item, KeyValue $settings, string $delimeter = '|'):string
     {
         $values = [];
 
@@ -731,7 +732,7 @@ class ElasticExportHelper
             }
         }
 
-        return implode('|', $values);
+        return implode($delimeter, $values);
     }
 
     /**
@@ -781,6 +782,31 @@ class ElasticExportHelper
         }
 
         return implode($delimiter, $values);
+    }
+
+    /**
+     * getAttributeNameAndValueCombination
+     * @param string $attributeNames
+     * @param string $attributeValues
+     * @param string $delimiter
+     * @return string
+     */
+    public function getAttributeNameAndValueCombination(string $attributeNames, string $attributeValues, string $delimiter = ','):string
+    {
+        $attributes='';
+        $attributeNameList = explode(',', $attributeNames);
+        $attributeValueList = explode(',',$attributeValues);
+        if (count($attributeNameList) > 0 && count($attributeValueList) > 0)
+        {
+            $i=0;
+            foreach ($attributeNameList as $attributeName)
+            {
+                $attributes .= $delimiter. ' ' . $attributeNameList[$i]. ': ' . $attributeValueList[$i];
+                $i++;
+            }
+        }
+
+        return $attributes;
     }
 
     /**
