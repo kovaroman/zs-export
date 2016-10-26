@@ -37,14 +37,9 @@ class SchuheDE extends CSVGenerator
 	private $propertySelectionRepository;
 
 	/**
-	 * @var array<int,mixed>
+	 * @var array
 	 */
 	private $itemPropertyCache = [];
-
-	/**
-	 * @var Map<int, array<int, string>>
-	 */
-//	private Vector<string> $variations = Vector{};
 
 	/**
 	 * @var array
@@ -72,7 +67,7 @@ class SchuheDE extends CSVGenerator
     }
 
 	/**
-	 * @param mixed $resultData
+	 * @param RecordList $resultData
 	 * @param array $formatSettings
 	 */
 	protected function generateContent($resultData, array $formatSettings = [])

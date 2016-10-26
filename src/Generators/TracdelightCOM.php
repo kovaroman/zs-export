@@ -38,7 +38,7 @@ class TracdelightCOM extends CSVGenerator
     private $arrayHelper;
 
     /**
-     * @var array<int,mixed>
+     * @var array
      */
     private $itemPropertyCache = [];
 
@@ -59,7 +59,8 @@ class TracdelightCOM extends CSVGenerator
     }
 
     /**
-     * @param mixed $resultData
+     * @param RecordList $resultData
+	 * @param array
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{

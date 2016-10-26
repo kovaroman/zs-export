@@ -37,7 +37,7 @@ class IdealoDE extends CSVGenerator
 	private $propertySelectionRepository;
 
 	/**
-	 * @var array<int,mixed>
+	 * @var array
 	 */
 	private $itemPropertyCache = [];
 
@@ -47,9 +47,8 @@ class IdealoDE extends CSVGenerator
 	private $arrayHelper;
 
 	/**
-	 * @var Map<int,PaymentMethod> $usedPaymentMethods
+	 * @var array
 	 */
-//	private Map<int,PaymentMethod> $usedPaymentMethods = Map{};
 	private $usedPaymentMethods = [];
 
     /**
@@ -69,6 +68,10 @@ class IdealoDE extends CSVGenerator
 		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
+	/**
+	 * @param RecordList $resultData
+	 * @param array $formatSettings
+	 */
     protected function generateContent($resultData, array $formatSettings = [])
     {
         if($resultData instanceof RecordList)

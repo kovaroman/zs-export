@@ -32,7 +32,8 @@ class ShopzillaDE extends CSVGenerator
     }
 
 	/**
-	 * @param mixed $resultData
+	 * @param RecordList $resultData
+	 * @param array
 	 */
 	protected function generateContent($resultData, array  $formatSettings = [])
 	{

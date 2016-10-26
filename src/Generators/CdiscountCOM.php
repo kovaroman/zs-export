@@ -51,7 +51,7 @@ class CdiscountCOM extends CSVGenerator
     private $propertySelectionRepository;
 
 	/**
-	 * @var array<int,mixed>
+	 * @var array
 	 */
     private $itemPropertyCache = [];
 

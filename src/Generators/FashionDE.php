@@ -44,7 +44,7 @@ class FashionDE extends CSVGenerator
     }
 
 	/**
-	 * @param mixed $resultData
+	 * @param RecordList $resultData
 	 */
 	protected function generateContent($resultData, array $formatSettings = [])
 	{
@@ -120,7 +120,7 @@ class FashionDE extends CSVGenerator
 	 * Get main information.
 	 * @param  Record   $item
 	 * @param  KeyValue $settings
-	 * @return array<string,mixed>
+	 * @return array
 	 */
 	private function getMain(Record $item, KeyValue $settings):array
 	{

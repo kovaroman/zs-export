@@ -37,7 +37,7 @@ class MyBestBrandsDE extends CSVGenerator
 	private $propertySelectionRepository;
 
 	/**
-	 * @var array<int,mixed>
+	 * @var array
 	 */
 	private $itemPropertyCache = [];
 
@@ -62,7 +62,8 @@ class MyBestBrandsDE extends CSVGenerator
     }
 
 	/**
-	 * @param mixed $resultData
+	 * @param RecordList $resultData
+	 * @param array
 	 */
 	protected function generateContent($resultData, array $formatSettings = [])
 	{
@@ -157,7 +158,7 @@ class MyBestBrandsDE extends CSVGenerator
 	 * Get main information.
 	 * @param  Record $item
 	 * @param  KeyValue $settings
-	 * @return array<string,mixed>
+	 * @return array
 	 */
 	private function getMain(Record $item, KeyValue $settings):array
 	{

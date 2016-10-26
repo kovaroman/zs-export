@@ -34,7 +34,7 @@ private $arrayHelper;
     }
 
     /**
-     * @param mixed $resultData
+     * @param RecordList $resultData
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{

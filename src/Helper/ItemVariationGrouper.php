@@ -39,7 +39,7 @@ class ItemVariationGrouper
 
     /**
      * returns a group of variations with same itemId
-     * @return array<mixed, mixed>
+     * @return array
      */
     public function getNextGroup():array
     {

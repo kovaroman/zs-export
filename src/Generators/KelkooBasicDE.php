@@ -34,7 +34,7 @@ class KelkooBasicDE extends CSVGenerator
     }
 
     /**
-     * @param mixed $resultData
+     * @param RecordList $resultData
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{
