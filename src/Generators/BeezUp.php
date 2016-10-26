@@ -14,27 +14,28 @@ use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
 
 class BeezUp extends CSVGenerator
 {
-    const PROPERTY_TYPE_DESCRIPTION = 'description';
-        /*
-         * @var ElasticExportHelper
-         */
+
+	const PROPERTY_TYPE_DESCRIPTION = 'description';
+
+	/*
+	 * @var ElasticExportHelper
+	 */
     private $elasticExportHelper;
 
-        /*
-         * @var ArrayHelper
-         */
+	/*
+	 * @var ArrayHelper
+	 */
     private $arrayHelper;
 
-        /**
-         * AttributeValueNameRepositoryContract $attributeValueNameRepository
-         */
+	/**
+	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
+	 */
     private $attributeValueNameRepository;
 
-        /**
-         * @var array<int,mixed>
-         */
+	/**
+	 * @var array
+	 */
     private $itemPropertyCache = [];
-
 
     /**
      * Geizhals constructor.
@@ -54,7 +55,7 @@ class BeezUp extends CSVGenerator
     }
 
     /**
-     * @param mixed $resultData
+     * @param RecordList $resultData
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{

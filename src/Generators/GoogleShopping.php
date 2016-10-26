@@ -74,17 +74,17 @@ class GoogleShopping extends CSVGenerator
     private $propertySelectionRepository;
 
     /**
-     * @var array<int,mixed>
+     * @var array
      */
     private $itemPropertyCache = [];
 
 	/**
-	 * @var array<int,string>
+	 * @var array
 	 */
 	private $attributeValueCache = [];
 
 	/**
-	 * @var array<int,string>
+	 * @var array
 	 */
 	private $linkedAttributeList = [];
 
@@ -113,7 +113,7 @@ class GoogleShopping extends CSVGenerator
     }
 
     /**
-     * @param mixed $resultData
+     * @param RecordList $resultData
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{

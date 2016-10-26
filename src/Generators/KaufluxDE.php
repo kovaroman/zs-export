@@ -38,24 +38,14 @@ class KaufluxDE extends CSVGenerator
 	private $propertySelectionRepository;
 
 	/**
-	 * @var array<int,mixed>
+	 * @var array
 	 */
 	private $itemPropertyCache = [];
 
 	/**
-	 * @var array<int>
+	 * @var array
 	 */
 	private $addedItems = [];
-
-	/**
-	 * @var ImmMap<int,string>
-	 */
-//	private ImmMap<int,string> $flags = ImmMap{
-//		0 => '',
-//		1 => 'Sonderangebot',
-//		2 => 'Neuheit',
-//		3 => 'Top Artikel',
-//	};
 
 	/**
 	 * @var array

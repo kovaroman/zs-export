@@ -41,7 +41,7 @@ class ShippingProfiles extends CSVGenerator
 	}
 
 	/**
-	 * @param mixed $resultData
+	 * @param RecordList $resultData
 	 * @param array $formatSettings
 	 */
 	protected function generateContent($resultData, array $formatSettings = [])
@@ -80,7 +80,7 @@ class ShippingProfiles extends CSVGenerator
 
 	/**
 	 * Get the head row.
-	 * @return array<mixed>
+	 * @return array
 	 */
 	private function head():array
 	{
@@ -96,8 +96,8 @@ class ShippingProfiles extends CSVGenerator
 
 	/**
 	 * Get row.
-	 * @param  <array<string,mixed> $row
-	 * @return array<mixed>
+	 * @param  array $row
+	 * @return array
 	 */
 	private function row(array $row):array
 	{
