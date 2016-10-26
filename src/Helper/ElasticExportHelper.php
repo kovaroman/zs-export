@@ -418,7 +418,7 @@ class ElasticExportHelper
         {
             if($availabilityLanguage->language == $language)
             {
-                return $availabilityLanguage->name;
+                return (string)$availabilityLanguage->name;
             }
         }
 
@@ -575,7 +575,7 @@ class ElasticExportHelper
             {
                 if($categoryDetails->lang == $lang)
                 {
-                    return $categoryDetails->name;
+                    return (string)$categoryDetails->name;
                 }
             }
         }
@@ -598,7 +598,7 @@ class ElasticExportHelper
 
 		if($categoryBranchMarketplace instanceof CategoryBranchMarketplace)
 		{
-			return $categoryBranchMarketplace->plenty_category_branch_marketplace_value1;
+			return (string)$categoryBranchMarketplace->plenty_category_branch_marketplace_value1;
 		}
 
 		return '';
@@ -666,7 +666,7 @@ class ElasticExportHelper
      * @param int $paymentMethodId
      * @return float|null
      */
-    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId):float
+    public function calculateShippingCost(int $itemId, int $shippingDestinationId, float $referrerId, int $paymentMethodId)
     {
         return $this->defaultShippingCostRepository->findShippingCost($itemId, $referrerId, $shippingDestinationId, $paymentMethodId);
     }
@@ -674,7 +674,7 @@ class ElasticExportHelper
     /**
      * returns the price of the given variation
      * @param  Record   $item
-     * @return float
+     * @return float|null
      */
     public function getPrice(Record $item)
     {
@@ -694,7 +694,7 @@ class ElasticExportHelper
             return $item->variationRecommendedRetailPrice->price;
         }
 
-        return 0.0;
+        return 0.00;
     }
 
     /**
@@ -710,7 +710,7 @@ class ElasticExportHelper
             return $item->variationSpecialOfferRetailPrice->retailPrice;
         }
 
-        return 0.0;
+        return 0.00;
     }
 
     /**
@@ -1091,7 +1091,10 @@ class ElasticExportHelper
      */
     public function getDefaultCurrency():string
     {
-        $config = []; // TODO load config
+        $config = [];
+
+		// TODO load config
+//		$config = $this->getConfig('cfgCurrency');
 
         if(is_array($config) && is_string($config['cfgCurrency']))
         {
@@ -1106,7 +1109,7 @@ class ElasticExportHelper
      * @param KeyValue $settings
      * @return array
      */
-    public function getPaymentMethods(KeyValue $settings):array		//	Map<int,PaymentMethod>
+    public function getPaymentMethods(KeyValue $settings):array
     {
         $paymentMethods = $this->paymentMethodRepository->getPaymentMethods($settings->get('destination'), $settings->get('plentyId'), $settings->get('lang'));
 
@@ -1174,8 +1177,13 @@ class ElasticExportHelper
         if($webstore instanceof Webstore)
         {
             $webstoreId = $webstore->id;
-            return $webstoreId;
+
+			if(!is_null($webstoreId))
+			{
+				return $webstoreId;
+			}
         }
+
         return 0;
     }
 
@@ -1187,10 +1195,18 @@ class ElasticExportHelper
      * @param bool $setLastExportedTimestamp
      * @return string
      */
-    public function generateSku(Record $item, int $marketId, string $sku = null, int $accountId = 0, bool $setLastExportedTimestamp = true):string
+    public function generateSku(Record $item,
+								int $marketId,
+								string $sku = null,
+								int $accountId = 0,
+								bool $setLastExportedTimestamp = true
+	):string
     {
-        $sku = $this->variationSkuRepository
-            ->generateSku($item->variationBase->id, $marketId, $accountId, $sku, $setLastExportedTimestamp);
+        $sku = $this->variationSkuRepository->generateSku($item->variationBase->id,
+														  $marketId,
+														  $accountId,
+														  $sku,
+														  $setLastExportedTimestamp);
 
         return $sku;
     }
