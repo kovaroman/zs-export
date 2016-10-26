@@ -676,9 +676,9 @@ class ElasticExportHelper
      * @param  Record   $item
      * @return float
      */
-    public function getPrice(Record $item):float
+    public function getPrice(Record $item)
     {
-            return (FLOAT)$item->variationRetailPrice->price;
+            return $item->variationRetailPrice->price;
     }
 
     /**
