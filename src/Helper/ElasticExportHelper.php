@@ -585,20 +585,23 @@ class ElasticExportHelper
 
 	/**
 	 * Get category branch marketplace for a custom branch id.
-	 * @param  int $categoryhId
+	 * @param  int $categoryId
 	 * @param  int $plentyId
 	 * @param  int $marketplaceId
-	 * @param  string $marketplaceSubId
+	 * @param  float $marketplaceSubId
 	 * @return string
 	 */
-	public function getCategoryMarketplace(int $categoryhId, int $plentyId, int $marketplaceId, float $marketplaceSubId = 0.0):string
+	public function getCategoryMarketplace(int $categoryId, int $plentyId, int $marketplaceId, float $marketplaceSubId = 0.0):string
 	{
-        $webstoreId = $this->getWebstoreId($plentyId);
-		$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryhId, $webstoreId, $marketplaceId, $marketplaceSubId);
-
-		if($categoryBranchMarketplace instanceof CategoryBranchMarketplace)
+		if($categoryId > 0)
 		{
-			return (string)$categoryBranchMarketplace->plenty_category_branch_marketplace_value1;
+			$webstoreId = $this->getWebstoreId($plentyId);
+			$categoryBranchMarketplace = $this->categoryBranchMarketplaceRepository->findCategoryBranchMarketplace($categoryId, $webstoreId, $marketplaceId, $marketplaceSubId);
+
+			if($categoryBranchMarketplace instanceof CategoryBranchMarketplace)
+			{
+				return (string)$categoryBranchMarketplace->plenty_category_branch_marketplace_value1;
+			}
 		}
 
 		return '';
