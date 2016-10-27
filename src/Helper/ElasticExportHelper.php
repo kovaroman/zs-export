@@ -694,7 +694,7 @@ class ElasticExportHelper
     {
         if($settings->get('transferRrp') == self::TRANSFER_RRP_YES)
         {
-            return $item->variationRecommendedRetailPrice->price;
+            return (float)$item->variationRecommendedRetailPrice->price;
         }
 
         return 0.00;
@@ -710,7 +710,7 @@ class ElasticExportHelper
     {
         if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
         {
-            return $item->variationSpecialOfferRetailPrice->retailPrice;
+            return (float)$item->variationSpecialOfferRetailPrice->retailPrice;
         }
 
         return 0.00;
