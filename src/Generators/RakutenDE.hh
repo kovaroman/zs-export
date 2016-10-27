@@ -241,7 +241,7 @@ class RakutenDE extends CSVGenerator
 			$stock = 0;
 		}
 
-		$vat = $item->variationBase->vatId;
+		$vat = $item->variationRetailPrice->vatValue;
 		if($vat == '19')
 		{
 			$vat = 1;
@@ -364,7 +364,7 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array<int, mixed> $attributeName):void
 	{
-        $vat = $item->variationBase->vatId;
+        $vat = $item->variationRetailPrice->vatValue;
         if($vat == '19')
         {
             $vat = 1;
