@@ -402,7 +402,7 @@ class GoogleShopping extends CSVGenerator
             $count++;
         }
 
-        if (strlen($item->itemBase->producer) > 0)
+        if (strlen($this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)) > 0)
         {
             $count++;
         }
