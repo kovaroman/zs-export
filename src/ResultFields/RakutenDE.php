@@ -66,7 +66,6 @@ class RakutenDE extends ResultFields
 			'itemBase'=> [
 				'id',
 				'producerId',
-				'condition',
 				'free1',
 				'free2',
 				'free3',
@@ -87,8 +86,6 @@ class RakutenDE extends ResultFields
 				'free18',
 				'free19',
 				'free20',
-                'variationCount',
-                'hasAttribute',
 				'tradoriaCategory'
 			],
 
@@ -102,12 +99,8 @@ class RakutenDE extends ResultFields
 			'itemPropertyList' => [
 				'params' => [],
 				'fields' => [
-					'itemPropertyId',
 					'propertyId',
 					'propertyValue',
-					'propertyValueType',
-					'isOrderProperty',
-					'propertyOrderMarkup'
 				]
 			],
 
@@ -127,7 +120,6 @@ class RakutenDE extends ResultFields
 				'availability',
 				'attributeValueSetId',
 				'content',
-				'customNumber',
 				'id',
 				'limitOrderByStockSelect',
 				'model',
@@ -169,8 +161,6 @@ class RakutenDE extends ResultFields
 				],
 				'fields' => [
 					'categoryId',
-					'plentyId',
-					'manually',
 				],
 			],
 
@@ -180,7 +170,7 @@ class RakutenDE extends ResultFields
 				],
 				'fields' => [
 					'code',
-					'barcodeId',
+					'barcodeType',
 				]
 			],
 
