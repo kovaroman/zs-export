@@ -8,8 +8,8 @@ use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
-use Plenty\Modules\Item\Manufacturer\Contracts\ManufacturerRepositoryContract;
-use Plenty\Modules\Item\Manufacturer\Models\Manufacturer;
+use Plenty\Modules\Market\Helper\Contracts\MarketItemHelperRepositoryContract;
+use Plenty\Modules\Market\Helper\Repositories\MarketItemHelperRepository;
 use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
@@ -149,9 +149,9 @@ class ElasticExportHelper
     private $availabilityRepository;
 
 	/**
-	 * ManufacturerRepositoryContract $manufacturerRepository
+	 * MarketItemHelperRepositoryContract marketItemHelperRepository
 	 */
-	private $manufacturerRepository;
+	private $marketItemHelperRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -171,6 +171,7 @@ class ElasticExportHelper
      * @param WebstoreRepositoryContract $webstoreRepository
      * @param VariationSkuRepositoryContract $variationSkuRepository
      * @param AvailabilityRepositoryContract $availabilityRepository
+	 * @param MarketItemHelperRepositoryContract $marketItemHelperRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitNameRepositoryContract $unitNameRepository,
@@ -188,7 +189,7 @@ class ElasticExportHelper
                                 WebstoreRepositoryContract $webstoreRepository,
                                 VariationSkuRepositoryContract $variationSkuRepository,
                                 AvailabilityRepositoryContract $availabilityRepository,
-								ManufacturerRepositoryContract $manufacturerRepository
+								MarketItemHelperRepositoryContract $marketItemHelperRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -223,7 +224,7 @@ class ElasticExportHelper
 
         $this->availabilityRepository = $availabilityRepository;
 
-		$this->manufacturerRepository = $manufacturerRepository;
+		$this->marketItemHelperRepository = $marketItemHelperRepository;
     }
 
     /**
@@ -898,29 +899,6 @@ class ElasticExportHelper
 	}
 
     /**
-     * Get base price unit as short cut.
-     *
-     * @param  Record   $item
-     * @param  KeyValue $settings
-     * @return string
-     */
-    public function getBasePriceDetailUnit(Record $item, KeyValue $settings):string
-    {
-        $unitLang = $this->unitNameRepository->findByUnitId((int) $item->variationBase->unitId);
-
-		if($unitLang instanceof UnitName)
-		{
-            $unitShortcut = $unitLang->unit->unitOfMeasurement;
-		}
-		else
-		{
-            $unitShortcut = '';
-		}
-
-        return $unitShortcut;
-    }
-
-    /**
      * Get main image.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -1214,7 +1192,7 @@ class ElasticExportHelper
         return $sku;
     }
 
-    /**
+	/**
 	 * Selects the external manufacturer name by id.
 	 *
 	 * @param int $manufacturerId
@@ -1224,21 +1202,8 @@ class ElasticExportHelper
 	{
 		if($manufacturerId > 0)
 		{
-			$manufacturer = $this->manufacturerRepository->findById($manufacturerId);
-
-			if($manufacturer instanceof Manufacturer)
-			{
-				if(strlen($manufacturer->externalName))
-				{
-					return $manufacturer->externalName;
-				}
-				elseif(strlen($manufacturer->name))
-				{
-					return $manufacturer->name;
-				}
-			}
+			return $this->marketItemHelperRepository->getExternalManufacturerName($manufacturerId);
 		}
-
 		return '';
 	}
 }

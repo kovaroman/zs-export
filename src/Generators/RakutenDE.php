@@ -119,7 +119,6 @@ class RakutenDE extends CSVGenerator
 				'energie_klassen_bild',
 			]);
 
-			$previousItemId = 0;
             $attributeName = array();
 			$attributeNameCombination = array();
 
@@ -291,9 +290,9 @@ class RakutenDE extends CSVGenerator
 			$referenceReducedPrice = 'VK';
 		}
 
-		$unit = $this->getUnit($item, $settings);
-		$basePriceContent = (float)$item->variationBase->content;
 
+		$unit = $this->getUnit($item);
+		$basePriceContent = (float)$item->variationBase->content;
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '',
@@ -545,7 +544,7 @@ class RakutenDE extends CSVGenerator
 			$referenceReducedPrice = 'VK';
 		}
 
-		$unit = $this->getUnit($item, $settings);
+		$unit = $this->getUnit($item);
 		$basePriceContent = (float)$item->variationBase->content;
 
 		$data = [
@@ -624,7 +623,7 @@ class RakutenDE extends CSVGenerator
 
 		if(count($imageList) > 0 && array_key_exists($number, $imageList))
 		{
-			return $imageList[$number];
+			return (string)$imageList[$number];
 		}
 		else
 		{
@@ -637,28 +636,25 @@ class RakutenDE extends CSVGenerator
 	 * for the Rakuten.de API.
 	 *
 	 * @param  Record   $item
-	 * @param  KeyValue $settings
 	 * @return string
 	 */
-	private function getUnit(Record $item, KeyValue $settings):string
+	private function getUnit(Record $item):string
 	{
-		$unit = $this->elasticExportHelper->getBasePriceDetailUnit($item, $settings);
-
-		switch($unit)
+		switch((int) $item->variationBase->unitId)
 		{
-			case 'MLT':
+			case '32':
 				return 'ml'; // Milliliter
-			case 'LTR':
+			case '5':
 				return 'l'; // Liter
-			case 'GRM':
+			case '3':
 				return 'g'; // Gramm
-			case 'KGM':
+			case '2':
 				return 'kg'; // Kilogramm
-			case 'CTM':
+			case '51':
 				return 'cm'; // Zentimeter
-			case 'MTR':
+			case '31':
 				return 'm'; // Meter
-			case 'MTK':
+			case '38':
 				return 'm²'; // Quadratmeter
 			default:
 				return '';
