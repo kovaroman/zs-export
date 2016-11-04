@@ -9,7 +9,7 @@ use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\Market\Helper\Contracts\MarketItemHelperRepositoryContract;
-use Plenty\Modules\Market\Helper\Repositories\MarketItemHelperRepository;
+use Plenty\Modules\Market\Helper\Contracts\MarketCategoryHelperRepositoryContract;
 use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
@@ -149,9 +149,14 @@ class ElasticExportHelper
     private $availabilityRepository;
 
 	/**
-	 * MarketItemHelperRepositoryContract marketItemHelperRepository
+	 * MarketItemHelperRepositoryContract $marketItemHelperRepository
 	 */
 	private $marketItemHelperRepository;
+
+	/**
+	 * MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
+	 */
+	private $marketCategoryHelperRepository;
 
     /**
      * ElasticExportHelper constructor.
@@ -172,6 +177,7 @@ class ElasticExportHelper
      * @param VariationSkuRepositoryContract $variationSkuRepository
      * @param AvailabilityRepositoryContract $availabilityRepository
 	 * @param MarketItemHelperRepositoryContract $marketItemHelperRepository
+	 * @param MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitNameRepositoryContract $unitNameRepository,
@@ -189,7 +195,8 @@ class ElasticExportHelper
                                 WebstoreRepositoryContract $webstoreRepository,
                                 VariationSkuRepositoryContract $variationSkuRepository,
                                 AvailabilityRepositoryContract $availabilityRepository,
-								MarketItemHelperRepositoryContract $marketItemHelperRepository
+								MarketItemHelperRepositoryContract $marketItemHelperRepository,
+								MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -225,6 +232,8 @@ class ElasticExportHelper
         $this->availabilityRepository = $availabilityRepository;
 
 		$this->marketItemHelperRepository = $marketItemHelperRepository;
+
+		$this->marketCategoryHelperRepository = $marketCategoryHelperRepository;
     }
 
     /**
@@ -474,59 +483,7 @@ class ElasticExportHelper
      */
     public function getCategory(int $categoryId, string $lang, int $plentyId, string $separator = ' > '):string
 	{
-        $categoryBranchList = array();
-
-        if($categoryId > 0)
-        {
-            $categoryBranch = $this->categoryBranchRepository->find($categoryId);
-
-            if(!is_null($categoryBranch) && $categoryBranch instanceof CategoryBranch)
-            {
-                $category1 = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
-                $category2 = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
-                $category3 = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
-                $category4 = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
-                $category5 = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
-                $category6 = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
-
-                if($category1 instanceof Category)
-                {
-                    $category1Details = $category1->details[0];
-                    $categoryBranchList[] = $category1Details->name;
-                }
-                if($category2 instanceof Category)
-                {
-                    $category2Details = $category2->details[0];
-                    $categoryBranchList[] = $category2Details->name;
-                }
-                if($category3 instanceof Category)
-                {
-                    $category3Details = $category3->details[0];
-                    $categoryBranchList[] = $category3Details->name;
-                }
-                if($category4 instanceof Category)
-                {
-                    $category4Details = $category4->details[0];
-                    $categoryBranchList[] = $category4Details->name;
-                }
-                if($category5 instanceof Category)
-                {
-                    $category5Details = $category5->details[0];
-                    $categoryBranchList[] = $category5Details->name;
-                }
-                if($category6 instanceof Category)
-                {
-                    $category6Details = $category6->details[0];
-                    $categoryBranchList[] = $category6Details->name;
-                }
-                if(is_array($categoryBranchList) && count($categoryBranchList) > 0)
-                {
-                    return implode($separator, $categoryBranchList);
-                }
-            }
-        }
-
-        return '';
+		return $this->marketCategoryHelperRepository->getCategoryBranchName($categoryId, $lang, $plentyId, $separator);
 	}
 
     public function getCategoryBranch(Record $item, KeyValue $settings, int $categoryLevel):string
@@ -1183,13 +1140,12 @@ class ElasticExportHelper
 								bool $setLastExportedTimestamp = true
 	):string
     {
-        $sku = $this->variationSkuRepository->generateSku($item->variationBase->id,
-														  $marketId,
-														  $accountId,
-														  $sku,
-														  $setLastExportedTimestamp);
-
-        return $sku;
+		return $this->marketItemHelperRepository->generateSku(
+			$item->variationBase->id,
+			$marketId,
+			$accountId,
+			$setLastExportedTimestamp
+		);
     }
 
 	/**
