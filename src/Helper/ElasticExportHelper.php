@@ -11,17 +11,13 @@ use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\Market\Helper\Contracts\MarketItemHelperRepositoryContract;
 use Plenty\Modules\Market\Helper\Contracts\MarketCategoryHelperRepositoryContract;
 use Plenty\Modules\Market\Helper\Contracts\MarketPropertyHelperRepositoryContract;
+use Plenty\Modules\Market\Helper\Contracts\MarketAttributeHelperRepositoryContract;
 use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
-use Plenty\Modules\Item\Attribute\Models\AttributeValueName;
-use Plenty\Modules\Item\Attribute\Models\AttributeName;
 use Plenty\Modules\Item\Property\Contracts\PropertyItemNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepositoryContract;
 use Plenty\Modules\Category\Models\Category;
-use Plenty\Modules\Item\Property\Contracts\PropertyMarketComponentRepositoryContract;
-use Plenty\Modules\Item\Property\Models\PropertyMarketComponent;
 use Plenty\Modules\Item\DataLayer\Models\ItemProperty;
 use Plenty\Modules\Order\Shipping\Models\DefaultShipping;
 use Plenty\Modules\Order\Payment\Method\Contracts\PaymentMethodRepositoryContract;
@@ -34,10 +30,6 @@ use Plenty\Modules\Order\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Order\Shipping\Countries\Models\Country;
 use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
 use Plenty\Modules\System\Models\Webstore;
-use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
-use Plenty\Modules\Item\VariationSku\Models\VariationSku;
-use Plenty\Modules\Item\Availability\Contracts\AvailabilityRepositoryContract;
-use Plenty\Modules\Item\Attribute\Contracts\AttributeNameRepositoryContract;
 
 /**
  * Class ElasticExportHelper
@@ -79,16 +71,6 @@ class ElasticExportHelper
      */
     private $unitNameRepository;
 
-	/**
-	 * AttributeValueNameRepositoryContract $attributeValueNameRepository
-	 */
-    private $attributeValueNameRepository;
-
-    /**
-     * AttributeNameRepositoryContract $attributeNameRepository
-     */
-    private $attributeNameRepository;
-
     /**
      * PropertyItemNameRepositoryContract $propertyItemNameRepository
      */
@@ -108,11 +90,6 @@ class ElasticExportHelper
      * CategoryRepositoryContract $categoryRepository
      */
     private $categoryRepository;
-
-    /**
-     * PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository;s
-     */
-    private $propertyMarketComponentRepository;
 
     /**
      * @var PaymentMethodRepositoryContract $paymentMethodRepository
@@ -139,16 +116,6 @@ class ElasticExportHelper
      */
     private $webstoreRepository;
 
-    /**
-     * VariationSkuRepositoryContract $variationSkuRepository
-     */
-    private $variationSkuRepository;
-
-    /**
-     * AvailabilityRepositoryContract $availabilityRepositoryContract
-     */
-    private $availabilityRepository;
-
 	/**
 	 * MarketItemHelperRepositoryContract $marketItemHelperRepository
 	 */
@@ -164,86 +131,61 @@ class ElasticExportHelper
 	 */
 	private $marketPropertyHelperRepository;
 
+	/**
+	 * MarketAttributeHelperRepositoryContract $marketAttributeHelperRepository
+	 */
+	private $marketAttributeHelperRepository;
+
     /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param UnitNameRepositoryContract $unitNameRepository
-     * @param AttributeValueNameRepositoryContract $attributeValueNameRepository
-     * @param AttributeNameRepositoryContract $attributeNameRepository
      * @param PropertyItemNameRepositoryContract $propertyItemNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      * @param CategoryRepositoryContract $categoryRepository
-     * @param PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository
      * @param PaymentMethodRepositoryContract $paymentMethodRepository
      * @param ConfigRepository $configRepository
      * @param CountryRepositoryContract $countryRepository
      * @param WebstoreRepositoryContract $webstoreRepository
-     * @param VariationSkuRepositoryContract $variationSkuRepository
-     * @param AvailabilityRepositoryContract $availabilityRepository
 	 * @param MarketItemHelperRepositoryContract $marketItemHelperRepository
 	 * @param MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
 	 * @param MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
+	 * @param MarketAttributeHelperRepositoryContract $marketAttributeHelperRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitNameRepositoryContract $unitNameRepository,
-                                AttributeValueNameRepositoryContract $attributeValueNameRepository,
-                                AttributeNameRepositoryContract $attributeNameRepository,
                                 PropertyItemNameRepositoryContract $propertyItemNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
                                 CategoryRepositoryContract $categoryRepository,
-                                PropertyMarketComponentRepositoryContract $propertyMarketComponentRepository,
                         		PaymentMethodRepositoryContract $paymentMethodRepository,
                                 DefaultShippingCostRepositoryContract $defaultShippingCostRepository,
                                 ConfigRepository $configRepository,
                                 CountryRepositoryContract $countryRepository,
                                 WebstoreRepositoryContract $webstoreRepository,
-                                VariationSkuRepositoryContract $variationSkuRepository,
-                                AvailabilityRepositoryContract $availabilityRepository,
 								MarketItemHelperRepositoryContract $marketItemHelperRepository,
 								MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository,
-								MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
+								MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository,
+								MarketAttributeHelperRepositoryContract $marketAttributeHelperRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
-
-        $this->unitNameRepository = $unitNameRepository;
-
-        $this->attributeValueNameRepository = $attributeValueNameRepository;
-
-        $this->attributeNameRepository = $attributeNameRepository;
-
-        $this->propertyItemNameRepository = $propertyItemNameRepository;
-
+		$this->unitNameRepository = $unitNameRepository;
+		$this->propertyItemNameRepository = $propertyItemNameRepository;
         $this->categoryBranchMarketplaceRepository = $categoryBranchMarketplaceRepository;
-
         $this->urlBuilderRepository = $urlBuilderRepository;
-
         $this->categoryRepository = $categoryRepository;
-
-        $this->propertyMarketComponentRepository = $propertyMarketComponentRepository;
-
 		$this->paymentMethodRepository = $paymentMethodRepository;
-
         $this->defaultShippingCostRepository = $defaultShippingCostRepository;
-
         $this->configRepository = $configRepository;
-
         $this->countryRepository = $countryRepository;
-
         $this->webstoreRepository = $webstoreRepository;
-
-        $this->variationSkuRepository = $variationSkuRepository;
-
-        $this->availabilityRepository = $availabilityRepository;
-
 		$this->marketItemHelperRepository = $marketItemHelperRepository;
-
 		$this->marketCategoryHelperRepository = $marketCategoryHelperRepository;
-
 		$this->marketPropertyHelperRepository = $marketPropertyHelperRepository;
+		$this->marketAttributeHelperRepository = $marketAttributeHelperRepository;
     }
 
     /**
@@ -662,10 +604,10 @@ class ElasticExportHelper
         {
             foreach($item->variationAttributeValueList as $attribute)
             {
-                $attributeName = $this->attributeNameRepository->findOne($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
-                if($attributeName instanceof AttributeName)
+                $attributeName = $this->marketAttributeHelperRepository->getAttributeName($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                if(strlen($attributeName) > 0)
                 {
-                    $values[] = $attributeName->name;
+                    $values[] = $attributeName;
                 }
             }
         }
@@ -691,11 +633,11 @@ class ElasticExportHelper
             $i = 0;
             foreach($item->variationAttributeValueList as $attribute)
             {
-                $attributeValueName = $this->attributeValueNameRepository->findOne($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                $attributeValueName = $this->marketAttributeHelperRepository->getAttributeValueName($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
-                if($attributeValueName instanceof AttributeValueName)
+                if(strlen($attributeValueName) > 0)
                 {
-                    $unsortedValues[$attribute->attributeId] = $attributeValueName->name;
+                    $unsortedValues[$attribute->attributeId] = $attributeValueName;
                     $i++;
                 }
             }
