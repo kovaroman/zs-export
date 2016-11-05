@@ -9,8 +9,6 @@ use Plenty\Modules\Item\DataLayer\Models\RecordList;
 use Plenty\Modules\DataExchange\Models\FormatSetting;
 use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
-use ElasticExport\Helper\ItemVariationGrouper;
-use Plenty\Plugin\Application;
 use Plenty\Modules\Market\Helper\Contracts\MarketPropertyHelperRepositoryContract;
 
 class RakutenDE extends CSVGenerator
@@ -39,11 +37,6 @@ class RakutenDE extends CSVGenerator
 	 */
 	private $attributeNameCombination = array();
 
-    /**
-     * Application $app
-     */
-    private $app;
-
 	/**
 	 * MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
 	 */
@@ -53,19 +46,16 @@ class RakutenDE extends CSVGenerator
 	 * Rakuten constructor.
 	 * @param ElasticExportHelper $elasticExportHelper
 	 * @param ArrayHelper $arrayHelper
-     * @param Application $app
 	 * @param MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
 	 */
 	public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		Application $app,
 		MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
 	)
 	{
 		$this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
-        $this->app = $app;
 		$this->marketPropertyHelperRepository = $marketPropertyHelperRepository;
 	}
 
