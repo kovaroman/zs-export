@@ -135,15 +135,14 @@ class RakutenDE extends CSVGenerator
 			$currentItemId = null;
 			$previousItemId = null;
 			$variations = array();
-
 			foreach($resultData as $variation)
 			{
 				// Case first variation
 				if ($currentItemId === null)
 				{
-					$currentItemId = $variation->itemBase->id;
 					$previousItemId = $variation->itemBase->id;
 				}
+				$currentItemId = $variation->itemBase->id;
 
 				// Check if it's the same item
 				if ($currentItemId == $previousItemId)
@@ -152,13 +151,11 @@ class RakutenDE extends CSVGenerator
 				}
 				else
 				{
-					$this->buildRows($settings, $variation);
-					$variations[] = array();
+					$this->buildRows($settings, $variations);
+					$variations = array();
 					$variations[] = $variation;
 					$previousItemId = $variation->itemBase->id;
 				}
-
-				$currentItemId = $variation->itemBase->id;
 			}
 		}
 	}
