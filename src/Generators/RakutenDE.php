@@ -691,7 +691,7 @@ class RakutenDE extends CSVGenerator
 			{
 				if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
 				{
-					if (strlen($externalComponent) > 0 && strstr($marketProperty['external_component'], $externalComponent))
+					if (strlen($externalComponent) > 0 && strpos($marketProperty['external_component'], $externalComponent) !== false)
 					{
 						$list = explode(':', $marketProperty['external_component']);
 						if (isset($list[1]) && strlen($list[1]) > 0)

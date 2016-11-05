@@ -889,7 +889,7 @@ class ElasticExportHelper
 			{
 				if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
 				{
-					if (strlen($externalComponent) > 0 && strstr($marketProperty['external_component'], $externalComponent))
+					if (strlen($externalComponent) > 0 && $marketProperty['external_component'] == $externalComponent)
 					{
 						return $property->propertyValue;
 					}
