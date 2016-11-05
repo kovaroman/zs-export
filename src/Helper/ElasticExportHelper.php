@@ -10,6 +10,7 @@ use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
 use Plenty\Modules\Market\Helper\Contracts\MarketItemHelperRepositoryContract;
 use Plenty\Modules\Market\Helper\Contracts\MarketCategoryHelperRepositoryContract;
+use Plenty\Modules\Market\Helper\Contracts\MarketPropertyHelperRepositoryContract;
 use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
 use Plenty\Modules\Item\Attribute\Contracts\AttributeValueNameRepositoryContract;
@@ -158,6 +159,11 @@ class ElasticExportHelper
 	 */
 	private $marketCategoryHelperRepository;
 
+	/**
+	 * MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
+	 */
+	private $marketPropertyHelperRepository;
+
     /**
      * ElasticExportHelper constructor.
      *
@@ -178,6 +184,7 @@ class ElasticExportHelper
      * @param AvailabilityRepositoryContract $availabilityRepository
 	 * @param MarketItemHelperRepositoryContract $marketItemHelperRepository
 	 * @param MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
+	 * @param MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitNameRepositoryContract $unitNameRepository,
@@ -196,7 +203,8 @@ class ElasticExportHelper
                                 VariationSkuRepositoryContract $variationSkuRepository,
                                 AvailabilityRepositoryContract $availabilityRepository,
 								MarketItemHelperRepositoryContract $marketItemHelperRepository,
-								MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
+								MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository,
+								MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -234,6 +242,8 @@ class ElasticExportHelper
 		$this->marketItemHelperRepository = $marketItemHelperRepository;
 
 		$this->marketCategoryHelperRepository = $marketCategoryHelperRepository;
+
+		$this->marketPropertyHelperRepository = $marketPropertyHelperRepository;
     }
 
     /**
@@ -396,44 +406,8 @@ class ElasticExportHelper
 
 		    return (string)$settings->get($availabilityIdString);
 		}
-
-        $availability = $this->availabilityRepository->findAvailability($item->variationBase->availability < 0 ? 10 : (int) $item->variationBase->availability);
-
-        if($availability instanceof Availability)
-        {
-            $name = $this->getAvailabilityName($availability, $settings->get('lang'));
-
-            if($returnAvailabilityName && strlen($name) > 0)
-            {
-                return (string) $name;
-            }
-            elseif(!$returnAvailabilityName && $availability->averageDays > 0)
-            {
-                return (string) $availability->averageDays;
-            }
-        }
-
-		return '';
+		return $this->marketItemHelperRepository->getAvailability($item->variationBase->availability, $settings->get('lang'), $returnAvailabilityName);
 	}
-
-    /**
-     * Get availability name for a vigen availability and lang.
-     * @param Availability $availability
-     * @param string $language
-     * @return string
-     */
-    private function getAvailabilityName(Availability $availability, string $language):string
-    {
-        foreach($availability->languages as $availabilityLanguage)
-        {
-            if($availabilityLanguage->language == $language)
-            {
-                return (string)$availabilityLanguage->name;
-            }
-        }
-
-        return '';
-    }
 
     /**
      * Get the item URL.
@@ -898,6 +872,34 @@ class ElasticExportHelper
         return $list;
     }
 
+	/**
+	 * Get item characters that match referrer from settings and a given component id.
+	 * @param  Record   $item
+	 * @param  float    $marketId
+	 * @param  string  $externalComponent
+	 * @return string
+	 */
+	public function getItemPropertyByExternalComponent(Record $item, float $marketId, $externalComponent):string
+	{
+		$marketProperties = $this->marketPropertyHelperRepository->getMarketProperty($marketId);
+
+		foreach($item->itemPropertyList as $property)
+		{
+			foreach($marketProperties as $marketProperty)
+			{
+				if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
+				{
+					if (strlen($externalComponent) > 0 && $marketProperty['external_component'] == $externalComponent)
+					{
+						return $property->propertyValue;
+					}
+				}
+			}
+		}
+
+		return '';
+	}
+
     /**
      * Get item character value by backend name.
      * @param  Record $item
@@ -920,41 +922,45 @@ class ElasticExportHelper
         return '';
     }
 
-    /**
-     * Get item characters that match referrer from settings and a given component id.
-     * @param  Record   $item
-     * @param  float    $marketId
-     * @param  int     $componentId  = null
-     * @return array
-     */
-    public function getItemCharactersByComponent(Record $item, float $marketId, int $componentId = null):array
-    {
-        $propertyList = $item->itemPropertyList;
-        $propertyMarketComponents = $this->propertyMarketComponentRepository->getPropertyMarketComponents($marketId, $componentId);
-        $list = array();
+	/**
+	 * Get item characters that match referrer from settings and a given component id.
+	 * @param  Record   $item
+	 * @param  float    $marketId
+	 * @param  int     $componentId  = null
+	 * @return array
+	 */
+	public function getItemCharactersByComponent(Record $item, float $marketId, int $componentId = null):array
+	{
+		$marketProperties = $this->marketPropertyHelperRepository->getMarketProperty($marketId);
 
-        foreach($propertyList as $property)
+		$list = array();
+
+		foreach($item->itemPropertyList as $property)
 		{
-            foreach($propertyMarketComponents as $propertyMarketComponent)
-            {
-                if($propertyMarketComponent instanceof PropertyMarketComponent && $propertyMarketComponent->propertyItemId == $property->propertyId)
-                {
-                    $list[] = [
-                        'itemCharacterId' 	 => $property->itemPropertyId,
-                        'characterId' 		 => $property->propertyId,
-                        'characterValue' 	 => $property->propertyValue,
-                        'characterValueType' => $property->propertyValueType,
-                        'characterItemId' 	 => $propertyMarketComponent->propertyItemId,
-                        'componentId' 		 => $propertyMarketComponent->componentId,
-                        'referrerId' 		 => $propertyMarketComponent->marketReference,
-                        'externalComponent'  => $propertyMarketComponent->externalComponent,
+			foreach($marketProperties as $marketProperty)
+			{
+				if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
+				{
+					if (!is_null($componentId) && $marketProperty['component_id'] != $componentId)
+					{
+						continue;
+					}
+					$list[] = [
+						'itemCharacterId' 	 => $property->itemPropertyId,
+						'characterId' 		 => $property->propertyId,
+						'characterValue' 	 => $property->propertyValue,
+						'characterValueType' => $property->propertyValueType,
+						'characterItemId' 	 => $marketProperty['character_item_id'],
+						'componentId' 		 => $marketProperty['component_id'],
+						'referrerId' 		 => $marketId,
+						'externalComponent'  => $marketProperty['external_component'],
 					];
-                }
-            }
+				}
+			}
 		}
 
 		return $list;
-    }
+	}
 
     /**
      * Get barcode by a given type.

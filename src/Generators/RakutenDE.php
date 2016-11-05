@@ -11,12 +11,13 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use ElasticExport\Helper\ItemVariationGrouper;
 use Plenty\Plugin\Application;
+use Plenty\Modules\Market\Helper\Contracts\MarketPropertyHelperRepositoryContract;
 
 class RakutenDE extends CSVGenerator
 {
-	const CHARACTER_TYPE_ENERGY_CLASS		= 'energie_klasse';
-	const CHARACTER_TYPE_ENERGY_CLASS_GROUP	= 'energie_klassen_gruppe';
-	const CHARACTER_TYPE_ENERGY_CLASS_UNTIL	= 'energie_klasse_bis';
+	const PROPERTY_TYPE_ENERGY_CLASS       = 'energy_efficiency_class';
+	const PROPERTY_TYPE_ENERGY_CLASS_GROUP = 'energy_efficiency_class_group';
+	const PROPERTY_TYPE_ENERGY_CLASS_UNTIL = 'energy_efficiency_class_until';
 
 	/*
 	 * @var ElasticExportHelper
@@ -34,16 +35,28 @@ class RakutenDE extends CSVGenerator
     private $app;
 
 	/**
+	 * MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
+	 */
+	private $marketPropertyHelperRepository;
+
+	/**
 	 * Rakuten constructor.
 	 * @param ElasticExportHelper $elasticExportHelper
 	 * @param ArrayHelper $arrayHelper
      * @param Application $app
+	 * @param MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
 	 */
-	public function __construct(ElasticExportHelper $elasticExportHelper, ArrayHelper $arrayHelper, Application $app)
+	public function __construct(
+		ElasticExportHelper $elasticExportHelper,
+		ArrayHelper $arrayHelper,
+		Application $app,
+		MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
+	)
 	{
 		$this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
         $this->app = $app;
+		$this->marketPropertyHelperRepository = $marketPropertyHelperRepository;
 	}
 
 	/**
@@ -348,9 +361,9 @@ class RakutenDE extends CSVGenerator
 			'bild9'						=> $this->getImageByNumber($item, $settings, 8),
 			'bild10'					=> $this->getImageByNumber($item, $settings, 9),
 			'technical_data'			=> $item->itemDescription->technicalData,
-			'energie_klassen_gruppe'	=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_GROUP),
-			'energie_klasse'			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS),
-			'energie_klasse_bis'		=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_UNTIL),
+			'energie_klassen_gruppe'	=> $this->getItemPropertyByExternalComponent($item, 106.00, self::PROPERTY_TYPE_ENERGY_CLASS_GROUP),
+			'energie_klasse'			=> $this->getItemPropertyByExternalComponent($item, 106.00, self::PROPERTY_TYPE_ENERGY_CLASS),
+			'energie_klasse_bis'		=> $this->getItemPropertyByExternalComponent($item, 106.00, self::PROPERTY_TYPE_ENERGY_CLASS_UNTIL),
 			'energie_klassen_bild'		=> '',
 		];
 
@@ -602,9 +615,9 @@ class RakutenDE extends CSVGenerator
 			'bild9'						=> '',
 			'bild10'					=> '',
 			'technical_data'			=> '',
-			'energie_klassen_gruppe'	=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_GROUP),
-			'energie_klasse'			=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS),
-			'energie_klasse_bis'		=> $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::CHARACTER_TYPE_ENERGY_CLASS_UNTIL),
+			'energie_klassen_gruppe'	=> $this->getItemPropertyByExternalComponent($item, 106.00, self::PROPERTY_TYPE_ENERGY_CLASS_GROUP),
+			'energie_klasse'			=> $this->getItemPropertyByExternalComponent($item, 106.00, self::PROPERTY_TYPE_ENERGY_CLASS),
+			'energie_klasse_bis'		=> $this->getItemPropertyByExternalComponent($item, 106.00, self::PROPERTY_TYPE_ENERGY_CLASS_UNTIL),
 			'energie_klassen_bild'		=> '',
 		];
 
@@ -659,5 +672,37 @@ class RakutenDE extends CSVGenerator
 			default:
 				return '';
 		}
+	}
+
+	/**
+	 * Get item characters that match referrer from settings and a given component id.
+	 * @param  Record   $item
+	 * @param  float    $marketId
+	 * @param  string  $externalComponent
+	 * @return string
+	 */
+	private function getItemPropertyByExternalComponent(Record $item, float $marketId, $externalComponent):string
+	{
+		$marketProperties = $this->marketPropertyHelperRepository->getMarketProperty($marketId);
+
+		foreach($item->itemPropertyList as $property)
+		{
+			foreach($marketProperties as $marketProperty)
+			{
+				if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
+				{
+					if (strlen($externalComponent) > 0 && strpos($marketProperty['external_component'], $externalComponent) !== false)
+					{
+						$list = explode(':', $marketProperty['external_component']);
+						if (isset($list[1]) && strlen($list[1]) > 0)
+						{
+							return $list[1];
+						}
+					}
+				}
+			}
+		}
+
+		return '';
 	}
 }
