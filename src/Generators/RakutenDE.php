@@ -157,6 +157,12 @@ class RakutenDE extends CSVGenerator
 					$previousItemId = $variation->itemBase->id;
 				}
 			}
+
+			// Write the las batch of variations
+			if (is_array($variations) && count($variations) > 0)
+			{
+				$this->buildRows($settings, $variations);
+			}
 		}
 	}
 
