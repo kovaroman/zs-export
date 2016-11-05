@@ -119,7 +119,7 @@ class RakutenDE extends CSVGenerator
 				'free_var_18',
 				'free_var_19',
 				'free_var_20',
-				'MPN'		 ,
+				'MPN',
 				'bild6',
 				'bild7',
 				'bild8',
@@ -329,7 +329,6 @@ class RakutenDE extends CSVGenerator
 			$reducedPrice = $variationSpecialPrice;
 			$referenceReducedPrice = 'VK';
 		}
-
 
 		$unit = $this->getUnit($item);
 		$basePriceContent = (float)$item->variationBase->content;
