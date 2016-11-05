@@ -180,9 +180,10 @@ class RakutenDE extends CSVGenerator
 				 * Select and save the attribute name order for the first variation of each item with attributes,
 				 * if the variation has attributes
 				 */
-				if (count($variation->variationAttributeValueList) > 0
-					&& !array_key_exists($variation->itemBase->id, $this->attributeName)
-					&& !array_key_exists($variation->itemBase->id, $this->attributeNameCombination))
+				if (is_array($variation->variationAttributeValueList) &&
+					count($variation->variationAttributeValueList) > 0 &&
+					!array_key_exists($variation->itemBase->id, $this->attributeName) &&
+					!array_key_exists($variation->itemBase->id, $this->attributeNameCombination))
 				{
 					$attributeName[$variation->itemBase->id] = $this->elasticExportHelper->getAttributeName($variation, $settings);
 					foreach ($variation->variationAttributeValueList as $attribute)
