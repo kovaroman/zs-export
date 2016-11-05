@@ -941,19 +941,20 @@ class ElasticExportHelper
 			{
 				if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
 				{
-					if ((int)$componentId > 0 && $marketProperty['component_id'] == $componentId)
+					if (!is_null($componentId) && $marketProperty['component_id'] != $componentId)
 					{
-						$list[] = [
-							'itemCharacterId' 	 => $property->itemPropertyId,
-							'characterId' 		 => $property->propertyId,
-							'characterValue' 	 => $property->propertyValue,
-							'characterValueType' => $property->propertyValueType,
-							'characterItemId' 	 => $marketProperty['character_item_id'],
-							'componentId' 		 => $marketProperty['component_id'],
-							'referrerId' 		 => $marketId,
-							'externalComponent'  => $marketProperty['external_component'],
-						];
+						continue;
 					}
+					$list[] = [
+						'itemCharacterId' 	 => $property->itemPropertyId,
+						'characterId' 		 => $property->propertyId,
+						'characterValue' 	 => $property->propertyValue,
+						'characterValueType' => $property->propertyValueType,
+						'characterItemId' 	 => $marketProperty['character_item_id'],
+						'componentId' 		 => $marketProperty['component_id'],
+						'referrerId' 		 => $marketId,
+						'externalComponent'  => $marketProperty['external_component'],
+					];
 				}
 			}
 		}
