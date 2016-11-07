@@ -357,7 +357,7 @@ class RakutenDE extends CSVGenerator
 			'bild3'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 4),
-			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),	//todo kategorie name
+			'kategorien'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),	//todo kategorie name
 			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 			'tradoria_kategorie'		=> $item->itemBase->tradoriaCategory,
 			'sichtbar'					=> 1,
@@ -469,7 +469,7 @@ class RakutenDE extends CSVGenerator
 			'bild3'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 4),
-			'kategorien'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+			'kategorien'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 			'lieferzeit'				=> '',
 			'tradoria_kategorie'		=> $item->itemBase->tradoriaCategory,
 			'sichtbar'					=> 1,
