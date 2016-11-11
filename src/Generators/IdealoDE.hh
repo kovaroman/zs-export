@@ -215,7 +215,7 @@ class IdealoDE extends CSVGenerator
 		}
 
 		$data = [
-			'article_id' 		=> $this->elasticExportHelper->generateSku($item, 121, (string)$item->variationMarketStatus->sku),
+			'article_id' 		=> '',
 			'deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 			'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 			'short_description' => $this->elasticExportHelper->getPreviewText($item, $settings),
@@ -257,6 +257,7 @@ class IdealoDE extends CSVGenerator
 		*/
 		if($checkoutApproved == 'true')
 		{
+			$data['article_id'] = $this->elasticExportHelper->generateSku($item, 121.02, (string)$item->variationMarketStatus->sku);
 			$data['itemsInStock'] = $stock;
 			$fulfillmentType = $this->getProperty($item, 'FulfillmentType:Spedition');
 			if(!is_null($fulfillmentType))
@@ -297,6 +298,7 @@ class IdealoDE extends CSVGenerator
 		}
 		else
 		{
+			$data['article_id'] = $this->elasticExportHelper->generateSku($item, 121, (string)$item->variationMarketStatus->sku);
 			$data['itemsInStock'] = '';
 			$data['fulfillmentType'] = '';
 			$data['twoManHandlingPrice'] = '';
