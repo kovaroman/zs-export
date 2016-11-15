@@ -69,7 +69,7 @@ class Check24DE extends CSVGenerator
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($shippingCost))
                 {
-                    $shippingCost = number_format($shippingCost, 2, ',', '');
+                    $shippingCost = number_format((float)$shippingCost, 2, ',', '');
                 }
                 else
                 {
@@ -78,21 +78,21 @@ class Check24DE extends CSVGenerator
 
 				$data = [
 					'id' 				=> $this->getSku($item),
-					'manufacturer' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'manufacturer' 		=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'mpnr' 				=> $item->variationBase->model,
 					'ean' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'name' 				=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
 					'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
-					'category_path' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-					'price' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+					'category_path' 	=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+					'price' 			=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'price_per_unit'	=> $this->elasticExportHelper->getBasePrice($item, $settings),
 					'link' 				=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_url'			=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'delivery_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'delivery_cost' 	=> $shippingCost,
 					'pzn' 				=> '',
-					'stock' 			=> $item->variationStock->stockNet,
-					'weight' 			=> $item->variationBase->weightG,	
+					'stock' 			=> (int)$item->variationStock->stockNet,
+					'weight' 			=> $item->variationBase->weightG,
 				];
 
 				$this->addCSVContent(array_values($data));
