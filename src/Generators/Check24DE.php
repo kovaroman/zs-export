@@ -91,7 +91,7 @@ class Check24DE extends CSVGenerator
 					'delivery_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'delivery_cost' 	=> $shippingCost,
 					'pzn' 				=> '',
-					'stock' 			=> (int)$item->variationStock->stockNet,
+					'stock' 			=> $item->variationStock->stockNet,
 					'weight' 			=> $item->variationBase->weightG,
 				];
 
