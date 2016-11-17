@@ -86,7 +86,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                 $shipmentAndHandling = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($shipmentAndHandling))
                 {
-                    $shipmentAndHandling = number_format($shipmentAndHandling, 2, ',', '');
+                    $shipmentAndHandling = number_format((float)$shipmentAndHandling, 2, ',', '');
                 }
                 else
                 {
@@ -107,7 +107,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'isbn'                  => $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
                     'fedas'                 => $item->itemBase->fedas,
                     'unit'                  => $basePriceList['unit'],
-                    'price'                 => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+                    'price'                 => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'price_old'             => $rrp,
                     'weight'                => $item->variationBase->weightG,
                     'category1'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 1),
@@ -116,7 +116,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'category4'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 4),
                     'category5'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
                     'category6'             => $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
-                    'category_concat'       => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+                    'category_concat'       => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'image_url_preview'     => $this->getImages($item, $settings, ';', 'preview'),
                     'image_url'             => $this->elasticExportHelper->getMainImage($item, $settings),
                     'shipment_and_handling' => $shipmentAndHandling,

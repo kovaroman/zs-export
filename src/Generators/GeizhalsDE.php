@@ -73,7 +73,7 @@ class GeizhalsDE extends CSVGenerator
 
                 if(!is_null($paymentInAdvance))
                 {
-                    $paymentInAdvance = number_format($paymentInAdvance + $this->getPaymentShippingExtraCharge($item, $settings, 0), 2, '.', '');
+                    $paymentInAdvance = number_format((float)$paymentInAdvance + $this->getPaymentShippingExtraCharge($item, $settings, 0), 2, '.', '');
                 }
                 else
                 {
@@ -82,7 +82,7 @@ class GeizhalsDE extends CSVGenerator
 
                 if(!is_null($cashOnDelivery))
                 {
-                    $cashOnDelivery = number_format($cashOnDelivery + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', '');
+                    $cashOnDelivery = number_format((float)$cashOnDelivery + $this->getPaymentShippingExtraCharge($item, $settings, 1), 2, '.', '');
                 }
                 else
                 {
@@ -90,17 +90,17 @@ class GeizhalsDE extends CSVGenerator
                 }
 
 				$data = [
-					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'Produktcode' 		=> $item->itemBase->id,
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($variationName) ? ' ' . $variationName : ''),
-					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+					'Preis' 			=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'Deeplink' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'Vorkasse' 			=> $paymentInAdvance,
 					'Nachnahme' 		=> $cashOnDelivery,
 					'Verfügbarkeit' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 					'Herstellercode' 	=> $item->variationBase->model,
 					'EAN' 				=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+					'Kategorie' 		=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 

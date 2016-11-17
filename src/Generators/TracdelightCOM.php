@@ -105,7 +105,7 @@ class TracdelightCOM extends CSVGenerator
                 $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
                 }
                 else
                 {
@@ -119,11 +119,11 @@ class TracdelightCOM extends CSVGenerator
                     'Produkttitel'          => $this->elasticExportHelper->getName($item, $settings),
                     'Bild-URL'              => $this->elasticExportHelper->getMainImage($item, $settings),
                     'Deeplink'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-                    'Produkt-Kategorie'     => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+                    'Produkt-Kategorie'     => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'Produkt-Beschreibung'  => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'Preis'                 => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+                    'Preis'                 => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'Währung'               => $item->variationRetailPrice->currency,
-                    'Marke'                 => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+                    'Marke'                 => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
                     'Versandkosten'         => $deliveryCost,
                     'Geschlecht'            => $this->getProperty($item, $settings, 'size') ? $this->getProperty($item, $settings, 'size') : $this->getStandardGender((string)$settings->get('gender')), // only mandatory for chlotes
                     'Grundpreis'            => $this->elasticExportHelper->getBasePrice($item, $settings), // only mandatory for cosmetics

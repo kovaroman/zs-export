@@ -171,17 +171,19 @@ class GoogleShopping extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item);
-                $variationPrice = number_format($this->elasticExportHelper->getPrice($item), 2, '.', '');
-                $salePrice = number_format($this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
+                $variationPrice = number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', '');
+                $salePrice = number_format((float)$this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
+
                 if($salePrice >= $variationPrice || $salePrice <= 0.00)
                 {
                     $salePrice = '';
                 }
 
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
                 if(!is_null($shippingCost))
                 {
-                    $shippingCost = number_format($shippingCost, 2, '.', '');
+                    $shippingCost = number_format((float)$shippingCost, 2, '.', '');
                 }
                 else
                 {
@@ -200,7 +202,7 @@ class GoogleShopping extends CSVGenerator
 					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'price'						=> $variationPrice,
 					'sale_price'				=> $salePrice,
-					'brand'						=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'brand'						=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'gtin'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'isbn'						=> $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
 					'mpn'						=> $item->variationBase->model,
@@ -438,7 +440,7 @@ class GoogleShopping extends CSVGenerator
     private function getUnitPricingMeasure(Record $item, KeyValue $settings):string
     {
         $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-        return (string)number_format($item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
+        return (string)number_format((float)$item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
     }
 
     /**

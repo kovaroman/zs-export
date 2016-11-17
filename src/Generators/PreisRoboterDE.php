@@ -48,7 +48,6 @@ class PreisRoboterDE extends CSVGenerator
             //convert settings to array
 			$settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-
             //add header to csv
 			$this->addCSVContent([
 					'art_number',
@@ -69,9 +68,10 @@ class PreisRoboterDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
 			    if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
                 }
                 else
                 {
@@ -81,7 +81,7 @@ class PreisRoboterDE extends CSVGenerator
 				$row = [
 					'art_number' 		    => $item->itemBase->id,
 					'art_name' 		        => $this->elasticExportHelper->getName($item, $settings, 256),
-					'art_price' 	        => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+					'art_price' 	        => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'art_url' 		        => $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'art_img_url' 	        => $this->elasticExportHelper->getMainImage($item, $settings),
 					'art_description' 	    => $this->elasticExportHelper->getDescription($item, $settings, 256),
@@ -89,7 +89,7 @@ class PreisRoboterDE extends CSVGenerator
 	                'art_lieferzeit' 	    => $this->elasticExportHelper->getAvailability($item, $settings),
 					'art_ean_code'		    => $item->variationBarcode->code,
 					'art_pzn' 	            => '',
-					'art_producer' 	        => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'art_producer' 	        => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 	                'art_producer_number'   => $item->variationBase->model,
 	                'art_baseprice' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];

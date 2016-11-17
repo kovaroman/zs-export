@@ -66,7 +66,7 @@ class ShoppingCOM extends CSVGenerator
 			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
                 }
                 else
                 {
@@ -75,14 +75,14 @@ class ShoppingCOM extends CSVGenerator
 
 				$data = [
 					'Händler-SKU' 			=> $item->itemBase->id,
-					'Hersteller' 			=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'Hersteller' 			=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'EAN' 					=> $item->variationBarcode->code,
 					'Produktname' 			=> $this->elasticExportHelper->getName($item, $settings),
 					'Produktbeschreibung' 	=> $this->elasticExportHelper->getDescription($item, $settings),
-					'Preis' 				=> number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
+					'Preis' 				=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, ',', ''),
 					'Produkt-URL' 			=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 	                'Produktbild-URL' 		=> $this->elasticExportHelper->getMainImage($item, $settings),
-					'Kategorie'				=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+					'Kategorie'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'Verfügbar' 			=> 'Ja',
 					'Verfügbarkeitdetails' 	=> $this->elasticExportHelper->getAvailability($item, $settings),
 	                'Versand: Landtarif' 	=> $deliveryCost,

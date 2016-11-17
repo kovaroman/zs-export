@@ -168,7 +168,6 @@ class IdealoDE extends CSVGenerator
 	{
 		$price = $this->elasticExportHelper->getPrice($item) <= 0 ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
 		$rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) <= $price ? 0 : $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
-
 		$variationName = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings);
 
 		if($item->variationBase->limitOrderByStockSelect == 2)
@@ -210,6 +209,7 @@ class IdealoDE extends CSVGenerator
 		}
 
 		$checkoutApproved = $this->getProperty($item, 'CheckoutApproved');
+
 		if(is_null($checkoutApproved) || strlen($checkoutApproved) <= 0)
 		{
 			$checkoutApproved = 'false';
@@ -226,15 +226,15 @@ class IdealoDE extends CSVGenerator
 			'short_description' => $this->elasticExportHelper->getPreviewText($item, $settings),
 			'description' 		=> $this->elasticExportHelper->getDescription($item, $settings),
 			'article_no' 		=> $item->variationBase->customNumber,
-			'producer' 			=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+			'producer' 			=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 			'model' 			=> $item->variationBase->model,
 			'availability' 		=> $this->elasticExportHelper->getAvailability($item, $settings),
 			'ean'	 			=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'isbn' 				=> $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
 			'fedas' 			=> $item->itemBase->fedas,
 			'warranty' 			=> '',
-			'price' 			=> number_format($price, 2, '.', ''),
-			'price_old' 		=> number_format($rrp, 2, '.', ''),
+			'price' 			=> number_format((float)$price, 2, '.', ''),
+			'price_old' 		=> number_format((float)$rrp, 2, '.', ''),
 			'weight' 			=> $item->variationBase->weightG,
 			'category1' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 1),
 			'category2' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 2),
@@ -274,7 +274,9 @@ class IdealoDE extends CSVGenerator
 				$full = $this->getProperty($item, 'FulfillmentType:Paketdienst');
 				$fulfillmentType = is_null($full) || strlen($full) <= 0 ? '' : 'Paketdienst';
 			}
+
 			$data['fulfillmentType'] = $fulfillmentType;
+
 			if($data['fulfillmentType'] == 'Spedition')
 			{
 				$twoManHandling = $this->getProperty($item, 'TwoManHandlingPrice');
@@ -286,6 +288,7 @@ class IdealoDE extends CSVGenerator
 
 				$twoManHandling > 0 ?
 					$data['twoManHandlingPrice'] = $twoManHandling : $data['twoManHandlingPrice'] = '';
+
 				if($twoManHandling > 0)
 				{
 					$disposal > 0 ?
@@ -320,7 +323,6 @@ class IdealoDE extends CSVGenerator
 				{
 					$name = $this->getPaymentMethodName($paymentMethod, $settings->get('lang') ?: 'de');
 					$cost = $this->elasticExportHelper->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethod->id);
-
 					$data[$name] = number_format((float)$cost, 2, '.', '');
 				}
 			}

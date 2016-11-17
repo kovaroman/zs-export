@@ -62,7 +62,7 @@ class GuenstigerDE extends CSVGenerator
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($shippingCost))
                 {
-                    $shippingCost = number_format($shippingCost, 2, ',', '');
+                    $shippingCost = number_format((float)$shippingCost, 2, ',', '');
                 }
                 else
                 {
@@ -71,7 +71,7 @@ class GuenstigerDE extends CSVGenerator
 
 				$data = [
 					'bezeichnung'      => $this->elasticExportHelper->getName($item, $settings, 256),
-					'preis' 	       => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+					'preis' 	       => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'deeplink' 		   => $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'ean' 		       => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'beschreibung' 	   => $this->elasticExportHelper->getDescription($item, $settings, 256),
