@@ -76,9 +76,10 @@ class BilligerDE extends CSVGenerator
                 }
 
                 $dlvCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+				
                 if(!is_null($dlvCost))
                 {
-                    $dlvCost = number_format($dlvCost, 2, ',', '');
+                    $dlvCost = number_format((float)$dlvCost, 2, ',', '');
                 }
                 else
                 {
@@ -88,12 +89,12 @@ class BilligerDE extends CSVGenerator
 				$data = [
 					'aid' 		=> $item->variationBase->id,
 					'name' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($attributes) ? ', ' . $attributes : ''),
-					'price' 	=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+					'price' 	=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'brand' 	=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'brand' 	=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'ean' 		=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'desc' 		=> $this->elasticExportHelper->getDescription($item, $settings),
-	                'shop_cat' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+	                'shop_cat' 	=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 					'image'		=> $this->elasticExportHelper->getMainImage($item, $settings),
 					'dlv_time' 	=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'dlv_cost' 	=> $dlvCost,

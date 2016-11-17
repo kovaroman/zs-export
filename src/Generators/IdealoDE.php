@@ -242,7 +242,7 @@ class IdealoDE extends CSVGenerator
 			'category4' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 4),
 			'category5' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 5),
 			'category6' 		=> $this->elasticExportHelper->getCategoryBranch($item, $settings, 6),
-			'category_concat' 	=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+			'category_concat' 	=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 			'image_url_preview' => $this->elasticExportHelper->getMainImage($item, $settings, 'preview'),
 			'image_url' 		=> $this->elasticExportHelper->getMainImage($item, $settings, 'normal'),
 			'base_price' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
@@ -321,7 +321,7 @@ class IdealoDE extends CSVGenerator
 					$name = $this->getPaymentMethodName($paymentMethod, $settings->get('lang') ?: 'de');
 					$cost = $this->elasticExportHelper->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethod->id);
 
-					$data[$name] = number_format($cost, 2, '.', '');
+					$data[$name] = number_format((float)$cost, 2, '.', '');
 				}
 			}
 		}
