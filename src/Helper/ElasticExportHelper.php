@@ -592,11 +592,12 @@ class ElasticExportHelper
 
     /**
      * Get the attributeNames
-     * @param Record   $item
-     * @param KeyValue $settings
+     * @param Record    $item
+     * @param KeyValue  $settings
+     * @param string    $delimiter
      * @return string
      */
-    public function getAttributeName(Record $item, KeyValue $settings):string
+    public function getAttributeName(Record $item, KeyValue $settings, string $delimiter = '|'):string
     {
         $values = [];
 
@@ -612,7 +613,7 @@ class ElasticExportHelper
             }
         }
 
-        return implode('|', $values);
+        return implode($delimiter, $values);
     }
 
     /**
@@ -662,6 +663,43 @@ class ElasticExportHelper
         }
 
         return implode($delimiter, $values);
+    }
+
+    /**
+     * getAttributeNameAndValueCombination
+     * @param string $attributeNames
+     * @param string $attributeValues
+     * @param string $delimiter
+     * @return string
+     */
+    public function getAttributeNameAndValueCombination(string $attributeNames, string $attributeValues, string $delimiter = ','):string
+    {
+        $attributes='';
+        $attributeNameList = array();
+        $attributeValueList = array();
+
+        if (strlen($attributeNames) && strlen($attributeValues))
+        {
+            $attributeNameList = explode(',', $attributeNames);
+            $attributeValueList = explode(',', $attributeValues);
+        }
+
+        if (count($attributeNameList) && count($attributeValueList))
+        {
+            foreach ($attributeNameList as $index => $attributeName)
+            {
+                if ($index==0)
+                {
+                    $attributes .= $attributeNameList[$index]. ': ' . $attributeValueList[$index];
+                }
+                else
+                {
+                    $attributes .= $delimiter. ' ' . $attributeNameList[$index]. ': ' . $attributeValueList[$index];
+                }
+            }
+        }
+
+        return $attributes;
     }
 
     /**

@@ -104,11 +104,11 @@ class BeezUp extends CSVGenerator
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
-
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
                 if(!is_null($shippingCost))
                 {
-                    $shippingCost = number_format($shippingCost, 2, ',', '');
+                    $shippingCost = number_format((float)$shippingCost, 2, ',', '');
                 }
                 else
                 {
@@ -120,11 +120,11 @@ class BeezUp extends CSVGenerator
                     'Artikel Nr'            =>  $item->variationBase->customNumber,
                     'MPN'                   =>  $item->variationBase->model,
                     'EAN'                   =>  $item->variationBarcode->code,
-                    'Marke'                 =>  $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+                    'Marke'                 =>  $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
-                    'Preis inkl. MwSt.'     =>  number_format($this->elasticExportHelper->getPrice($item), 2, '.', '')  ,
-                    'UVP inkl. MwSt.'       =>  number_format($rrp, 2, '.', ''),
+                    'Preis inkl. MwSt.'     =>  number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', '')  ,
+                    'UVP inkl. MwSt.'       =>  number_format((float)$rrp, 2, '.', ''),
                     'Produkt-URL'           =>  $this->elasticExportHelper->getUrl($item, $settings),
                     'Bild-URL'              =>  $this->getImageByNumber($item, $settings, 1),
                     'Bild-URL2'             =>  $this->getImageByNumber($item, $settings, 2),

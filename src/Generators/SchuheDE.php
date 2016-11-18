@@ -147,7 +147,7 @@ class SchuheDE extends CSVGenerator
                 $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, '.', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, '.', '');
                 }
                 else
                 {
@@ -169,14 +169,14 @@ class SchuheDE extends CSVGenerator
 					'Hersteller Farbbezeichnung'	=> $this->getProperty($item, $settings, 'producer_color'),
 					'GG Größengang'					=> $this->getProperty($item, $settings, 'size_range'),
 					'Größe'							=> $this->getProperty($item, $settings, 'size'),
-					'Marke'							=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'Marke'							=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'Saison'						=> $this->getProperty($item, $settings, 'season'),
 					'EAN'							=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'Währung'						=> $settings->get('currency'),
 					'Versandkosten'					=> $deliveryCost,
 					'Info Versandkosten'			=> $this->getProperty($item, $settings, 'shipping_costs_info'),
-					'Preis' . ' (UVP)'				=> number_format($rrp, 2, '.', ''),
-					'reduzierter Preis'				=> number_format($price, 2, '.', ''),
+					'Preis' . ' (UVP)'				=> number_format((float)$rrp, 2, '.', ''),
+					'reduzierter Preis'				=> number_format((float)$price, 2, '.', ''),
 					'Grundpreis'					=> $this->elasticExportHelper->getBasePrice($item, $settings),
 					'Grundpreis Einheit'			=> $basePriceList['lot'],
 					'Kategorien'					=> $this->getCategories($item, $settings),
@@ -404,7 +404,7 @@ class SchuheDE extends CSVGenerator
 
 		foreach($item->variationCategoryList as $category)
 		{
-			$category = $this->elasticExportHelper->getCategory($category->categoryId, $settings->get('lang'), $settings->get('plentyId'));
+			$category = $this->elasticExportHelper->getCategory((int)$category->categoryId, $settings->get('lang'), $settings->get('plentyId'));
 
 			if(strlen($category))
 			{

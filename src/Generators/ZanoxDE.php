@@ -67,11 +67,11 @@ private $arrayHelper;
 			foreach($resultData as $item)
 			{
                 $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
                 if(!is_null($shippingCost))
                 {
-                    $shippingCost = number_format($shippingCost, 2, '.', '');
+                    $shippingCost = number_format((float)$shippingCost, 2, '.', '');
                 }
                 else
                 {
@@ -81,15 +81,15 @@ private $arrayHelper;
 				$data = [
                     'prod_number'           => $item->itemBase->id,
                     'prod_name'             => strip_tags(html_entity_decode($this->elasticExportHelper->getName($item, $settings))),
-                    'prod_price'            => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+                    'prod_price'            => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'currency_symbol'       => $item->variationRetailPrice->currency,
-                    'category'              => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+                    'category'              => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'prod_description'      => strip_tags(html_entity_decode($this->elasticExportHelper->getPreviewText($item, $settings, 256))),
                     'prod_description_long' => strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings, 256))),
                     'img_small'             => $this->elasticExportHelper->getMainImage($item, $settings, 'preview'),
                     'img_medium'            => $this->elasticExportHelper->getMainImage($item, $settings, 'middle'),
                     'img_large'             => $this->elasticExportHelper->getMainImage($item, $settings, 'normal'),
-                    'manufacturer'          => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+                    'manufacturer'          => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
                     'prod_url'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'prod_ean'              => $item->variationBarcode->code,
                     'shipping_costs'        => $shippingCost,

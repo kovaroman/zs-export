@@ -63,9 +63,10 @@ class KelkooBasicDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
                 if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
                 }
                 else
                 {
@@ -76,7 +77,7 @@ class KelkooBasicDE extends CSVGenerator
                     'url' 		    => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'title' 		=> $this->elasticExportHelper->getName($item, $settings, 80),
                     'description'   => $this->elasticExportHelper->getDescription($item, $settings, 160),
-                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
+                    'price' 	    => number_format((float)$this->elasticExportHelper->getPrice($item), 2, ',', ''),
                     'offerid'       => $item->variationBase->id,
                     'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),
                     'availability'  => $this->elasticExportHelper->getAvailability($item, $settings, false),

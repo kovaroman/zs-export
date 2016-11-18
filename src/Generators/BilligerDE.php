@@ -62,6 +62,19 @@ class BilligerDE extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
+                $attributes = '';
+                $attributeName = $this->elasticExportHelper->getAttributeName($item, $settings, ',');
+                $attributeValue = $this->elasticExportHelper->getAttributeValueSetShortFrontendName($item, $settings, ',');
+                if (strlen($attributeName) && strlen($attributeValue))
+                {
+                    $attributes = $this->elasticExportHelper->getAttributeNameAndValueCombination($attributeName, $attributeValue);
+                }
+
+                if(strlen($attributes) <= 0 && $item->itemBase->variationCount > 1)
+                {
+                    continue;
+                }
+
                 $dlvCost = $this->elasticExportHelper->getShippingCost($item, $settings);
 				
                 if(!is_null($dlvCost))
@@ -74,8 +87,8 @@ class BilligerDE extends CSVGenerator
                 }
 
 				$data = [
-					'aid' 		=> $item->itemBase->id,
-					'name' 		=> $this->elasticExportHelper->getName($item, $settings),
+					'aid' 		=> $item->variationBase->id,
+					'name' 		=> $this->elasticExportHelper->getName($item, $settings) . (strlen($attributes) ? ', ' . $attributes : ''),
 					'price' 	=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'link' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'brand' 	=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),

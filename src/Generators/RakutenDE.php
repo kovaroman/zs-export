@@ -283,7 +283,7 @@ class RakutenDE extends CSVGenerator
 			$stock = 0;
 		}
 
-		$vat = $item->variationBase->vatId;
+		$vat = $item->variationRetailPrice->vatValue;
 		if($vat == '19')
 		{
 			$vat = 1;
@@ -345,10 +345,10 @@ class RakutenDE extends CSVGenerator
 			'variantenwert'				=> '',
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
-			'preis'						=> number_format($price, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) > 0 ? number_format($basePriceContent,3,',') : '',
+			'preis'						=> number_format((float)$price, 2, '.', ''),
+			'grundpreis_inhalt'			=> strlen($unit) > 0 ? number_format((float)$basePriceContent,3,',') : '',
 			'grundpreis_einheit'		=> $unit,
-			'reduzierter_preis'			=> number_format($reducedPrice, 2, '.', ''),
+			'reduzierter_preis'			=> number_format((float)$reducedPrice, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
 			'mwst_klasse'				=> $vat,
 			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
@@ -357,7 +357,7 @@ class RakutenDE extends CSVGenerator
 			'bild3'						=> $this->getImageByNumber($item, $settings, 2),
 			'bild4'						=> $this->getImageByNumber($item, $settings, 3),
 			'bild5'						=> $this->getImageByNumber($item, $settings, 4),
-			'kategorien'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),	//todo kategorie name
+			'kategorien'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 			'lieferzeit'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 			'tradoria_kategorie'		=> $item->itemBase->tradoriaCategory,
 			'sichtbar'					=> 1,
@@ -405,7 +405,7 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array $attributeName)
 	{
-        $vat = $item->variationBase->vatId;
+        $vat = $item->variationRetailPrice->vatValue;
         if($vat == '19')
         {
             $vat = 1;
@@ -451,7 +451,7 @@ class RakutenDE extends CSVGenerator
 			'artikelnummer'				=> '',
 			'produkt_bestellbar'		=> '',
 			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
-			'hersteller'				=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+			'hersteller'				=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 			'beschreibung'				=> $this->elasticExportHelper->getDescription($item, $settings, 5000),
 			'variante'					=> $attributeName[$item->itemBase->id],
 			'variantenwert'				=> '',
@@ -599,10 +599,10 @@ class RakutenDE extends CSVGenerator
 			'variantenwert'				=> $attributeValue,
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
-			'preis'						=> number_format($price, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) ? number_format($basePriceContent,3,',') : '',
+			'preis'						=> number_format((float)$price, 2, '.', ''),
+			'grundpreis_inhalt'			=> strlen($unit) ? number_format((float)$basePriceContent,3,',') : '',
 			'grundpreis_einheit'		=> $unit,
-			'reduzierter_preis'			=> number_format($reducedPrice, 2, '.', ''),
+			'reduzierter_preis'			=> number_format((float)$reducedPrice, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
 			'mwst_klasse'				=> '',
 			'bestandsverwaltung_aktiv'	=> '',

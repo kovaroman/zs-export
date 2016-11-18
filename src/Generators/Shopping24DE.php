@@ -144,11 +144,11 @@ class Shopping24DE extends CSVGenerator
     private function getMain(Record $item, KeyValue $settings):array
 	{
         $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : '';
-
         $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
         if(!is_null($deliveryCost))
         {
-            $deliveryCost = number_format($deliveryCost, 2, ',', '');
+            $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
         }
         else
         {
@@ -160,12 +160,12 @@ class Shopping24DE extends CSVGenerator
             'long_description'  => preg_replace(array("/\t/","/;/","/\|/"),"",strip_tags(html_entity_decode($this->elasticExportHelper->getDescription($item, $settings)))),
             'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
             'deep_link'         => $this->elasticExportHelper->getUrl($item, $settings, true, false),
-            'price'             => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
-            'old_price'         => number_format($rrp, 2, ',',''),
+            'price'             => number_format((float)$this->elasticExportHelper->getPrice($item), 2, ',', ''),
+            'old_price'         => number_format((float)$rrp, 2, ',',''),
             'currency'          => $item->variationRetailPrice->currency,
             'delivery_costs'    => $deliveryCost,
-            'category'          => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-            'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)),
+            'category'          => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+            'brand'             => html_entity_decode($this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId)),
             'gender_age'        => $this->itemPropertyCache[$item->itemBase->id]['gender_age'],
             'ean'               => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
             'keywords'          => html_entity_decode($item->itemDescription->keywords),

@@ -62,9 +62,10 @@ class KelkooPremiumDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
 			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
+
 			    if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
                 }
                 else
                 {
@@ -72,11 +73,11 @@ class KelkooPremiumDE extends CSVGenerator
                 }
 
 				$data = [
-                    'category'      => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-                    'marke'         => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+                    'category'      => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+                    'marke'         => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
                     'title' 		=> $this->elasticExportHelper->getName($item, $settings),
                     'description'   => $this->elasticExportHelper->getDescription($item, $settings, 256),
-                    'price' 	    => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+                    'price' 	    => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
                     'deliverycost' 	=> $deliveryCost,
                     'url' 		    => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'image'		    => $this->elasticExportHelper->getMainImage($item, $settings),

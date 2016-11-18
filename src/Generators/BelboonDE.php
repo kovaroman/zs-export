@@ -77,11 +77,11 @@ class BelboonDE extends CSVGenerator
 			{
 				$previewImageInformation = $this->getImageInformation($item, $settings, 'preview');
 				$largeImageInformation = $this->getImageInformation($item, $settings, 'normal');
-
                 $shipping = $this->elasticExportHelper->getShippingCost($item, $settings);
+
                 if(!is_null($shipping))
                 {
-                    $shipping = number_format($shipping, 2, ',', '');
+                    $shipping = number_format((float)$shipping, 2, ',', '');
                 }
                 else
                 {
@@ -92,8 +92,8 @@ class BelboonDE extends CSVGenerator
 		            'Merchant_ProductNumber'      => $item->itemBase->id,
 		            'EAN_Code'                    => $item->variationBarcode->code,
 		            'Product_Title'               => $this->elasticExportHelper->getName($item, $settings, 256),
-		            'Brand'                       => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
-		            'Price'                       => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+		            'Brand'                       => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
+		            'Price'                       => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 		            'Currency'                    => $item->variationRetailPrice->currency,
 		            'DeepLink_URL'                => $this->elasticExportHelper->getUrl($item, $settings),
 		            'Image_Small_URL'             => $previewImageInformation['url'],
@@ -102,7 +102,7 @@ class BelboonDE extends CSVGenerator
 		            'Image_Large_URL'             => $largeImageInformation['url'],
 		            'Image_Large_WIDTH'           => $largeImageInformation['width'],
 		            'Image_Large_HEIGHT'          => $largeImageInformation['height'],
-		            'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+		            'Merchant_Product_Category'   => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
 		            'Keywords'                    => $item->itemDescription->keywords,
 		            'Product_Description_Short'   => $this->elasticExportHelper->getPreviewText($item, $settings, 256),
 		            'Product_Description_Long'    => $this->elasticExportHelper->getDescription($item, $settings, 256),

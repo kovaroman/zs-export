@@ -67,7 +67,7 @@ class ShopzillaDE extends CSVGenerator
 			    $deliveryCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($deliveryCost))
                 {
-                    $deliveryCost = number_format($deliveryCost, 2, ',', '');
+                    $deliveryCost = number_format((float)$deliveryCost, 2, ',', '');
                 }
                 else
                 {
@@ -75,8 +75,8 @@ class ShopzillaDE extends CSVGenerator
                 }
 
 				$data = [
-					'Kategorie' 		=> $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
-					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
+					'Kategorie' 		=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+					'Hersteller' 		=> $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
 					'Bezeichnung' 		=> $this->elasticExportHelper->getName($item, $settings, 256),
 					'Beschreibung' 		=> $this->elasticExportHelper->getDescription($item, $settings, 256),
 					'Artikel-URL' 		=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
@@ -89,7 +89,7 @@ class ShopzillaDE extends CSVGenerator
 					'Gebot' 			=> '',
 					'Werbetext' 		=> '2',
 					'EAN' 				=> $item->variationBarcode->code,
-					'Preis' 			=> number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
+					'Preis' 			=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'Grundpreis' 		=> $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 

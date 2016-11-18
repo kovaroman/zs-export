@@ -78,7 +78,7 @@ private $arrayHelper;
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
                 if(!is_null($shippingCost))
                 {
-                    $shippingCost = number_format($shippingCost, 2, '.', '');
+                    $shippingCost = number_format((float)$shippingCost, 2, '.', '');
                 }
                 else
                 {
@@ -88,8 +88,8 @@ private $arrayHelper;
 				$data = [
                     'product_url'       => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'designation'       => $this->elasticExportHelper->getName($item, $settings),
-                    'price'             => number_format($this->elasticExportHelper->getPrice($item), 2, '.', ''),
-                    'category'          => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+                    'price'             => number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
+                    'category'          => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'image_url'         => $this->elasticExportHelper->getMainImage($item, $settings),
                     'description'       => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'regular_price'     => $rrp,
@@ -101,7 +101,7 @@ private $arrayHelper;
                     'condition'         => $itemCondition[(int)$item->itemBase->condition],
                     'upc_ean'           => $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
                     'isbn'              => $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
-                    'brand'             => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId)
+                    'brand'             => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId)
 				];
 
 				$this->addCSVContent(array_values($data));

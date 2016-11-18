@@ -79,13 +79,13 @@ class EcondaDE extends CSVGenerator
                     'Description'       => $this->elasticExportHelper->getDescription($item, $settings),
                     'ProductURL'        => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'ImageURL'          => $this->elasticExportHelper->getMainImage($item, $settings),
-                    'Price'             => number_format($this->elasticExportHelper->getPrice($item), 2, ',', ''),
-                    'MSRP'              => number_format($rrp, 2, ',', ''),
+                    'Price'             => number_format((float)$this->elasticExportHelper->getPrice($item), 2, ',', ''),
+                    'MSRP'              => number_format((float)$rrp, 2, ',', ''),
                     'New'               => $itemCondition[(int)$item->itemBase->condition],
                     'Stock'             => $item->variationStock->stockNet,
                     'EAN'               => $item->variationBarcode->code,
-                    'Brand'             => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
-                    'ProductCategory'   => $this->elasticExportHelper->getCategory($item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
+                    'Brand'             => $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
+                    'ProductCategory'   => $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, $settings->get('lang'), $settings->get('plentyId')),
                     'Grundpreis'        => $this->elasticExportHelper->getBasePrice($item, $settings),
 				];
 
