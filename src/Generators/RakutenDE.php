@@ -168,7 +168,7 @@ class RakutenDE extends CSVGenerator
 
 	/**
 	 * @param $settings
-	 * @param $variations
+	 * @param RecordList $variations
 	 */
 	private function buildRows($settings, $variations)
 	{
@@ -185,7 +185,8 @@ class RakutenDE extends CSVGenerator
 					!array_key_exists($variation->itemBase->id, $this->attributeName) &&
 					!array_key_exists($variation->itemBase->id, $this->attributeNameCombination))
 				{
-					$attributeName[$variation->itemBase->id] = $this->elasticExportHelper->getAttributeName($variation, $settings);
+					$this->attributeName[$variation->itemBase->id] = $this->elasticExportHelper->getAttributeName($variation, $settings);
+
 					foreach ($variation->variationAttributeValueList as $attribute)
 					{
 						$attributeNameCombination[$variation->itemBase->id][] = $attribute->attributeId;
