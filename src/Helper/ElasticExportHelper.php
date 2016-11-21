@@ -601,11 +601,12 @@ class ElasticExportHelper
     {
         $values = [];
 
-        if($item->variationBase->attributeValueSetId)
+        if(!is_null($item->variationBase->attributeValueSetId))
         {
             foreach($item->variationAttributeValueList as $attribute)
             {
                 $attributeName = $this->marketAttributeHelperRepository->getAttributeName($attribute->attributeId, $settings->get('lang') ? $settings->get('lang') : 'de');
+
                 if(strlen($attributeName) > 0)
                 {
                     $values[] = $attributeName;
@@ -634,7 +635,7 @@ class ElasticExportHelper
             $i = 0;
             foreach($item->variationAttributeValueList as $attribute)
             {
-                $attributeValueName = $this->marketAttributeHelperRepository->getAttributeValueName($attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
+                $attributeValueName = $this->marketAttributeHelperRepository->getAttributeValueName($attribute->attributeId, $attribute->attributeValueId, $settings->get('lang') ? $settings->get('lang') : 'de');
 
                 if(strlen($attributeValueName) > 0)
                 {
