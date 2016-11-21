@@ -298,7 +298,7 @@ class IdealoDE extends CSVGenerator
 		}
 		else
 		{
-			$data['article_id'] = $this->elasticExportHelper->generateSku($item, 121, (string)$item->variationMarketStatus->sku);
+			$data['article_id'] = $this->elasticExportHelper->generateSku($item, 121.00, (string)$item->variationMarketStatus->sku);
 			$data['itemsInStock'] = '';
 			$data['fulfillmentType'] = '';
 			$data['twoManHandlingPrice'] = '';

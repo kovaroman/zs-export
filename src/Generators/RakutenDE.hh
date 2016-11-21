@@ -295,7 +295,7 @@ class RakutenDE extends CSVGenerator
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '',
-			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, 106, (string)$item->variationMarketStatus->sku),
+			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, 106.00, (string)$item->variationMarketStatus->sku),
 			'produkt_bestellbar'		=> $variationAvailable,
 			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
 			'hersteller'				=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
@@ -549,7 +549,7 @@ class RakutenDE extends CSVGenerator
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '#'.$item->itemBase->id,
-			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, 106, (string)$item->variationMarketStatus->sku),
+			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, 106.00, (string)$item->variationMarketStatus->sku),
 			'produkt_bestellbar'		=> $variationAvailable,
 			'produktname'				=> '',
 			'hersteller'				=> '',
