@@ -1113,15 +1113,15 @@ class ElasticExportHelper
     }
 
     /**
-     * @param Record $item
-     * @param int $marketId
+     * @param Record 	  $item
+     * @param float 	  $marketId
      * @param null|string $sku
-     * @param int $accountId
-     * @param bool $setLastExportedTimestamp
+     * @param int 		  $accountId
+     * @param bool 		  $setLastExportedTimestamp
      * @return string
      */
     public function generateSku(Record $item,
-								int $marketId,
+								float $marketId,
 								string $sku = null,
 								int $accountId = 0,
 								bool $setLastExportedTimestamp = true
