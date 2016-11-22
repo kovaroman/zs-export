@@ -17,6 +17,7 @@ use Plenty\Modules\Item\Attribute\Contracts\AttributeValueRepositoryContract;
 use Plenty\Modules\Item\Attribute\Models\AttributeValue;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
+use Plenty\Repositories\Models\PaginatedResult;
 
 class GoogleShopping extends CSVGenerator
 {
@@ -491,23 +492,23 @@ class GoogleShopping extends CSVGenerator
 	 */
 	private function loadLinkedAttributeList(KeyValue $settings)
 	{
-		$attributeRepositoryList = $this->attributeRepository->all();
+		$attributeList = $this->attributeRepository->all();
 
-		if (count($attributeRepositoryList) > 0)
+		if($attributeList instanceof PaginatedResult)
 		{
-			foreach ($attributeRepositoryList as $attributeRepository)
+			foreach($attributeList->getResult() as $attribute)
 			{
-				if($attributeRepository instanceof Attribute)
+				if($attribute instanceof Attribute)
 				{
-					if (strlen($attributeRepository->googleShoppingAttribute) > 0)
+					if(strlen($attribute->googleShoppingAttribute) > 0)
 					{
-						$this->linkedAttributeList[$attributeRepository->id] = $attributeRepository->googleShoppingAttribute;
+						$this->linkedAttributeList[$attribute->id] = $attribute->googleShoppingAttribute;
 
-						$attributeValueList = $this->attributeValueRepository->findByAttributeId($attributeRepository->id);
+						$attributeValueList = $this->attributeValueRepository->findByAttributeId($attribute->id);
 
-						if (count($attributeValueList) > 0)
+						if($attributeValueList instanceof PaginatedResult)
 						{
-							foreach ($attributeValueList as $attributeValue)
+							foreach ($attributeValueList->getResult() as $attributeValue)
 							{
 								$attributeValueName = $this->attributeValueNameRepository->findOne($attributeValue->id, $settings->get('lang'));
 
