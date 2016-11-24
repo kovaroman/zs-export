@@ -332,8 +332,15 @@ class RakutenDE extends CSVGenerator
 			$referenceReducedPrice = 'VK';
 		}
 
-		$unit = $this->getUnit($item);
-		$basePriceContent = (float)$item->variationBase->content;
+        $unit = $this->getUnit($item);
+        $basePriceContent = (float)$item->variationBase->content;
+        $convertBasePriceContentTag = $this->elasticExportHelper->getConvertContentTag($basePriceContent, 3);
+        if ($convertBasePriceContentTag == true && strlen($unit))
+        {
+            $basePriceContent = $this->elasticExportHelper->getConvertedBasePriceContent($basePriceContent, $unit);
+            $unit = $this->elasticExportHelper->getConvertedBasePriceUnit($unit);
+        }
+
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '',
@@ -347,7 +354,7 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format((float)$price, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) > 0 ? number_format((float)$basePriceContent,3,',') : '',
+			'grundpreis_inhalt'			=> strlen($unit) > 0 ? number_format((float)$basePriceContent,3,',','') : '',
 			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> number_format((float)$reducedPrice, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
@@ -585,8 +592,14 @@ class RakutenDE extends CSVGenerator
 			$referenceReducedPrice = 'VK';
 		}
 
-		$unit = $this->getUnit($item);
-		$basePriceContent = (float)$item->variationBase->content;
+        $unit = $this->getUnit($item);
+        $basePriceContent = (float)$item->variationBase->content;
+        $convertBasePriceContentTag = $this->elasticExportHelper->getConvertContentTag($basePriceContent, 3);
+        if ($convertBasePriceContentTag == true && strlen($unit))
+        {
+            $basePriceContent = $this->elasticExportHelper->getConvertedBasePriceContent($basePriceContent, $unit);
+            $unit = $this->elasticExportHelper->getConvertedBasePriceUnit($unit);
+        }
 
 		$data = [
 			'id'						=> '',
@@ -601,7 +614,7 @@ class RakutenDE extends CSVGenerator
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 			'lagerbestand'				=> $stock,
 			'preis'						=> number_format((float)$price, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) ? number_format((float)$basePriceContent,3,',') : '',
+			'grundpreis_inhalt'			=> strlen($unit) ? number_format((float)$basePriceContent,3,',','') : '',
 			'grundpreis_einheit'		=> $unit,
 			'reduzierter_preis'			=> number_format((float)$reducedPrice, 2, '.', ''),
 			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
