@@ -174,6 +174,8 @@ class RakutenDE extends CSVGenerator
 	{
 		if (is_array($variations) && count($variations) > 0)
 		{
+			$primaryVariationKey = null;
+
 			foreach($variations as $key => $variation)
 			{
 				/**
@@ -192,6 +194,20 @@ class RakutenDE extends CSVGenerator
 						$attributeNameCombination[$variation->itemBase->id][] = $attribute->attributeId;
 					}
 				}
+
+				// note key of primary variation
+				if($variation->variationBase->primaryVariation === true)
+				{
+					$primaryVariationKey = $key;
+				}
+			}
+
+			// change sort of array and add primary variation as first entry
+			if(!is_null($primaryVariationKey))
+			{
+				$primaryVariation = $variations[$primaryVariationKey];
+				unset($variations[$primaryVariationKey]);
+				array_unshift($variations, $primaryVariation);
 			}
 
 			$i = 1;
