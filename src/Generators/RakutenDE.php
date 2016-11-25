@@ -238,109 +238,36 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function buildParentWithoutChildrenRow(Record $item, KeyValue $settings)
 	{
-		if($item->variationBase->limitOrderByStockSelect == 2)
-		{
-			$variationAvailable = 1;
-			$inventoryManagementActive = 0;
-			$stock = 999;
-		}
-		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
-		{
-			$variationAvailable = 1;
-			$inventoryManagementActive = 1;
-			if($item->variationStock->stockNet > 999)
-			{
-				$stock = 999;
-			}
-			else
-			{
-				$stock = $item->variationStock->stockNet;
-			}
-		}
-		elseif($item->variationBase->limitOrderByStockSelect == 0)
-		{
-			$variationAvailable = 1;
-			$inventoryManagementActive = 0;
-			if($item->variationStock->stockNet > 999)
-			{
-				$stock = 999;
-			}
-			else
-			{
-				if($item->variationStock->stockNet > 0)
-				{
-					$stock = $item->variationStock->stockNet;
-				}
-				else
-				{
-					$stock = 0;
-				}
-			}
-		}
-		else
-		{
-			$variationAvailable = 0;
-			$inventoryManagementActive = 1;
-			$stock = 0;
-		}
 
-		$vat = $item->variationRetailPrice->vatValue;
-		if($vat == '19')
-		{
-			$vat = 1;
-		}
-		else if($vat == '10,7')
-		{
-			$vat = 4;
-		}
-		else if($vat == '7')
-		{
-			$vat = 2;
-		}
-		else if($vat == '0')
-		{
-			$vat = 3;
-		}
-		else
-		{
-			//bei anderen Steuersätzen immer 19% nehmen
-			$vat = 1;
-		}
+        $vat = $this->getVat($item);
 
-        $priceList = $this->getPriceCombination($item, $settings);
+        $stockList = $this->getStockList($item);
 
-        $price = $priceList[0];
-        $reducedPrice = $priceList[1];
-        $referenceReducedPrice = $priceList[2];
+        $priceList = $this->getPriceList($item, $settings);
 
-        $unit = $this->getUnit($item);
-        $basePriceContent = (float)$item->variationBase->content;
-        $convertBasePriceContentTag = $this->elasticExportHelper->getConvertContentTag($basePriceContent, 3);
-        if ($convertBasePriceContentTag == true && strlen($unit))
-        {
-            $basePriceContent = $this->elasticExportHelper->getConvertedBasePriceContent($basePriceContent, $unit);
-            $unit = $this->elasticExportHelper->getConvertedBasePriceUnit($unit);
-        }
+        $basePriceComponentList = $this->getBasePriceComponentList($item);
 
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '',
 			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, 106, (string)$item->variationMarketStatus->sku),
-			'produkt_bestellbar'		=> $variationAvailable,
+			'produkt_bestellbar'		=> $stockList['variationAvailable'],
 			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
 			'hersteller'				=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
 			'beschreibung'				=> $this->elasticExportHelper->getDescription($item, $settings, 5000),
 			'variante'					=> $this->elasticExportHelper->getAttributeName($item, $settings),
 			'variantenwert'				=> '',
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-			'lagerbestand'				=> $stock,
-			'preis'						=> number_format((float)$price, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) > 0 ? number_format((float)$basePriceContent,3,',','') : '',
-			'grundpreis_einheit'		=> $unit,
-			'reduzierter_preis'			=> $reducedPrice > 0 ? number_format((float)$reducedPrice, 2, '.', '') : '',
-			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
+			'lagerbestand'				=> $stockList['stock'],
+            'preis'						=> number_format((float)$priceList['price'], 2, '.', ''),
+            'grundpreis_inhalt'			=> strlen($basePriceComponentList['unit']) ?
+                                                number_format((float)$basePriceComponentList['content'],3,',','') : '',
+            'grundpreis_einheit'		=> $basePriceComponentList['unit'],
+            'reduzierter_preis'			=> $priceList['reducedPrice'] > 0 ?
+                                                number_format((float)$priceList['reducedPrice'], 2, '.', '') : '',
+            'bezug_reduzierter_preis'	=> $priceList['referenceReducedPrice'],
 			'mwst_klasse'				=> $vat,
-			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
+			'bestandsverwaltung_aktiv'	=> $stockList['inventoryManagementActive'],
 			'bild1'						=> $this->getImageByNumber($item, $settings, 0),
 			'bild2'						=> $this->getImageByNumber($item, $settings, 1),
 			'bild3'						=> $this->getImageByNumber($item, $settings, 2),
@@ -394,45 +321,9 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array $attributeName)
 	{
-        $vat = $item->variationRetailPrice->vatValue;
-        if($vat == '19')
-        {
-            $vat = 1;
-        }
-        else if($vat == '10,7')
-        {
-            $vat = 4;
-        }
-        else if($vat == '7')
-        {
-            $vat = 2;
-        }
-        else if($vat == '0')
-        {
-            $vat = 3;
-        }
-        else
-        {
-            //bei anderen Steuersaetzen immer 19% nehmen
-            $vat = 1;
-        }
+        $vat = $this->getVat($item);
 
-        if($item->variationBase->limitOrderByStockSelect == 2)
-        {
-            $inventoryManagementActive = 0;
-        }
-        elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
-        {
-            $inventoryManagementActive = 1;
-        }
-        elseif($item->variationBase->limitOrderByStockSelect == 0)
-        {
-            $inventoryManagementActive = 0;
-        }
-        else
-        {
-            $inventoryManagementActive = 1;
-        }
+        $stockList = $this->getStockList($item);
 
 		$data = [
 			'id'						=> '#'.$item->itemBase->id,
@@ -452,7 +343,7 @@ class RakutenDE extends CSVGenerator
 			'reduzierter_preis'			=> '',
 			'bezug_reduzierter_preis'	=> '',
 			'mwst_klasse'				=> $vat,
-			'bestandsverwaltung_aktiv'	=> $inventoryManagementActive,
+			'bestandsverwaltung_aktiv'	=> $stockList['inventoryManagementActive'],
 			'bild1'						=> $this->getImageByNumber($item, $settings, 0),
 			'bild2'						=> $this->getImageByNumber($item, $settings, 1),
 			'bild3'						=> $this->getImageByNumber($item, $settings, 2),
@@ -507,80 +398,31 @@ class RakutenDE extends CSVGenerator
 	private function buildChildRow(Record $item, KeyValue $settings, string $attributeValue = '')
 	{
 
-        if($item->variationBase->limitOrderByStockSelect == 2)
-		{
-			$variationAvailable = 1;
-			$stock = 999;
-		}
-		elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
-		{
-			$variationAvailable = 1;
-			if($item->variationStock->stockNet > 999)
-			{
-				$stock = 999;
-			}
-			else
-			{
-				$stock = $item->variationStock->stockNet;
-			}
-		}
-		elseif($item->variationBase->limitOrderByStockSelect == 0)
-		{
-			$variationAvailable = 1;
-			if($item->variationStock->stockNet > 999)
-			{
-				$stock = 999;
-			}
-			else
-			{
-				if($item->variationStock->stockNet > 0)
-				{
-					$stock = $item->variationStock->stockNet;
-				}
-				else
-				{
-					$stock = 0;
-				}
-			}
-		}
-		else
-		{
-			$variationAvailable = 0;
-			$stock = 0;
-		}
+        $stockList = $this->getStockList($item);
 
-        $priceList = $this->getPriceCombination($item, $settings);
+        $priceList = $this->getPriceList($item, $settings);
 
-        $price = $priceList[0];
-        $reducedPrice = $priceList[1];
-        $referenceReducedPrice = $priceList[2];
-
-        $unit = $this->getUnit($item);
-        $basePriceContent = (float)$item->variationBase->content;
-        $convertBasePriceContentTag = $this->elasticExportHelper->getConvertContentTag($basePriceContent, 3);
-        if ($convertBasePriceContentTag == true && strlen($unit))
-        {
-            $basePriceContent = $this->elasticExportHelper->getConvertedBasePriceContent($basePriceContent, $unit);
-            $unit = $this->elasticExportHelper->getConvertedBasePriceUnit($unit);
-        }
+        $basePriceComponentList = $this->getBasePriceComponentList($item);
 
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '#'.$item->itemBase->id,
 			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, 106, (string)$item->variationMarketStatus->sku),
-			'produkt_bestellbar'		=> $variationAvailable,
+			'produkt_bestellbar'		=> $stockList['variationAvailable'],
 			'produktname'				=> '',
 			'hersteller'				=> '',
 			'beschreibung'				=> '',
 			'variante'					=> '',
 			'variantenwert'				=> $attributeValue,
 			'isbn_ean'					=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
-			'lagerbestand'				=> $stock,
-			'preis'						=> number_format((float)$price, 2, '.', ''),
-			'grundpreis_inhalt'			=> strlen($unit) ? number_format((float)$basePriceContent,3,',','') : '',
-			'grundpreis_einheit'		=> $unit,
-			'reduzierter_preis'			=> $reducedPrice > 0 ? number_format((float)$reducedPrice, 2, '.', '') : '',
-			'bezug_reduzierter_preis'	=> $referenceReducedPrice,
+			'lagerbestand'				=> $stockList['stock'],
+			'preis'						=> number_format((float)$priceList['price'], 2, '.', ''),
+			'grundpreis_inhalt'			=> strlen($basePriceComponentList['unit']) ?
+                                                number_format((float)$basePriceComponentList['content'],3,',','') : '',
+			'grundpreis_einheit'		=> $basePriceComponentList['unit'],
+			'reduzierter_preis'			=> $priceList['reducedPrice'] > 0 ?
+                                                number_format((float)$priceList['reducedPrice'], 2, '.', '') : '',
+			'bezug_reduzierter_preis'	=> $priceList['referenceReducedPrice'],
 			'mwst_klasse'				=> '',
 			'bestandsverwaltung_aktiv'	=> '',
 			'bild1'						=> '',
@@ -678,6 +520,34 @@ class RakutenDE extends CSVGenerator
 		}
 	}
 
+    /**
+     * Get id for vat
+     * @param Record $item
+     * @return int
+     */
+	private function getVat(Record $item):int
+    {
+        $vat = $item->variationRetailPrice->vatValue;
+        if($vat == '10,7')
+        {
+            $vat = 4;
+        }
+        else if($vat == '7')
+        {
+            $vat = 2;
+        }
+        else if($vat == '0')
+        {
+            $vat = 3;
+        }
+        else
+        {
+            //bei anderen Steuersaetzen immer 19% nehmen
+            $vat = 1;
+        }
+        return $vat;
+    }
+
 	/**
 	 * Get item characters that match referrer from settings and a given component id.
 	 * @param  Record   $item
@@ -711,50 +581,135 @@ class RakutenDE extends CSVGenerator
 	}
 
     /**
-     * Get a Combination of price, reduced price and the reference for the reduced price.
+     * Get necessary components to enable Rakuten to calculate a base price for the variation
+     * @param Record $item
+     * @return array
+     */
+	private function getBasePriceComponentList(Record $item):array
+    {
+        $unit = $this->getUnit($item);
+        $content = (float)$item->variationBase->content;
+        $convertBasePriceContentTag = $this->elasticExportHelper->getConvertContentTag($content, 3);
+        if ($convertBasePriceContentTag == true && strlen($unit))
+        {
+            $content = $this->elasticExportHelper->getConvertedBasePriceContent($content, $unit);
+            $unit = $this->elasticExportHelper->getConvertedBasePriceUnit($unit);
+        }
+        return array(
+            'content'   =>  $content,
+            'unit'      =>  $unit,
+        );
+    }
+
+    /**
+     * Get all informations that depend on stock settings and stock volume
+     * (inventoryManagementActive, $variationAvailable, $stock)
+     * @param Record $item
+     * @return array
+     */
+    private function getStockList(Record $item):array
+    {
+        $inventoryManagementActive = 0;
+        $variationAvailable = 0;
+        $stock = 0;
+
+        if($item->variationBase->limitOrderByStockSelect == 2)
+        {
+            $variationAvailable = 1;
+            $inventoryManagementActive = 0;
+            $stock = 999;
+        }
+        elseif($item->variationBase->limitOrderByStockSelect == 1 && $item->variationStock->stockNet > 0)
+        {
+            $variationAvailable = 1;
+            $inventoryManagementActive = 1;
+            if($item->variationStock->stockNet > 999)
+            {
+                $stock = 999;
+            }
+            else
+            {
+                $stock = $item->variationStock->stockNet;
+            }
+        }
+        elseif($item->variationBase->limitOrderByStockSelect == 0)
+        {
+            $variationAvailable = 1;
+            $inventoryManagementActive = 0;
+            if($item->variationStock->stockNet > 999)
+            {
+                $stock = 999;
+            }
+            else
+            {
+                if($item->variationStock->stockNet > 0)
+                {
+                    $stock = $item->variationStock->stockNet;
+                }
+                else
+                {
+                    $stock = 0;
+                }
+            }
+        }
+
+        return array (
+            'stock'                     =>  $stock,
+            'variationAvailable'        =>  $variationAvailable,
+            'inventoryManagementActive' =>  $inventoryManagementActive,
+        );
+
+    }
+
+	/**
+     * Get a List of price, reduced price and the reference for the reduced price.
      * @param Record $item
      * @param KeyValue $settings
      * @return array
      */
-    private function getPriceCombination(Record $item, KeyValue $settings):array
+    private function getPriceList(Record $item, KeyValue $settings):array
     {
         $variationPrice = $this->elasticExportHelper->getPrice($item);
         $variationRrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
         $variationSpecialPrice = $this->elasticExportHelper->getSpecialPrice($item, $settings);
 
-        #setting retail price as selling price without a reduced price
+        //setting retail price as selling price without a reduced price
         $price = $variationPrice;
         $reducedPrice = '';
         $referenceReducedPrice = '';
 
         if ($price != '' || $price != 0.00)
         {
-            #if recommended retail price is set and higher than retail price...
+            //if recommended retail price is set and higher than retail price...
             if ($variationRrp > 0 && $variationRrp > $variationPrice)
             {
-                #set recommended retail price as selling price
+                //set recommended retail price as selling price
                 $price = $variationRrp;
-                #set retail price as reduced price
+                //set retail price as reduced price
                 $reducedPrice = $variationPrice;
-                #set recommended retail price as reference
+                //set recommended retail price as reference
                 $referenceReducedPrice = 'UVP';
             }
 
-            # if special offer price is set and lower than retail price and recommended retail price is already set as reference...
+            // if special offer price is set and lower than retail price and recommended retail price is already set as reference...
             if ($variationSpecialPrice > 0 && $variationPrice > $variationSpecialPrice && $referenceReducedPrice == 'UVP')
             {
-                #set special offer price as reduced price
+                //set special offer price as reduced price
                 $reducedPrice = $variationSpecialPrice;
             }
-            #if recommended retail price is not set as reference then ...
+            //if recommended retail price is not set as reference then ...
             elseif ($variationSpecialPrice > 0 && $variationPrice > $variationSpecialPrice)
             {
-                #set special offer price as reduced price and...
+                //set special offer price as reduced price and...
                 $reducedPrice = $variationSpecialPrice;
-                #set retail price as reference
+                //set retail price as reference
                 $referenceReducedPrice = 'VK';
             }
         }
-        return array($price, $reducedPrice, $referenceReducedPrice);
+        return array(
+            'price'                     =>  $price,
+            'reducedPrice'              =>  $reducedPrice,
+            'referenceReducedPrice'     =>  $referenceReducedPrice
+        );
     }
 }
