@@ -239,7 +239,7 @@ class RakutenDE extends CSVGenerator
 	private function buildParentWithoutChildrenRow(Record $item, KeyValue $settings)
 	{
 
-        $vat = $this->getVat($item);
+        $vat = $this->getVatClassId($item);
 
         $stockList = $this->getStockList($item);
 
@@ -321,7 +321,7 @@ class RakutenDE extends CSVGenerator
 	 */
 	private function buildParentWithChildrenRow(Record $item, KeyValue $settings, array $attributeName)
 	{
-        $vat = $this->getVat($item);
+        $vat = $this->getVatClassId($item);
 
         $stockList = $this->getStockList($item);
 
@@ -525,7 +525,7 @@ class RakutenDE extends CSVGenerator
      * @param Record $item
      * @return int
      */
-	private function getVat(Record $item):int
+	private function getVatClassId(Record $item):int
     {
         $vat = $item->variationRetailPrice->vatValue;
         if($vat == '10,7')
