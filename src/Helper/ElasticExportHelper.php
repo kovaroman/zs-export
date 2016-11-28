@@ -8,13 +8,14 @@ use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
+use Plenty\Modules\Item\Property\Models\PropertyName;
 use Plenty\Modules\Market\Helper\Contracts\MarketItemHelperRepositoryContract;
 use Plenty\Modules\Market\Helper\Contracts\MarketCategoryHelperRepositoryContract;
 use Plenty\Modules\Market\Helper\Contracts\MarketPropertyHelperRepositoryContract;
 use Plenty\Modules\Market\Helper\Contracts\MarketAttributeHelperRepositoryContract;
 use Plenty\Modules\Item\Unit\Contracts\UnitNameRepositoryContract;
 use Plenty\Modules\Item\Unit\Models\UnitName;
-use Plenty\Modules\Item\Property\Contracts\PropertyItemNameRepositoryContract;
+use Plenty\Modules\Item\Property\Contracts\PropertyNameRepositoryContract;
 use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryRepositoryContract;
 use Plenty\Modules\Category\Models\Category;
@@ -74,7 +75,7 @@ class ElasticExportHelper
     /**
      * PropertyItemNameRepositoryContract $propertyItemNameRepository
      */
-    private $propertyItemNameRepository;
+    private $propertyNameRepository;
 
     /**
      * CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
@@ -141,7 +142,7 @@ class ElasticExportHelper
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
      * @param UnitNameRepositoryContract $unitNameRepository
-     * @param PropertyItemNameRepositoryContract $propertyItemNameRepository
+     * @param PropertyNameRepositoryContract $propertyNameRepository
      * @param CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository
      * @param UrlBuilderRepositoryContract $urlBuilderRepository
      * @param CategoryRepositoryContract $categoryRepository
@@ -156,7 +157,7 @@ class ElasticExportHelper
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitNameRepositoryContract $unitNameRepository,
-                                PropertyItemNameRepositoryContract $propertyItemNameRepository,
+                                PropertyNameRepositoryContract $propertyNameRepository,
                                 CategoryBranchMarketplaceRepositoryContract $categoryBranchMarketplaceRepository,
                                 UrlBuilderRepositoryContract $urlBuilderRepository,
                                 CategoryRepositoryContract $categoryRepository,
@@ -173,7 +174,7 @@ class ElasticExportHelper
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
 		$this->unitNameRepository = $unitNameRepository;
-		$this->propertyItemNameRepository = $propertyItemNameRepository;
+		$this->propertyNameRepository = $propertyNameRepository;
         $this->categoryBranchMarketplaceRepository = $categoryBranchMarketplaceRepository;
         $this->urlBuilderRepository = $urlBuilderRepository;
         $this->categoryRepository = $categoryRepository;
@@ -890,13 +891,14 @@ class ElasticExportHelper
      */
     public function getItemCharacterByBackendName(Record $item, KeyValue $settings, string $backendName):string
     {
-        foreach($item->itemPropertyList as $itemProperty)
+        foreach($item->itemPropertyList as $property)
         {
-            $propertyItemName = $this->propertyItemNameRepository->findOne($itemProperty->propertyId, $settings->get('lang')? $settings->get('lang') : 'de');
+            $propertyName = $this->propertyNameRepository->findOne($property->propertyId, $settings->get('lang')? $settings->get('lang') : 'de');
 
-            if($propertyItemName->name == $backendName)
+            if($propertyName instanceof PropertyName &&
+				$propertyName->name == $backendName)
             {
-                return (string) $itemProperty->propertyValue;
+                return (string) $property->propertyValue;
             }
         }
 
