@@ -136,6 +136,10 @@ class IdealoDE extends CSVGenerator
 			'disposalPrice'
 		];
 
+        /**
+         * If the shipping cost type is configuration, all payment methods will be taken as available payment methods from the chosen
+         * default shipping configuration.
+         */
         if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
         {
             $paymentMethods = $this->elasticExportHelper->getPaymentMethods($settings);
@@ -144,25 +148,40 @@ class IdealoDE extends CSVGenerator
 
             if($defaultShipping instanceof DefaultShipping)
             {
-                switch($settings->get('shippingCostMethodOfPayment'))
+                foreach([$defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
                 {
-                    case 1:
-                        $paymentMethodId = $defaultShipping->paymentMethod2;
-                        break;
-                    case 2:
-                        $paymentMethodId = $defaultShipping->paymentMethod3;
-                        break;
-                    default:
-                        $paymentMethodId = $defaultShipping->paymentMethod1;
-                }
+                    if(count($this->usedPaymentMethods) == 0)
+                    {
+                        $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                        $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    }
 
-                if(array_key_exists($paymentMethodId, $paymentMethods))
-                {
-                    $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
-                    $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    elseif
+                    (
+                        array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
+                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId)
+                    )
+                    {
+                        $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                        $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    }
+
+                    elseif
+                    (
+                        array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
+                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId)
+                    )
+                    {
+                        $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                        $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    }
                 }
             }
         }
+        /**
+         * If nothing is checked at the elastic export settings regarding the shipping cost type,
+         * all payment methods within both default shipping configurations will be taken as available payment methods.
+         */
         elseif($settings->get('shippingCostType') == 1)
         {
             $paymentMethods = $this->elasticExportHelper->getPaymentMethods($settings);
@@ -175,12 +194,26 @@ class IdealoDE extends CSVGenerator
                 {
                     foreach([$defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
                     {
-                        if
+                        if(count($this->usedPaymentMethods) == 0)
+                        {
+                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                        }
+
+                        elseif
                         (
-                            array_key_exists($paymentMethodId, $paymentMethods)
-                            && (!array_key_exists($paymentMethodId, $this->usedPaymentMethods[1])
-                                ||
-                                !array_key_exists($paymentMethodId, $this->usedPaymentMethods[2]))
+                            array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
+                            && $this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId
+                        )
+                        {
+                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                        }
+
+                        elseif
+                        (
+                            array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
+                            && ($this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId && $this->usedPaymentMethods[2][0]->getAttributes()['id'] != $paymentMethodId)
                         )
                         {
                             $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
