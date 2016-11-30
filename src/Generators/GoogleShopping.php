@@ -24,11 +24,11 @@ class GoogleShopping extends CSVGenerator
     const CHARACTER_TYPE_GENDER						= 'gender';
     const CHARACTER_TYPE_AGE_GROUP					= 'age_group';
     const CHARACTER_TYPE_SIZE_TYPE					= 'size_type';
-    const CHARACTER_TYPE_SIZE_SYSTEM					= 'size_system';
-    const CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS		= 'energy_efficiency_class';
+    const CHARACTER_TYPE_SIZE_SYSTEM				= 'size_system';
+    const CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS	= 'energy_efficiency_class';
     const CHARACTER_TYPE_EXCLUDED_DESTINATION		= 'excluded_destination';
     const CHARACTER_TYPE_ADWORDS_REDIRECT			= 'adwords_redirect';
-    const CHARACTER_TYPE_MOBILE_LINK					= 'mobile_link';
+    const CHARACTER_TYPE_MOBILE_LINK			    = 'mobile_link';
     const CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE	= 'sale_price_effective_date';
     const CHARACTER_TYPE_CUSTOM_LABEL_0				= 'custom_label_0';
     const CHARACTER_TYPE_CUSTOM_LABEL_1				= 'custom_label_1';
@@ -41,8 +41,8 @@ class GoogleShopping extends CSVGenerator
     const CHARACTER_TYPE_PATTERN						= 'pattern';
     const CHARACTER_TYPE_MATERIAL					= 'material';
 
-    const ISO_CODE_2                                 = 'isoCode2';
-    const ISO_CODE_3                                 = 'isoCode3';
+    const ISO_CODE_2                                = 'isoCode2';
+    const ISO_CODE_3                                = 'isoCode3';
 
 	/*
 	 * @var ElasticExportHelper
@@ -167,7 +167,6 @@ class GoogleShopping extends CSVGenerator
 				'custom_label_4',
 			]);
 
-            $rows = [];
 
 			foreach($resultData as $item)
 			{
@@ -191,6 +190,16 @@ class GoogleShopping extends CSVGenerator
                     $shippingCost = '';
                 }
 
+                if(strlen($shippingCost) == 0)
+                {
+                    $shipping = '';
+                }
+                else
+                {
+                    $shipping = $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.$shippingCost;
+                }
+
+
 				$data = [
 					'id' 						=> $item->variationBase->id,
 					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 256),
@@ -212,7 +221,7 @@ class GoogleShopping extends CSVGenerator
 					'material'					=> $variationAttributes['material'][0],
 					'pattern'					=> $variationAttributes['pattern'][0],
 					'item_group_id'				=> $item->itemBase->id,
-					'shipping'					=> $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.$shippingCost,
+					'shipping'					=> $shipping,
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
 					'gender'					=> $this->getProperty($item, self::CHARACTER_TYPE_GENDER),
 					'age_group'					=> $this->getProperty($item, self::CHARACTER_TYPE_AGE_GROUP),
