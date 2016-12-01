@@ -108,11 +108,6 @@ class BeezUp extends CSVGenerator
                 $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
                 $rrp = ($price > $rrp) ? $price : $rrp;
 
-                if($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $rrp)
-                {
-                    $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
-                }
-
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
 
                 if(!is_null($shippingCost))
