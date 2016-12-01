@@ -150,27 +150,19 @@ class IdealoDE extends CSVGenerator
             {
                 foreach([$defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
                 {
-                    if(count($this->usedPaymentMethods) == 0)
+                    if(count($this->usedPaymentMethods) == 0 && array_key_exists($paymentMethodId, $paymentMethods))
                     {
                         $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
                         $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
                     }
-
-                    elseif
-                    (
-                        array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
-                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId)
-                    )
+                    elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
+                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId))
                     {
                         $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
                         $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
                     }
-
-                    elseif
-                    (
-                        array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
-                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId)
-                    )
+                    elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
+                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId))
                     {
                         $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
                         $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
@@ -194,27 +186,20 @@ class IdealoDE extends CSVGenerator
                 {
                     foreach([$defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
                     {
-                        if(count($this->usedPaymentMethods) == 0)
+                        if(count($this->usedPaymentMethods) == 0 && array_key_exists($paymentMethodId, $paymentMethods))
+                        {
+                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                        }
+                        elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
+                            && $this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId)
                         {
                             $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
                             $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
                         }
 
-                        elseif
-                        (
-                            array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
-                            && $this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId
-                        )
-                        {
-                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
-                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
-                        }
-
-                        elseif
-                        (
-                            array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
-                            && ($this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId && $this->usedPaymentMethods[2][0]->getAttributes()['id'] != $paymentMethodId)
-                        )
+                        elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
+                            && ($this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId && $this->usedPaymentMethods[2][0]->getAttributes()['id'] != $paymentMethodId))
                         {
                             $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
                             $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
