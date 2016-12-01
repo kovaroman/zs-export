@@ -104,7 +104,10 @@ class BeezUp extends CSVGenerator
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
 
-                $rrp = $this->elasticExportHelper->getPrice($item);
+                $price = $this->elasticExportHelper->getPrice($item);
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
+                $rrp = ($price > $rrp) ? $price : $rrp;
+
                 if($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $rrp)
                 {
                     $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
@@ -129,7 +132,7 @@ class BeezUp extends CSVGenerator
                     'Marke'                 =>  $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
-                    'Preis inkl. MwSt.'     =>  number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
+                    'Preis inkl. MwSt.'     =>  number_format((float)$price, 2, '.', ''),
                     'UVP inkl. MwSt.'       =>  number_format((float)$rrp, 2, '.', ''),
                     'Produkt-URL'           =>  $this->elasticExportHelper->getUrl($item, $settings),
                     'Bild-URL'              =>  $this->getImageByNumber($item, $settings, 1),
