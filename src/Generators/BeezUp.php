@@ -103,7 +103,11 @@ class BeezUp extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
-                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item) ? $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) : $this->elasticExportHelper->getPrice($item);
+
+                $price = $this->elasticExportHelper->getPrice($item);
+                $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
+                $rrp = ($price > $rrp) ? $price : $rrp;
+
                 $shippingCost = $this->elasticExportHelper->getShippingCost($item, $settings);
 
                 if(!is_null($shippingCost))
@@ -123,7 +127,7 @@ class BeezUp extends CSVGenerator
                     'Marke'                 =>  $this->elasticExportHelper->getExternalManufacturerName((int)$item->itemBase->producerId),
                     'Produktname'           =>  $this->elasticExportHelper->getName($item, $settings, 256),
                     'Produktbeschreibung'   =>  $this->getDescription($item, $settings),
-                    'Preis inkl. MwSt.'     =>  number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', '')  ,
+                    'Preis inkl. MwSt.'     =>  number_format((float)$price, 2, '.', ''),
                     'UVP inkl. MwSt.'       =>  number_format((float)$rrp, 2, '.', ''),
                     'Produkt-URL'           =>  $this->elasticExportHelper->getUrl($item, $settings),
                     'Bild-URL'              =>  $this->getImageByNumber($item, $settings, 1),
@@ -150,34 +154,34 @@ class BeezUp extends CSVGenerator
 
 				$this->addCSVContent(array_values($data));
 			}
-}
-}
+        }
+    }
 
-/**
- * Get item description.
- * @param Record $item
- * @param KeyValue $settings
- * @return string
- */
-private function getDescription(Record $item, KeyValue $settings):string
-{
-	$description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::PROPERTY_TYPE_DESCRIPTION);
+    /**
+     * Get item description.
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    private function getDescription(Record $item, KeyValue $settings):string
+    {
+        $description = $this->elasticExportHelper->getItemCharacterByBackendName($item, $settings, self::PROPERTY_TYPE_DESCRIPTION);
 
-	if (strlen($description) <= 0)
-	{
-		$description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
-	}
+        if (strlen($description) <= 0)
+        {
+            $description = $this->elasticExportHelper->getDescription($item, $settings, 5000);
+        }
 
-	return $description;
-}
+        return $description;
+    }
 
-/**
- * Get variation attributes.
- * @param  Record   $item
- * @param  KeyValue $settings
- * @return array<string,string>
- */
-private function getVariationAttributes(Record $item, KeyValue $settings):array
+    /**
+     * Get variation attributes.
+     * @param  Record   $item
+     * @param  KeyValue $settings
+     * @return array<string,string>
+     */
+    private function getVariationAttributes(Record $item, KeyValue $settings):array
     {
         $variationAttributes = [];
 
@@ -189,7 +193,7 @@ private function getVariationAttributes(Record $item, KeyValue $settings):array
             {
                 if($attributeValueName->attributeValue->attribute->amazonAttribute)
                 {
-                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute][] = $attributeValueName->name;
+                    $variationAttributes[$attributeValueName->attributeValue->attribute->amazonAttribute] = $attributeValueName->name;
                 }
             }
         }
@@ -197,12 +201,12 @@ private function getVariationAttributes(Record $item, KeyValue $settings):array
         return $variationAttributes;
     }
 
-        /**
-         * @param Record $item
-         * @param KeyValue $settings
-         * @param int $number
-         * @return string
-         */
+    /**
+     * @param Record $item
+     * @param KeyValue $settings
+     * @param int $number
+     * @return string
+     */
     private function getImageByNumber(Record $item, KeyValue $settings, int $number):string
     {
         $imageList = $this->elasticExportHelper->getImageList($item, $settings);
