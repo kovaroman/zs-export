@@ -105,7 +105,7 @@ class BeezUp extends CSVGenerator
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
 
                 $rrp = $this->elasticExportHelper->getPrice($item);
-                if($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $this->elasticExportHelper->getPrice($item))
+                if($this->elasticExportHelper->getRecommendedRetailPrice($item, $settings) > $rrp)
                 {
                     $rrp = $this->elasticExportHelper->getRecommendedRetailPrice($item, $settings);
                 }
