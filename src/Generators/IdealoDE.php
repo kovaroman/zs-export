@@ -470,7 +470,14 @@ class IdealoDE extends CSVGenerator
 
 		if(array_key_exists($property, $itemPropertyList))
 		{
-			return $itemPropertyList[$property];
+			if ($property == "CheckoutApproved")
+			{
+				return true;
+			}
+			else
+			{
+				return $itemPropertyList[$property];
+			}
 		}
 
 		return '';
