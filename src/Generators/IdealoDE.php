@@ -24,6 +24,7 @@ class IdealoDE extends CSVGenerator
 
 	const SHIPPING_COST_TYPE_FLAT = 'flat';
     const SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+	const PROPERTY_IDEALO_DIREKTKAUF = 'CheckoutApproved';
 
 	/**
      * @var ElasticExportHelper $elasticExportHelper
@@ -46,10 +47,15 @@ class IdealoDE extends CSVGenerator
 	 */
 	private $arrayHelper;
 
-	/**
-	 * @var array
-	 */
-	private $usedPaymentMethods = [];
+    /**
+     * @var array
+     */
+    private $usedPaymentMethods = [];
+
+    /**
+     * @var array
+     */
+    private $defaultShippingList = [];
 
     /**
      * IdealoGenerator constructor.
@@ -131,31 +137,84 @@ class IdealoDE extends CSVGenerator
 			'disposalPrice'
 		];
 
-		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
-		{
-			$paymentMethods = $this->elasticExportHelper->getPaymentMethods($settings);
+        /**
+         * If the shipping cost type is configuration, all payment methods will be taken as available payment methods from the chosen
+         * default shipping configuration.
+         */
+        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
+        {
+            $paymentMethods = $this->elasticExportHelper->getPaymentMethods($settings);
 
-			$defaultShipping = $this->elasticExportHelper->getDefaultShipping($settings);
+            $defaultShipping = $this->elasticExportHelper->getDefaultShipping($settings);
 
-			if($defaultShipping instanceof DefaultShipping)
-			{
-				foreach([$defaultShipping->paymentMethod1, $defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
-				{
-					if(array_key_exists($paymentMethodId, $paymentMethods) && !array_key_exists($paymentMethodId, $this->usedPaymentMethods))
-					{
-						$data[] = $this->getPaymentMethodName($paymentMethods[$paymentMethodId], $settings->get('lang') ?: 'de');
-						$this->usedPaymentMethods[$paymentMethodId] = $paymentMethods[$paymentMethodId];
-					}
-				}
-			}
-		}
+            if($defaultShipping instanceof DefaultShipping)
+            {
+                foreach([$defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
+                {
+                    if(count($this->usedPaymentMethods) == 0 && array_key_exists($paymentMethodId, $paymentMethods))
+                    {
+                        $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                        $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    }
+                    elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
+                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId))
+                    {
+                        $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                        $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    }
+                    elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
+                        && ($this->usedPaymentMethods[$defaultShipping->id][0]->getAttributes()['id'] != $paymentMethodId))
+                    {
+                        $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                        $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                    }
+                }
+            }
+        }
+        /**
+         * If nothing is checked at the elastic export settings regarding the shipping cost type,
+         * all payment methods within both default shipping configurations will be taken as available payment methods.
+         */
+        elseif($settings->get('shippingCostType') == 1)
+        {
+            $paymentMethods = $this->elasticExportHelper->getPaymentMethods($settings);
 
-		if(count($this->usedPaymentMethods) <= 0)
-		{
-			$data[] = self::DEFAULT_PAYMENT_METHOD;
-		}
+            $this->defaultShippingList = $this->elasticExportHelper->getDefaultShippingList();
 
-		return $data;
+            foreach($this->defaultShippingList as $defaultShipping)
+            {
+                if($defaultShipping instanceof DefaultShipping)
+                {
+                    foreach([$defaultShipping->paymentMethod2, $defaultShipping->paymentMethod3] as $paymentMethodId)
+                    {
+                        if(count($this->usedPaymentMethods) == 0 && array_key_exists($paymentMethodId, $paymentMethods))
+                        {
+                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                        }
+                        elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 1
+                            && $this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId)
+                        {
+                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                        }
+
+                        elseif(array_key_exists($paymentMethodId, $paymentMethods) && count($this->usedPaymentMethods) == 2
+                            && ($this->usedPaymentMethods[1][0]->getAttributes()['id'] != $paymentMethodId && $this->usedPaymentMethods[2][0]->getAttributes()['id'] != $paymentMethodId))
+                        {
+                            $data[] = $paymentMethods[$paymentMethodId]->getAttributes()['name'];
+                            $this->usedPaymentMethods[$defaultShipping->id][] = $paymentMethods[$paymentMethodId];
+                        }
+                    }
+                }
+            }
+        }
+        if(count($this->usedPaymentMethods) <= 0 || $settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
+        {
+            $data[] = self::DEFAULT_PAYMENT_METHOD;
+        }
+
+        return $data;
 	}
 
 	/**
@@ -315,25 +374,42 @@ class IdealoDE extends CSVGenerator
 			$data['disposalPrice'] = '';
 		}
 
-		if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
-		{
-			$defaultShipping = $this->elasticExportHelper->getDefaultShipping($settings);
-
-			if($defaultShipping instanceof DefaultShipping && count($this->usedPaymentMethods))
-			{
-				foreach($this->usedPaymentMethods as $paymentMethod)
-				{
-					$name = $this->getPaymentMethodName($paymentMethod, $settings->get('lang') ?: 'de');
-					$cost = $this->elasticExportHelper->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $settings->get('referrerId'), $paymentMethod->id);
-					$data[$name] = number_format((float)$cost, 2, '.', '');
-				}
-			}
-		}
-
-		if(count($this->usedPaymentMethods) <= 0)
-		{
-			$data[self::DEFAULT_PAYMENT_METHOD] = 0.00;
-		}
+        if(count($this->usedPaymentMethods) == 1)
+        {
+            foreach($this->usedPaymentMethods as $paymentMethod)
+            {
+                foreach($paymentMethod as $method)
+                {
+                    $name = $method->getAttributes()['name'];
+                    $cost = $this->elasticExportHelper->getShippingCost($item, $settings, $method->id);
+                    $data[$name] = number_format((float)$cost, 2, '.', '');
+                }
+            }
+        }
+        elseif(count($this->usedPaymentMethods) > 1)
+        {
+            foreach($this->usedPaymentMethods as $defaultShipping => $paymentMethod)
+            {
+                foreach ($paymentMethod as $method)
+                {
+                    $name = $method->getAttributes()['name'];
+                    $cost = $this->elasticExportHelper->calculateShippingCost(
+                        $item->itemBase->id,
+                        $this->defaultShippingList[$defaultShipping]->shippingDestinationId,
+                        $this->defaultShippingList[$defaultShipping]->referrerId,
+                        $method->id);
+                    $data[$name] = number_format((float)$cost, 2, '.', '');
+                }
+            }
+        }
+        elseif(count($this->usedPaymentMethods) <= 0 && $settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
+        {
+            $data[self::DEFAULT_PAYMENT_METHOD] = $settings->get('shippingCostFlat');
+        }
+        else
+        {
+            $data[self::DEFAULT_PAYMENT_METHOD] = 0.00;
+        }
 
 		return array_values($data);
 	}
@@ -383,37 +459,26 @@ class IdealoDE extends CSVGenerator
         return '';
     }
 
-	/**
-	 * Get payment method name.
-	 * @param  PaymentMethod $paymentMethod
-	 * @return string
-	 */
-	private function getPaymentMethodName(PaymentMethod $paymentMethod, string $lang = 'de'):string
-	{
-		foreach($paymentMethod->informations as $paymentMethodInformation)
-		{
-			if($paymentMethodInformation->lang == $lang)
-			{
-				return $paymentMethodInformation->name;
-			}
-		}
-
-		return '';
-	}
-
-	    /**
-		 * Get property.
-		 * @param  Record   $item
-		 * @param  string   $property
-		 * @return string|null
-		 */
+    /**
+     * Get property.
+     * @param  Record   $item
+     * @param  string   $property
+     * @return string|null
+     */
     private function getProperty(Record $item, string $property):string
 	{
 		$itemPropertyList = $this->getItemPropertyList($item, 121.00);
 
 		if(array_key_exists($property, $itemPropertyList))
 		{
-			return $itemPropertyList[$property];
+			if ($property == self::PROPERTY_IDEALO_DIREKTKAUF)
+			{
+				return true;
+			}
+			else
+			{
+				return $itemPropertyList[$property];
+			}
 		}
 
 		return '';

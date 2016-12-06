@@ -1108,7 +1108,7 @@ class ElasticExportHelper
 	 * @param  KeyValue $settings
 	 * @return DefaultShipping|null
 	 */
-	public function getDefaultShipping(KeyValue $settings):DefaultShipping
+	public function getDefaultShipping(KeyValue $settings)
 	{
         $defaultShippingProfiles = $this->getConfig('plenty.order.shipping.default_shipping');
 
@@ -1122,6 +1122,31 @@ class ElasticExportHelper
 
         return null;
 	}
+
+    /**
+     * Get the default shipping list.
+     * @return array|null
+     */
+    public function getDefaultShippingList()
+    {
+        $defaultShippingProfiles = $this->getConfig('plenty.order.shipping.default_shipping');
+        $list = [];
+
+        foreach($defaultShippingProfiles as $defaultShippingProfile)
+        {
+            if($defaultShippingProfile instanceof DefaultShipping)
+            {
+                $list[$defaultShippingProfile->id] = $defaultShippingProfile;
+            }
+        }
+
+        if(is_array($list) && count($list) > 0)
+        {
+            return $list;
+        }
+
+        return null;
+    }
 
     /**
      * Get custom configuration.
