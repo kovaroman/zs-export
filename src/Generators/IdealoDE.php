@@ -24,6 +24,7 @@ class IdealoDE extends CSVGenerator
 
 	const SHIPPING_COST_TYPE_FLAT = 'flat';
     const SHIPPING_COST_TYPE_CONFIGURATION = 'configuration';
+	const PROPERTY_IDEALO_DIREKTKAUF = 'CheckoutApproved';
 
 	/**
      * @var ElasticExportHelper $elasticExportHelper
@@ -470,7 +471,14 @@ class IdealoDE extends CSVGenerator
 
 		if(array_key_exists($property, $itemPropertyList))
 		{
-			return $itemPropertyList[$property];
+			if ($property == self::PROPERTY_IDEALO_DIREKTKAUF)
+			{
+				return true;
+			}
+			else
+			{
+				return $itemPropertyList[$property];
+			}
 		}
 
 		return '';
