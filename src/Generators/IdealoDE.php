@@ -463,9 +463,9 @@ class IdealoDE extends CSVGenerator
      * Get property.
      * @param  Record   $item
      * @param  string   $property
-     * @return string|null
+     * @return string|bool
      */
-    private function getProperty(Record $item, string $property):string
+    private function getProperty(Record $item, string $property)
 	{
 		$itemPropertyList = $this->getItemPropertyList($item, 121.00);
 
