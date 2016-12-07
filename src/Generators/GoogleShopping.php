@@ -501,60 +501,75 @@ class GoogleShopping extends CSVGenerator
 	 */
 	private function loadLinkedAttributeList(KeyValue $settings)
 	{
-		$attributeList = $this->attributeRepository->all();
+        $attributeListPage = 1;
+        $attributeListTotal = null;
 
+		$attributeList = $this->attributeRepository->all();
 		if($attributeList instanceof PaginatedResult)
 		{
-			foreach($attributeList->getResult() as $attribute)
-			{
-                $page = 1;
-                $total = null;
+            $attributeListTotal = $attributeList->getTotalCount();
 
-                if($attribute instanceof Attribute)
+            while($attributeListTotal > 0)
+            {
+                $this->iterateAttributeList($attributeList, $settings);
+                $attributeListPage++;
+                $attributeListTotal = $attributeListTotal - 50;
+                $attributeList = $this->attributeRepository->all(['*'], 50, $attributeListPage);
+            }
+		}
+	}
+
+    /**
+     * @param PaginatedResult $attributeList
+     * @param KeyValue $settings
+     */
+	private function iterateAttributeList($attributeList, $settings)
+    {
+        foreach($attributeList->getResult() as $attribute)
+        {
+            $attributeValuePage = 1;
+            $attributeValueTotal = null;
+
+            if($attribute instanceof Attribute)
+            {
+                if(strlen($attribute->googleShoppingAttribute) > 0)
                 {
-                    if(strlen($attribute->googleShoppingAttribute) > 0)
+                    $this->linkedAttributeList[$attribute->id] = $attribute->googleShoppingAttribute;
+
+                    $attributeValueList = $this->attributeValueRepository->findByAttributeId($attribute->id, $attributeValuePage);
+                    if($attributeValueList instanceof PaginatedResult)
                     {
-                        $this->linkedAttributeList[$attribute->id] = $attribute->googleShoppingAttribute;
-
-                        $attributeValueList = $this->attributeValueRepository->findByAttributeId($attribute->id, $page);
-                        $total = $attributeValueList->getTotalCount();
-
-                        if($attributeValueList instanceof PaginatedResult)
+                        $attributeValueTotal = $attributeValueList->getTotalCount();
+                        while($attributeValueTotal > 0)
                         {
-                            foreach ($attributeValueList->getResult() as $attributeValue)
-                            {
-                                $attributeValueName = $this->attributeValueNameRepository->findOne($attributeValue->id, $settings->get('lang'));
-
-                                if($attributeValueName instanceof AttributeValueName)
-                                {
-                                    $this->attributeValueCache[$attributeValue->id] = $attributeValueName->name;
-                                }
-                            }
-                        }
-
-                        $page++;
-                        $total = $total - 50;
-                        while($total > 0)
-                        {
-                            $attributeValueList = $this->attributeValueRepository->findByAttributeId($attribute->id, $page);
-                            if($attributeValueList instanceof PaginatedResult)
-                            {
-                                foreach ($attributeValueList->getResult() as $attributeValue)
-                                {
-                                    $attributeValueName = $this->attributeValueNameRepository->findOne($attributeValue->id, $settings->get('lang'));
-
-                                    if($attributeValueName instanceof AttributeValueName)
-                                    {
-                                        $this->attributeValueCache[$attributeValue->id] = $attributeValueName->name;
-                                    }
-                                }
-                            }
-                            $page++;
-                            $total = $total - 50;
+                            $this->setAttributeValueCache($attributeValueList, $settings);
+                            $attributeValuePage++;
+                            $attributeValueTotal = $attributeValueTotal - 50;
+                            $attributeValueList = $this->attributeValueRepository->findByAttributeId($attribute->id, $attributeValuePage);
                         }
                     }
                 }
-			}
-		}
-	}
+            }
+        }
+    }
+
+    /**
+     * @param PaginatedResult $attibuteValueList
+     * @param KeyValue $settings
+     */
+	private function setAttributeValueCache($attributeValueList, $settings)
+    {
+        if($attributeValueList instanceof PaginatedResult)
+        {
+            foreach ($attributeValueList->getResult() as $attributeValue)
+            {
+                $attributeValueName = $this->attributeValueNameRepository->findOne($attributeValue->id, $settings->get('lang'));
+
+                if($attributeValueName instanceof AttributeValueName)
+                {
+                    $this->attributeValueCache[$attributeValue->id] = $attributeValueName->name;
+                }
+            }
+        }
+    }
 }
