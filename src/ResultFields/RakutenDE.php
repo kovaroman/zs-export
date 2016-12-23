@@ -107,8 +107,8 @@ class RakutenDE extends ResultFields
 			'variationImageList' => [
 				'params' => [
 					'type' => 'all',
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				],
-				'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				'fields' => [
 					'type',
 					'path',
