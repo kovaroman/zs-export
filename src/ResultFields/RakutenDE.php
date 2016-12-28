@@ -54,13 +54,7 @@ class RakutenDE extends ResultFields
             $itemDescriptionFields[] = 'description';
         }
 
-        if($settings->get('descriptionType') == 'technicalData'
-            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
-            || $settings->get('previewTextType') == 'technicalData'
-            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
-        {
-            $itemDescriptionFields[] = 'technicalData';
-        }
+        $itemDescriptionFields[] = 'technicalData';
 
 		$fields = [
 			'itemBase'=> [
