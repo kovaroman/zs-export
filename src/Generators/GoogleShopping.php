@@ -228,9 +228,11 @@ class GoogleShopping extends CSVGenerator
 					'excluded_destination'		=> $this->getProperty($item, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getProperty($item, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item, $settings),
-					'unit_pricing_measure'		=> (string)number_format((float)$item->variationBase->content, 3, '.', '').' '.
+					'unit_pricing_measure'		=> $item->variationBase->unitId == 1 && $item->variationBase->content == 1 ? '' :
+                                                        (string)number_format((float)$item->variationBase->content, 3, '.', '').' '.
                                                         (string)$this->getUnit($item),
-					'unit_pricing_base_measure'	=> $this->getUnitPricingBaseMeasure($item, $settings),
+					'unit_pricing_base_measure'	=> $item->variationBase->unitId == 1 && $item->variationBase->content == 1 ? '' :
+                                                        $this->getUnitPricingBaseMeasure($item, $settings),
 					'energy_efficiency_class'	=> $this->getProperty($item, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
 					'size_system'				=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_SYSTEM),
 					'size_type'					=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_TYPE),
