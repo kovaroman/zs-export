@@ -228,8 +228,9 @@ class GoogleShopping extends CSVGenerator
 					'excluded_destination'		=> $this->getProperty($item, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getProperty($item, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item, $settings),
-					'unit_pricing_measure'		=> '', // $this->getUnitPricingMeasure($item, $settings),
-					'unit_pricing_base_measure'	=> '', // $this->getUnitPricingBaseMeasure($item, $settings),
+					'unit_pricing_measure'		=> (string)number_format((float)$item->variationBase->content, 3, '.', '').' '.
+                                                        (string)$this->getUnit($item),
+					'unit_pricing_base_measure'	=> $this->getUnitPricingBaseMeasure($item, $settings),
 					'energy_efficiency_class'	=> $this->getProperty($item, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
 					'size_system'				=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_SYSTEM),
 					'size_type'					=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_TYPE),
@@ -430,15 +431,37 @@ class GoogleShopping extends CSVGenerator
     }
 
     /**
-     * Calculate and get unit price
-     * @param Record $item
-     * @param KeyValue $settings
+     * Returns the unit, if there is any unit configured, which is allowed
+     * for GoogleShopping.
+     *
+     * @param  Record   $item
      * @return string
      */
-    private function getUnitPricingBaseMeasure(Record $item, KeyValue $settings):string
+    private function getUnit(Record $item):string
     {
-        $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-        return (string)$basePriceList['lot'].' '.(string)$basePriceList['unit'];
+        switch((int) $item->variationBase->unitId)
+        {
+            case '1':
+                return 'ct'; //Stück
+            case '32':
+                return 'ml'; // Milliliter
+            case '5':
+                return 'l'; // Liter
+            case '4':
+                return 'mg'; //Milligramm
+            case '3':
+                return 'g'; // Gramm
+            case '2':
+                return 'kg'; // Kilogramm
+            case '51':
+                return 'cm'; // Zentimeter
+            case '31':
+                return 'm'; // Meter
+            case '38':
+                return 'sqm'; // Quadratmeter
+            default:
+                return '';
+        }
     }
 
     /**
@@ -447,10 +470,10 @@ class GoogleShopping extends CSVGenerator
      * @param KeyValue $settings
      * @return string
      */
-    private function getUnitPricingMeasure(Record $item, KeyValue $settings):string
+    private function getUnitPricingBaseMeasure(Record $item, KeyValue $settings):string
     {
         $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-        return (string)number_format((float)$item->variationBase->content, 2, '.', '').' '.(string)$basePriceList['unit'];
+        return (string)$basePriceList['lot'].' '.(string)$this->getUnit($item);
     }
 
     /**
