@@ -239,6 +239,36 @@ class ElasticExportHelper
     }
 
     /**
+     * Removes invisible ASCII-Code from the text
+     *
+     * @param $text
+     * @return string
+     */
+    public function cleanText($text):string
+    {
+        //Removes invisible ASCII-Code
+        $text = preg_replace('/\p{Cc}+/u', '',$text);
+
+        return $text;
+    }
+
+    /**
+     * Get technical data.
+     *
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    public function getTechnicalData(Record $item, KeyValue $settings):string
+    {
+        //Removes invisible ASCII-Code
+        $technicalData = $this->cleanText($item->itemDescription->technicalData);
+
+        return $technicalData;
+    }
+
+
+    /**
      * Get preview text.
      *
      * @param  Record        $item
@@ -273,6 +303,9 @@ class ElasticExportHelper
         }
 
         $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
+
+        //Removes invisible ASCII-Code
+        $previewText = $this->cleanText($previewText);
 
         if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
@@ -318,6 +351,8 @@ class ElasticExportHelper
         }
 
         $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
+
+        $description = $this->cleanText($description);
 
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
