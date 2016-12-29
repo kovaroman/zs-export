@@ -54,13 +54,7 @@ class RakutenDE extends ResultFields
             $itemDescriptionFields[] = 'description';
         }
 
-        if($settings->get('descriptionType') == 'technicalData'
-            || $settings->get('descriptionType') == 'itemDescriptionAndTechnicalData'
-            || $settings->get('previewTextType') == 'technicalData'
-            || $settings->get('previewTextType') == 'itemDescriptionAndTechnicalData')
-        {
-            $itemDescriptionFields[] = 'technicalData';
-        }
+        $itemDescriptionFields[] = 'technicalData';
 
 		$fields = [
 			'itemBase'=> [
@@ -107,8 +101,8 @@ class RakutenDE extends ResultFields
 			'variationImageList' => [
 				'params' => [
 					'type' => 'all',
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				],
-				'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
 				'fields' => [
 					'type',
 					'path',
