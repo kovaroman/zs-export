@@ -5,6 +5,7 @@ namespace ElasticExport\Helper;
 use Plenty\Modules\Category\Contracts\CategoryBranchMarketplaceRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
+use Plenty\Modules\Helper\Services\WebstoreHelper;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
@@ -26,6 +27,7 @@ use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostRepositoryContract;
 use Plenty\Modules\Item\Availability\Models\Availability;
 use Plenty\Modules\Item\Availability\Models\AvailabilityLanguage;
+use Plenty\Modules\System\Models\WebstoreConfiguration;
 use Plenty\Plugin\ConfigRepository;
 use Plenty\Modules\Order\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Order\Shipping\Countries\Models\Country;
@@ -318,6 +320,13 @@ class ElasticExportHelper
         }
 
         $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
+
+	    /** @var WebstoreRepositoryContract $webstoreRepo */
+	    $webstoreRepo = pluginApp(WebstoreRepositoryContract::class);
+
+	    $webstore = $webstoreRepo->findByPlentyId($settings->get('plentyId'));
+
+	    $description = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $description );
 
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
