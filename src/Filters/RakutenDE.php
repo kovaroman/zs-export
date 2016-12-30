@@ -3,7 +3,6 @@
 namespace ElasticExport\Filters;
 
 use Plenty\Modules\DataExchange\Contracts\FiltersForElasticSearchContract;
-use Plenty\Modules\DataExchange\Models\FormatSetting;
 
 use Plenty\Plugin\Application;
 
@@ -23,7 +22,6 @@ class RakutenDE extends FiltersForElasticSearchContract
     }
 
     /**
-     * @param FormatSetting[] $formatSettings
      * @return array
      */
     public function generateElasticSearchFilter():array
