@@ -370,6 +370,13 @@ class ElasticExportHelper
         return substr($description, 0, $descriptionLength);
     }
 
+    /**
+     * Converts relative image url paths to absolute paths
+     *
+     * @param string $text
+     * @param KeyValue $settings
+     * @return string
+     */
     public function convertUrl(string $text, KeyValue $settings):string
     {
         /** @var WebstoreRepositoryContract $webstoreRepo */
@@ -380,7 +387,6 @@ class ElasticExportHelper
         $text = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $text );
 
         return $text;
-
     }
 
     /**
