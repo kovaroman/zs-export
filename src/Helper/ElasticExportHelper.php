@@ -241,20 +241,6 @@ class ElasticExportHelper
     }
 
     /**
-     * Removes invisible ASCII-Code from the text
-     *
-     * @param $text
-     * @return string
-     */
-    public function cleanText($text):string
-    {
-        //Removes invisible ASCII-Code
-        $text = preg_replace('/[\x0A-\x0D]/u', ' ',$text);
-
-        return $text;
-    }
-
-    /**
      * Get technical data.
      *
      * @param Record $item
@@ -263,16 +249,10 @@ class ElasticExportHelper
      */
     public function getTechnicalData(Record $item, KeyValue $settings):string
     {
-        $technicalData=$item->itemDescription->technicalData;
+        $technicalData = $item->itemDescription->technicalData;
 
-        /** @var WebstoreRepositoryContract $webstoreRepo */
-        $webstoreRepo = pluginApp(WebstoreRepositoryContract::class);
+        $technicalData = $this->convertUrl($technicalData, $settings);;
 
-        $webstore = $webstoreRepo->findByPlentyId($settings->get('plentyId'));
-
-        $technicalData = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $technicalData );
-
-        //Removes invisible ASCII-Code
         $technicalData = $this->cleanText($technicalData);
 
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
@@ -320,15 +300,16 @@ class ElasticExportHelper
                 break;
         }
 
-        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
+        $previewText = $this->convertUrl($previewText, $settings);
 
-        //Removes invisible ASCII-Code
         $previewText = $this->cleanText($previewText);
 
         if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
             $previewText = strip_tags($previewText, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
         }
+
+        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
 
         if($previewTextLength <= 0)
         {
@@ -368,14 +349,7 @@ class ElasticExportHelper
                 break;
         }
 
-        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
-
-        /** @var WebstoreRepositoryContract $webstoreRepo */
-        $webstoreRepo = pluginApp(WebstoreRepositoryContract::class);
-
-        $webstore = $webstoreRepo->findByPlentyId($settings->get('plentyId'));
-
-        $description = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $description );
+        $description = $this->convertUrl($description, $settings);
 
         $description = $this->cleanText($description);
 
@@ -386,12 +360,41 @@ class ElasticExportHelper
 
         $description = html_entity_decode($description);
 
+        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
+
         if($descriptionLength <= 0)
         {
             return $description;
         }
 
         return substr($description, 0, $descriptionLength);
+    }
+
+    public function convertUrl(string $text, KeyValue $settings):string
+    {
+        /** @var WebstoreRepositoryContract $webstoreRepo */
+        $webstoreRepo = pluginApp(WebstoreRepositoryContract::class);
+
+        $webstore = $webstoreRepo->findByPlentyId($settings->get('plentyId'));
+
+        $text = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $text );
+
+        return $text;
+
+    }
+
+    /**
+     * Removes invisible ASCII-Code from the text
+     *
+     * @param $text
+     * @return string
+     */
+    public function cleanText(string $text):string
+    {
+        //Removes invisible ASCII-Code
+        $text = preg_replace('/[\x0A-\x0D]/u', ' ',$text);
+
+        return $text;
     }
 
     /**
