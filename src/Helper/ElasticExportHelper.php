@@ -247,7 +247,7 @@ class ElasticExportHelper
     public function cleanText($text):string
     {
         //Removes invisible ASCII-Code
-        $text = preg_replace('/\p{Cc}+/u', '',$text);
+        $text = preg_replace('/[\x0A-\x0D]/u', ' ',$text);
 
         return $text;
     }
@@ -263,6 +263,13 @@ class ElasticExportHelper
     {
         //Removes invisible ASCII-Code
         $technicalData = $this->cleanText($item->itemDescription->technicalData);
+
+        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $technicalData = strip_tags($technicalData, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+        }
+
+        $technicalData = html_entity_decode($technicalData);
 
         return $technicalData;
     }
