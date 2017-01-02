@@ -257,7 +257,7 @@ class ElasticExportHelper
 
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
-            $technicalData = strip_tags($technicalData, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+            $technicalData = strip_tags($technicalData, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
         }
 
         $technicalData = html_entity_decode($technicalData);
@@ -355,7 +355,7 @@ class ElasticExportHelper
 
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
-            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
         }
 
         $description = html_entity_decode($description);
