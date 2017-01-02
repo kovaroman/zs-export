@@ -199,6 +199,7 @@ class GoogleShopping extends CSVGenerator
                     $shipping = $this->elasticExportHelper->getCountry($settings, self::ISO_CODE_2).':::'.$shippingCost;
                 }
 
+                $basePriceComponents = $this->getBasePriceComponents($item, $settings);
 
 				$data = [
 					'id' 						=> $item->variationBase->id,
@@ -228,11 +229,8 @@ class GoogleShopping extends CSVGenerator
 					'excluded_destination'		=> $this->getProperty($item, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
 					'adwords_redirect'			=> $this->getProperty($item, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item, $settings),
-					'unit_pricing_measure'		=> $item->variationBase->unitId == 1 && $item->variationBase->content == 1 ? '' :
-                                                        (string)number_format((float)$item->variationBase->content, 3, '.', '').' '.
-                                                        (string)$this->getUnit($item),
-					'unit_pricing_base_measure'	=> $item->variationBase->unitId == 1 && $item->variationBase->content == 1 ? '' :
-                                                        $this->getUnitPricingBaseMeasure($item, $settings),
+					'unit_pricing_measure'		=> $basePriceComponents['unit_pricing_measure'],
+					'unit_pricing_base_measure'	=> $basePriceComponents['unit_pricing_base_measure'],
 					'energy_efficiency_class'	=> $this->getProperty($item, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
 					'size_system'				=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_SYSTEM),
 					'size_type'					=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_TYPE),
@@ -330,6 +328,39 @@ class GoogleShopping extends CSVGenerator
         return '';
     }
 
+    private function getBasePriceComponents(Record $item, KeyValue $settings):array
+    {
+        $unitPricingMeasure = '';
+        $unitPricingBaseMeasure = '';
+
+        if ($item->variationBase->unitId == 1 && $item->variationBase->content == 1)
+        {
+            $unitPricingMeasure = '';
+            $unitPricingBaseMeasure = '';
+        }
+        else
+        {
+            if (in_array($item->variationBase->unitId, array('5','2','31','38')))
+            {
+                $unitPricingMeasure = ((string)number_format((float)$item->variationBase->content, 3, '.', '').' '.(string)$this->getUnit($item));
+            }
+            elseif ($this->getUnit($item) != '')
+            {
+                $unitPricingMeasure = ((string)ceil((float)$item->variationBase->content).' '.(string)$this->getUnit($item));
+            }
+
+            if ($unitPricingMeasure != '')
+            {
+                $unitPricingBaseMeasure = $this->getUnitPricingBaseMeasure($item, $settings);
+            }
+        }
+
+        return array(
+            'unit_pricing_measure'      =>  $unitPricingMeasure,
+            'unit_pricing_base_measure' =>  $unitPricingBaseMeasure
+        );
+
+    }
 
     /**
      * Get item properties.
