@@ -333,16 +333,11 @@ class GoogleShopping extends CSVGenerator
         $unitPricingMeasure = '';
         $unitPricingBaseMeasure = '';
 
-        if ($item->variationBase->unitId == 1 && $item->variationBase->content == 1)
-        {
-            $unitPricingMeasure = '';
-            $unitPricingBaseMeasure = '';
-        }
-        else
+        if ($item->variationBase->unitId >= 1 && $item->variationBase->content > 1)
         {
             if (in_array($item->variationBase->unitId, array('5','2','31','38')))
             {
-                $unitPricingMeasure = ((string)number_format((float)$item->variationBase->content, 3, '.', '').' '.(string)$this->getUnit($item));
+                $unitPricingMeasure = ((string)number_format((float)$item->variationBase->content, 2, '.', '').' '.(string)$this->getUnit($item));
             }
             elseif ($this->getUnit($item) != '')
             {
