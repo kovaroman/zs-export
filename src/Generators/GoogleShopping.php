@@ -346,7 +346,7 @@ class GoogleShopping extends CSVGenerator
             }
             elseif ($this->getUnit($item) != '')
             {
-                $unitPricingMeasure = ((string)ceil((float)$item->variationBase->content).' '.(string)$this->getUnit($item));
+                $unitPricingMeasure = ((string)number_format((float)$item->variationBase->content, 2, ',', '').' '.(string)$this->getUnit($item));
             }
 
             if ($unitPricingMeasure != '')
@@ -505,8 +505,27 @@ class GoogleShopping extends CSVGenerator
      */
     private function getUnitPricingBaseMeasure(Record $item, KeyValue $settings):string
     {
-        $basePriceList = $this->elasticExportHelper->getBasePriceList($item, $settings);
-        return (string)$basePriceList['lot'].' '.(string)$this->getUnit($item);
+        $content = $item->variationBase->content;
+        $basePriceUnit = $this->getUnit($item);
+
+        if(in_array($item->variationBase->unitId, array('3','32')))
+        {
+            if($content <= 250)
+            {
+                $basePriceContent = 100;
+            }
+            else
+            {
+                $basePriceContent = 1;
+                $basePriceUnit = $basePriceUnit=='g' ? 'kg' : 'l';
+            }
+        }
+        else
+        {
+            $basePriceContent = 1;
+        }
+
+        return (string)$basePriceContent.' '.(string)$basePriceUnit;
     }
 
     /**
