@@ -5,6 +5,7 @@ namespace ElasticExport\Helper;
 use Plenty\Modules\Category\Contracts\CategoryBranchMarketplaceRepositoryContract;
 use Plenty\Modules\Category\Contracts\CategoryBranchRepositoryContract;
 use Plenty\Modules\Category\Models\CategoryBranchMarketplace;
+use Plenty\Modules\Helper\Services\WebstoreHelper;
 use Plenty\Modules\Item\DataLayer\Models\Record;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Category\Models\CategoryBranch;
@@ -26,6 +27,7 @@ use Plenty\Modules\Order\Payment\Method\Models\PaymentMethod;
 use Plenty\Modules\Item\DefaultShippingCost\Contracts\DefaultShippingCostRepositoryContract;
 use Plenty\Modules\Item\Availability\Models\Availability;
 use Plenty\Modules\Item\Availability\Models\AvailabilityLanguage;
+use Plenty\Modules\System\Models\WebstoreConfiguration;
 use Plenty\Plugin\ConfigRepository;
 use Plenty\Modules\Order\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Order\Shipping\Countries\Models\Country;
@@ -239,6 +241,32 @@ class ElasticExportHelper
     }
 
     /**
+     * Get technical data.
+     *
+     * @param Record $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    public function getTechnicalData(Record $item, KeyValue $settings):string
+    {
+        $technicalData = $item->itemDescription->technicalData;
+
+        $technicalData = $this->convertUrl($technicalData, $settings);;
+
+        $technicalData = $this->cleanText($technicalData);
+
+        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $technicalData = strip_tags($technicalData, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
+        }
+
+        $technicalData = html_entity_decode($technicalData);
+
+        return $technicalData;
+    }
+
+
+    /**
      * Get preview text.
      *
      * @param  Record        $item
@@ -272,12 +300,16 @@ class ElasticExportHelper
                 break;
         }
 
-        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
+        $previewText = $this->convertUrl($previewText, $settings);
+
+        $previewText = $this->cleanText($previewText);
 
         if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
             $previewText = strip_tags($previewText, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
         }
+
+        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
 
         if($previewTextLength <= 0)
         {
@@ -317,14 +349,18 @@ class ElasticExportHelper
                 break;
         }
 
-        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
+        $description = $this->convertUrl($description, $settings);
+
+        $description = $this->cleanText($description);
 
         if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
         {
-            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
         }
 
         $description = html_entity_decode($description);
+
+        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
 
         if($descriptionLength <= 0)
         {
@@ -332,6 +368,39 @@ class ElasticExportHelper
         }
 
         return substr($description, 0, $descriptionLength);
+    }
+
+    /**
+     * Converts relative image url paths to absolute paths
+     *
+     * @param string $text
+     * @param KeyValue $settings
+     * @return string
+     */
+    public function convertUrl(string $text, KeyValue $settings):string
+    {
+        /** @var WebstoreRepositoryContract $webstoreRepo */
+        $webstoreRepo = pluginApp(WebstoreRepositoryContract::class);
+
+        $webstore = $webstoreRepo->findByPlentyId($settings->get('plentyId'));
+
+        $text = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $text );
+
+        return $text;
+    }
+
+    /**
+     * Removes invisible ASCII-Code from the text
+     *
+     * @param $text
+     * @return string
+     */
+    public function cleanText(string $text):string
+    {
+        //Removes invisible ASCII-Code
+        $text = preg_replace('/[\x0A-\x0D]/u', ' ',$text);
+
+        return $text;
     }
 
     /**
