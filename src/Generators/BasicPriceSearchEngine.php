@@ -97,7 +97,7 @@ class BasicPriceSearchEngine extends CSVGenerator
 					'article_id'            => $item->itemBase->id,
                     'deeplink'              => $this->elasticExportHelper->getUrl($item, $settings, true, false),
                     'name'                  => $this->elasticExportHelper->getName($item, $settings),
-                    'short_description'     => $item->itemDescription->shortDescription,
+                    'short_description'     => $this->elasticExportHelper->getPreviewText($item, $settings),
                     'description'           => $this->elasticExportHelper->getDescription($item, $settings, 256),
                     'article_no'            => $item->variationBase->customNumber,
                     'producer'              => $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
