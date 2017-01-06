@@ -64,7 +64,7 @@ class GoogleShopping extends ResultFields
 			'itemBase'=> [
 				'id',
 				'producerId',
-				'condition',
+				'apiCondition',
 			],
 
 			'itemDescription' => [
