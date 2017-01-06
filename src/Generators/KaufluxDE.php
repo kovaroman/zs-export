@@ -11,6 +11,7 @@ use ElasticExport\Helper\ElasticExportHelper;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\Property\Contracts\PropertySelectionRepositoryContract;
 use Plenty\Modules\Item\Property\Models\PropertySelection;
+use Plenty\Modules\Helper\Contracts\UrlBuilderRepositoryContract;
 
 /**
  * Class KaufluxDE
@@ -37,6 +38,11 @@ class KaufluxDE extends CSVGenerator
 	 */
 	private $propertySelectionRepository;
 
+    /**
+     * @var UrlBuilderRepositoryContract $urlBuilderRepository
+     */
+    private $urlBuilderRepository;
+
 	/**
 	 * @var array
 	 */
@@ -58,20 +64,23 @@ class KaufluxDE extends CSVGenerator
 	];
 
     /**
-     * IdealoGenerator constructor.
+     * KaufluxDE constructor.
      * @param ElasticExportHelper $elasticExportHelper
      * @param ArrayHelper $arrayHelper
      * @param PropertySelectionRepositoryContract $propertySelectionRepository
+     * @param UrlBuilderRepositoryContract $urlBuilderRepository
      */
     public function __construct(
 		ElasticExportHelper $elasticExportHelper,
 		ArrayHelper $arrayHelper,
-		PropertySelectionRepositoryContract $propertySelectionRepository
+		PropertySelectionRepositoryContract $propertySelectionRepository,
+        UrlBuilderRepositoryContract $urlBuilderRepository
 	)
     {
         $this->elasticExportHelper = $elasticExportHelper;
 		$this->arrayHelper = $arrayHelper;
 		$this->propertySelectionRepository = $propertySelectionRepository;
+        $this->urlBuilderRepository = $urlBuilderRepository;
     }
 
     protected function generateContent($resultData, array $formatSettings = [])
@@ -243,7 +252,7 @@ class KaufluxDE extends CSVGenerator
 	 */
 	private function getImageByNumber(Record $item, KeyValue $settings, int $number):string
 	{
-		$imageList = $this->elasticExportHelper->getImageList($item, $settings);
+		$imageList = $this->getImageList($item, $settings);
 
 		if(count($imageList) > 0 && array_key_exists($number, $imageList))
 		{
@@ -346,4 +355,31 @@ class KaufluxDE extends CSVGenerator
 
 		return true;
 	}
+
+    /**
+     * @param Record $item
+     * @param KeyValue $settings
+     */
+    private function getImageList(Record $item, KeyValue $settings)
+    {
+        $list = array();
+        foreach ($item->variationImageList['variationImages']->toArray() as $variationImage)
+        {
+            $list[] = $this->urlBuilderRepository->getImageUrl($variationImage['path'], $settings->get('plentyId'), 'normal', $variationImage['fileType'], $variationImage['type'] == 'external');
+            if(count($list) == 3)
+            {
+                return $list;
+            }
+        }
+        foreach ($item->variationImageList['itemImages']->toArray() as $variationImage)
+        {
+            $list[] = $this->urlBuilderRepository->getImageUrl($variationImage['path'], $settings->get('plentyId'), 'normal', $variationImage['fileType'], $variationImage['type'] == 'external');
+            if(count($list) == 3)
+            {
+                return $list;
+            }
+        }
+
+        return $list;
+    }
 }
