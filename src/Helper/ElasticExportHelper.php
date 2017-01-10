@@ -249,7 +249,7 @@ class ElasticExportHelper
      */
     public function getTechnicalData(Record $item, KeyValue $settings):string
     {
-        $technicalData = $item->itemDescription->technicalData;
+        $technicalData = (string)$item->itemDescription->technicalData;
 
         $technicalData = $this->convertUrl($technicalData, $settings);;
 
@@ -279,19 +279,19 @@ class ElasticExportHelper
         switch($settings->get('previewTextType'))
         {
             case 'itemShortDescription':
-                $previewText = $item->itemDescription->shortDescription;
+                $previewText = (string)$item->itemDescription->shortDescription;
                 break;
 
             case 'technicalData':
-                $previewText = $item->itemDescription->technicalData;
+                $previewText = (string)$item->itemDescription->technicalData;
                 break;
 
             case 'itemDescriptionAndTechnicalData':
-                $previewText = $item->itemDescription->description . ' ' . $item->itemDescription->technicalData;
+                $previewText = (string)$item->itemDescription->description . ' ' . $item->itemDescription->technicalData;
                 break;
 
             case 'itemDescription':
-                $previewText = $item->itemDescription->description;
+                $previewText = (string)$item->itemDescription->description;
                 break;
 
             case 'dontTransfer':
@@ -332,20 +332,20 @@ class ElasticExportHelper
         switch($settings->get('descriptionType'))
         {
             case 'itemShortDescription':
-                $description = $item->itemDescription->shortDescription;
+                $description = (string)$item->itemDescription->shortDescription;
                 break;
 
             case 'technicalData':
-                $description = $item->itemDescription->technicalData;
+                $description = (string)$item->itemDescription->technicalData;
                 break;
 
             case 'itemDescriptionAndTechnicalData':
-                $description = $item->itemDescription->description . ' ' . $item->itemDescription->technicalData;
+                $description = (string)$item->itemDescription->description . ' ' . (string)$item->itemDescription->technicalData;
                 break;
 
             case 'itemDescription':
             default:
-                $description = $item->itemDescription->description;
+                $description = (string)$item->itemDescription->description;
                 break;
         }
 
