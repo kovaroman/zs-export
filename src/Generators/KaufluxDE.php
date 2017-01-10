@@ -141,6 +141,8 @@ class KaufluxDE extends CSVGenerator
                     $shippingCost = '';
                 }
 
+                $imageList = $this->getImageList($item, $settings);
+
 				$data = [
 					'GroupID' 			=> $item->itemBase->id,
 					'BestellNr' 		=> $this->elasticExportHelper->generateSku($item, 116, (string)$item->variationMarketStatus->sku),
@@ -156,9 +158,9 @@ class KaufluxDE extends CSVGenerator
 					'KurzText' 			=> $this->elasticExportHelper->getPreviewText($item, $settings),
 					'DetailText' 		=> $this->elasticExportHelper->getDescription($item, $settings) . ' ' . $this->getPropertyDescription($item, $settings),
 					'Keywords' 			=> $item->itemDescription->keywords,
-					'Bild1' 			=> $this->getImageByNumber($item, $settings, 1),
-					'Bild2' 			=> $this->getImageByNumber($item, $settings, 2),
-					'Bild3' 			=> $this->getImageByNumber($item, $settings, 3),
+					'Bild1' 			=> count($imageList) > 0 && array_key_exists(0, $imageList) ? $imageList[0] : '',
+					'Bild2' 			=> count($imageList) > 0 && array_key_exists(1, $imageList) ? $imageList[1] : '',
+					'Bild3' 			=> count($imageList) > 0 && array_key_exists(2, $imageList) ? $imageList[2] : '',
 					'Gewicht' 			=> $item->variationBase->weightG,
 					'Preis' 			=> number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', ''),
 					'MwSt' 				=> $item->variationRetailPrice->vatValue,
@@ -242,26 +244,6 @@ class KaufluxDE extends CSVGenerator
 		}
 
 		return $this->itemPropertyCache[$item->itemBase->id];
-	}
-
-	/**
-	 * @param Record $item
-	 * @param KeyValue $settings
-	 * @param int $number
-	 * @return string
-	 */
-	private function getImageByNumber(Record $item, KeyValue $settings, int $number):string
-	{
-		$imageList = $this->getImageList($item, $settings);
-
-		if(count($imageList) > 0 && array_key_exists($number, $imageList))
-		{
-			return $imageList[$number];
-		}
-		else
-		{
-			return '';
-		}
 	}
 
 	/**

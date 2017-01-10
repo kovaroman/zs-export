@@ -80,24 +80,19 @@ class KaufluxDE extends ResultFields
                 'params' => [
                     'itemImages'                                       => [
                         'type'                 => 'item', // all images
-                        'fileType'             => ['gif', 'jpeg', 'jpg', 'png'],
                         'imageType'            => ['internal'],
                         'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 116,
                     ],
                     'variationImages'                    => [
                         'type'                 => 'variation', // current variation images
-                        'fileType'             => ['gif', 'jpeg', 'jpg', 'png'],
                         'imageType'            => ['internal'],
                         'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 116,
                     ],
                 ],
                 'fields' => [
-                    'imageId',
                     'type',
-                    'fileType',
                     'path',
                     'position',
-                    'attributeValueId',
                 ],
             ],
 
