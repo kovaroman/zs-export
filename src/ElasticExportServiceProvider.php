@@ -7,6 +7,8 @@ use Plenty\Plugin\DataExchangeServiceProvider;
 
 class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
+    const RAKUTEN_DE = 'RakutenDE';
+
 	public function register()
 	{
 	}
@@ -46,12 +48,25 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 
 		foreach ($formats as $format)
 		{
-			$container->add(
-				$format,
-				'ElasticExport\ResultFields\\'.$format,
-				'ElasticExport\Generators\\'.$format,
-				'ElasticExport\Filters\\' . $format
-			);
+            //todo richtige weiche einbauen
+            if($format == self::RAKUTEN_DE)
+            {
+                $container->add(
+                    $format,
+                    'ElasticExport\ES_ResultFields\\'.$format,
+                    'ElasticExport\Generators\\'.$format,
+                    'ElasticExport\Filters\\' . $format
+                );
+            }
+            else
+            {
+                $container->add(
+                    $format,
+                    'ElasticExport\ResultFields\\'.$format,
+                    'ElasticExport\Generators\\'.$format,
+                    'ElasticExport\Filters\\' . $format
+                );
+            }
 		}
 	}
 }
