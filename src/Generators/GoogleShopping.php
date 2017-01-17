@@ -209,7 +209,7 @@ class GoogleShopping extends CSVGenerator
 					'product_type'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, (string)$settings->get('lang'), (int)$settings->get('plentyId')),
 					'link'						=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
 					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
-					'condition'					=> $this->getCondition($item->itemBase->condition),
+					'condition'					=> $this->getCondition($item->itemBase->apiCondition),
 					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'price'						=> $variationPrice,
 					'sale_price'				=> $salePrice,
@@ -217,10 +217,10 @@ class GoogleShopping extends CSVGenerator
 					'gtin'						=> $this->elasticExportHelper->getBarcodeByType($item, $settings->get('barcode')),
 					'isbn'						=> $this->elasticExportHelper->getBarcodeByType($item, ElasticExportHelper::BARCODE_ISBN),
 					'mpn'						=> $item->variationBase->model,
-					'color'						=> $variationAttributes['color'][0],
-					'size'						=> $variationAttributes['size'][0],
-					'material'					=> $variationAttributes['material'][0],
-					'pattern'					=> $variationAttributes['pattern'][0],
+					'color'						=> $variationAttributes[self::CHARACTER_TYPE_COLOR],
+					'size'						=> $variationAttributes[self::CHARACTER_TYPE_SIZE],
+					'material'					=> $variationAttributes[self::CHARACTER_TYPE_MATERIAL],
+					'pattern'					=> $variationAttributes[self::CHARACTER_TYPE_PATTERN],
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> $shipping,
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
@@ -255,11 +255,11 @@ class GoogleShopping extends CSVGenerator
      * @param  string   $property
      * @return string
      */
-    private function getProperty(Record $item, string $property):string
+    private function getProperty(Record $item, string $propertyType):string
     {
         $itemPropertyList = $this->getItemPropertyList($item);
 
-        switch ($property)
+        switch ($propertyType)
         {
             case self::CHARACTER_TYPE_GENDER:
                 $allowedList = [
@@ -318,11 +318,14 @@ class GoogleShopping extends CSVGenerator
                     'A+++',
                 ];
                 break;
+
+			default:
+				$allowedList = array();
         }
 
-        if(array_key_exists($property, $itemPropertyList) && in_array($itemPropertyList[$property], $allowedList))
+        if(array_key_exists($propertyType, $itemPropertyList) && (count($allowedList) <= 0 || in_array($itemPropertyList[$propertyType], $allowedList)))
         {
-            return $itemPropertyList[$property];
+			return $itemPropertyList[$propertyType];
         }
 
         return '';
@@ -378,7 +381,7 @@ class GoogleShopping extends CSVGenerator
                     {
                         if((string) $data['characterValueType'] == 'selection')
                         {
-                            $propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterValue'], 'de');
+                            $propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterItemId'], 'de');
                             if($propertySelection instanceof PropertySelection)
                             {
                                 $list[(string) $data['externalComponent']] = (string) $propertySelection->name;
@@ -409,9 +412,10 @@ class GoogleShopping extends CSVGenerator
         $conditionList = [
             0 => 'new',
             1 => 'used',
-            2 => 'new',
-            3 => 'new',
-            4 => 'refurbished',
+            2 => 'used',
+            3 => 'used',
+            4 => 'used',
+            5 => 'refurbished'
         ];
 
         if (array_key_exists($conditionId, $conditionList))
@@ -548,6 +552,7 @@ class GoogleShopping extends CSVGenerator
 	 */
     private function getVariationAttributes(Record $item):array
     {
+		$list = [];
 		$variationAttributes = [];
 
 		foreach($item->variationAttributeValueList as $variationAttribute)
@@ -561,7 +566,31 @@ class GoogleShopping extends CSVGenerator
 			}
 		}
 
-		return $variationAttributes;
+		$typeList = array(
+			self::CHARACTER_TYPE_COLOR,
+			self::CHARACTER_TYPE_SIZE,
+			self::CHARACTER_TYPE_PATTERN,
+			self::CHARACTER_TYPE_MATERIAL
+		);
+
+		foreach ($typeList as $type)
+		{
+			$property = $this->getProperty($item, $type);
+			if (strlen(trim($property)) > 0)
+			{
+				$list[$type] = trim($property);
+			}
+			elseif (strlen(trim($variationAttributes[$type][0])) > 0)
+			{
+				$list[$type] = trim($variationAttributes[$type][0]);
+			}
+			else
+			{
+				$list[$type] = '';
+			}
+		}
+
+		return $list;
 	}
 
 	/**

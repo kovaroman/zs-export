@@ -191,7 +191,7 @@ class RakutenDE extends CSVGenerator
 
 					foreach ($variation->variationAttributeValueList as $attribute)
 					{
-						$attributeNameCombination[$variation->itemBase->id][] = $attribute->attributeId;
+						$this->attributeNameCombination[$variation->itemBase->id][] = $attribute->attributeId;
 					}
 				}
 
