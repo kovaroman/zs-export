@@ -33,6 +33,7 @@ use Plenty\Modules\Order\Shipping\Countries\Contracts\CountryRepositoryContract;
 use Plenty\Modules\Order\Shipping\Countries\Models\Country;
 use Plenty\Modules\System\Contracts\WebstoreRepositoryContract;
 use Plenty\Modules\System\Models\Webstore;
+use Plenty\Modules\Item\VariationSku\Contracts\VariationSkuRepositoryContract;
 
 /**
  * Class ElasticExportHelper
@@ -140,6 +141,11 @@ class ElasticExportHelper
 	private $marketAttributeHelperRepository;
 
     /**
+     * @var VariationSkuRepositoryContract $variationSkuRepository
+     */
+    private $variationSkuRepository;
+
+    /**
      * ElasticExportHelper constructor.
      *
      * @param CategoryBranchRepositoryContract $categoryBranchRepository
@@ -156,6 +162,7 @@ class ElasticExportHelper
 	 * @param MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository
 	 * @param MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository
 	 * @param MarketAttributeHelperRepositoryContract $marketAttributeHelperRepository
+     * @param VariationSkuRepositoryContract $variationSkuRepository
      */
     public function __construct(CategoryBranchRepositoryContract $categoryBranchRepository,
                                 UnitNameRepositoryContract $unitNameRepository,
@@ -171,7 +178,8 @@ class ElasticExportHelper
 								MarketItemHelperRepositoryContract $marketItemHelperRepository,
 								MarketCategoryHelperRepositoryContract $marketCategoryHelperRepository,
 								MarketPropertyHelperRepositoryContract $marketPropertyHelperRepository,
-								MarketAttributeHelperRepositoryContract $marketAttributeHelperRepository
+								MarketAttributeHelperRepositoryContract $marketAttributeHelperRepository,
+                                VariationSkuRepositoryContract $variationSkuRepository
     )
     {
         $this->categoryBranchRepository = $categoryBranchRepository;
@@ -189,6 +197,7 @@ class ElasticExportHelper
 		$this->marketCategoryHelperRepository = $marketCategoryHelperRepository;
 		$this->marketPropertyHelperRepository = $marketPropertyHelperRepository;
 		$this->marketAttributeHelperRepository = $marketAttributeHelperRepository;
+        $this->variationSkuRepository = $variationSkuRepository;
     }
 
     /**
@@ -223,6 +232,37 @@ class ElasticExportHelper
     }
 
     /**
+     * Get name.
+     *
+     * @param  array $item
+     * @param  KeyValue  $settings
+     * @param  int $defaultNameLength
+     * @return string
+     */
+    public function getEsName($item, KeyValue $settings, int $defaultNameLength = 0):string
+    {
+        $name = '';
+
+        switch($settings->get('nameId'))
+        {
+            case 3:
+                $name = (string)$item['data']['texts'][0]['name3'];
+                break;
+
+            case 2:
+                $name = (string)$item['data']['texts'][0]['name2'];
+                break;
+
+            case 1:
+            default:
+                $name = (string)$item['data']['texts'][0]['name1'];
+                break;
+        }
+
+        return $this->cleanName($name, (int)$settings->get('nameMaxLength') ? (int)$settings->get('nameMaxLength') : (int)$defaultNameLength);
+    }
+
+    /**
      * Clean name to a defined length. If maxLength is 0 than named is returned intact.
      * @param  string 	$name
      * @param  int 		$maxLength
@@ -250,6 +290,31 @@ class ElasticExportHelper
     public function getTechnicalData(Record $item, KeyValue $settings):string
     {
         $technicalData = (string)$item->itemDescription->technicalData;
+
+        $technicalData = $this->convertUrl($technicalData, $settings);;
+
+        $technicalData = $this->cleanText($technicalData);
+
+        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $technicalData = strip_tags($technicalData, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
+        }
+
+        $technicalData = html_entity_decode($technicalData);
+
+        return $technicalData;
+    }
+
+    /**
+     * Get technical data.
+     *
+     * @param array $item
+     * @param KeyValue $settings
+     * @return string
+     */
+    public function getEsTechnicalData($item, KeyValue $settings):string
+    {
+        $technicalData = (string)$item['data']['texts'][0]['technicalData'];
 
         $technicalData = $this->convertUrl($technicalData, $settings);;
 
@@ -371,6 +436,57 @@ class ElasticExportHelper
     }
 
     /**
+     * Get description.
+     *
+     * @param  array        $item
+     * @param  KeyValue      $settings
+     * @param  int           $defaultDescriptionLength
+     * @return string
+     */
+    public function getEsDescription($item, KeyValue $settings, int $defaultDescriptionLength = 0):string
+    {
+        switch($settings->get('descriptionType'))
+        {
+            case 'itemShortDescription':
+                $description = (string)$item['data']['texts'][0]['shortDescription'];
+                break;
+
+            case 'technicalData':
+                $description = (string)$item['data']['texts'][0]['technicalData'];
+                break;
+
+            case 'itemDescriptionAndTechnicalData':
+                $description = (string)$item['data']['texts'][0]['description'] . ' ' . (string)$item['data']['texts'][0]['technicalData'];
+                break;
+
+            case 'itemDescription':
+            default:
+                $description = (string)$item['data']['texts'][0]['description'];
+                break;
+        }
+
+        $description = $this->convertUrl($description, $settings);
+
+        $description = $this->cleanText($description);
+
+        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
+        }
+
+        $description = html_entity_decode($description);
+
+        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
+
+        if($descriptionLength <= 0)
+        {
+            return $description;
+        }
+
+        return substr($description, 0, $descriptionLength);
+    }
+
+    /**
      * Converts relative image url paths to absolute paths
      *
      * @param string $text
@@ -420,6 +536,24 @@ class ElasticExportHelper
 		}
 		return $this->marketItemHelperRepository->getAvailability($item->variationBase->availability, $settings->get('lang'), $returnAvailabilityName);
 	}
+
+    /**
+     * Get variation availability days.
+     * @param  array   $item
+     * @param  KeyValue $settings
+     * @param  bool 	$returnAvailabilityName = true
+     * @return string
+     */
+    public function getEsAvailability($item, KeyValue $settings, bool $returnAvailabilityName = true):string
+    {
+        if($settings->get('transferItemAvailability') == self::TRANSFER_ITEM_AVAILABILITY_YES)
+        {
+            $availabilityIdString = 'itemAvailability' . $item['data']['variation']['availability']['id'];
+
+            return (string)$settings->get($availabilityIdString);
+        }
+        return $this->marketItemHelperRepository->getAvailability($item['data']['variation']['availability']['id'], $settings->get('lang'), $returnAvailabilityName);
+    }
 
     /**
      * Get the item URL.
@@ -645,6 +779,21 @@ class ElasticExportHelper
     }
 
     /**
+     * @param float $price
+     * @param KeyValue $settings
+     * @return float
+     */
+    public function getEsRecommendedRetailPrice($price, KeyValue $settings):float
+    {
+        if($settings->get('transferRrp') == self::TRANSFER_RRP_YES)
+        {
+            return $price;
+        }
+
+        return 0.00;
+    }
+
+    /**
      * returns the specialOfferPrice of the given variation if transferOfferPrice is set
      * @param Record $item
      * @param KeyValue $settings
@@ -655,6 +804,21 @@ class ElasticExportHelper
         if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
         {
             return (float)$item->variationSpecialOfferRetailPrice->retailPrice;
+        }
+
+        return 0.00;
+    }
+
+    /**
+     * @param float $price
+     * @param KeyValue $settings
+     * @return float
+     */
+    public function getEsSpecialPrice($price, KeyValue $settings):float
+    {
+        if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
+        {
+            return (float)$price;
         }
 
         return 0.00;
@@ -688,6 +852,33 @@ class ElasticExportHelper
     }
 
     /**
+     * @param array    $item
+     * @param KeyValue  $settings
+     * @param string    $delimiter
+     * @return string
+     */
+    public function getEsAttributeName($item, KeyValue $settings, string $delimiter = '|'):string
+    {
+        $values = [];
+
+        if(!is_null($item['data']['attributes'][0]['attributeValueSetId']))
+        {
+            foreach($item['data']['attributes'] as $attribute)
+            {
+                $attributeName = $this->marketAttributeHelperRepository->getAttributeName($attribute['attributeId'], $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                if(strlen($attributeName) > 0)
+                {
+                    $values[] = $attributeName;
+                }
+            }
+        }
+
+        return implode($delimiter, $values);
+    }
+
+
+    /**
      * Get the attribute value set short frontend name. Ex. blue, XL
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -710,6 +901,54 @@ class ElasticExportHelper
                 if(strlen($attributeValueName) > 0)
                 {
                     $unsortedValues[$attribute->attributeId] = $attributeValueName;
+                    $i++;
+                }
+            }
+
+            /**
+             * sort the attribute value names depending on the order of the $attributeNameCombination
+             */
+            if(is_array($attributeNameCombination) && count($attributeNameCombination) > 0)
+            {
+                $j = 0;
+                while($i > 0)
+                {
+                    $values[] = $unsortedValues[$attributeNameCombination[$j]];
+                    $j++;
+                    $i--;
+                }
+            }
+            else
+            {
+                $values = $unsortedValues;
+            }
+        }
+
+        return implode($delimiter, $values);
+    }
+
+    /**
+     * @param  array   $item
+     * @param  KeyValue $settings
+     * @param  string $delimiter
+     * @param  array $attributeNameCombination
+     * @return string
+     */
+    public function getEsAttributeValueSetShortFrontendName($item, KeyValue $settings, string $delimiter = ', ', array $attributeNameCombination = null):string
+    {
+        $values = [];
+        $unsortedValues = [];
+
+        if($item['attributes']['attributeValueSetId'])
+        {
+            $i = 0;
+            foreach($item['attributes'] as $attribute)
+            {
+                $attributeValueName = $this->marketAttributeHelperRepository->getAttributeValueName($attribute['attributeId'], $attribute['valueId'], $settings->get('lang') ? $settings->get('lang') : 'de');
+
+                if(strlen($attributeValueName) > 0)
+                {
+                    $unsortedValues[$attribute['attributeId']] = $attributeValueName;
                     $i++;
                 }
             }
@@ -923,6 +1162,41 @@ class ElasticExportHelper
         return $list;
     }
 
+    /**
+     * @param array $item
+     * @param KeyValue $settings
+     * @param string $imageType = 'normal'
+     * @return array
+     */
+    public function getEsImageList($item, KeyValue $settings, string $imageType = 'normal'):array
+    {
+        $list = [];
+
+        if(array_key_exists('item', $item['data']['images']))
+        {
+            foreach($item['data']['images']['all'] as $image)
+            {
+                $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
+            }
+        }
+        if(array_key_exists('item', $item['data']['images']))
+        {
+            foreach($item['data']['images']['item'] as $image)
+            {
+                $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
+            }
+        }
+        if(array_key_exists('variation', $item['data']['images']))
+        {
+            foreach($item['data']['images']['variation'] as $image)
+            {
+                $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
+            }
+        }
+
+        return $list;
+    }
+
 	/**
 	 * Get item characters that match referrer from settings and a given component id.
 	 * @param  Record   $item
@@ -1027,6 +1301,24 @@ class ElasticExportHelper
             if($variationBarcode->barcodeType == $barcodeType || $barcodeType == 'FirstBarcode')
             {
                 return (string) $variationBarcode->code;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * @param  array   $item
+     * @param  string   $barcodeType
+     * @return string
+     */
+    public function getEsBarcodeByType($item, string $barcodeType):string
+    {
+        foreach($item['data']['barcodes'] as $variationBarcode)
+        {
+            if($variationBarcode['type'] == $barcodeType || $barcodeType == 'FirstBarcode')
+            {
+                return (string) $variationBarcode['code'];
             }
         }
 
@@ -1282,6 +1574,30 @@ class ElasticExportHelper
 			$accountId,
 			$setLastExportedTimestamp
 		);
+    }
+
+    /**
+     * @param int $variationId
+     * @param float $marketId
+     * @param int $accountId
+     * @param string|null $sku
+     * @param bool $setLastExportedTimestamp
+     * @return string
+     */
+    public function generateEsSku(int $variationId,
+                                float $marketId,
+                                int $accountId = 0,
+                                string $sku = null,
+                                bool $setLastExportedTimestamp = true
+    ):string
+    {
+        return $this->variationSkuRepository->generateSku(
+            $variationId,
+            $marketId,
+            $accountId,
+            $sku,
+            $setLastExportedTimestamp
+        );
     }
 
 	/**

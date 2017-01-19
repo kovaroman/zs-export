@@ -41,8 +41,23 @@ class RakutenDE extends ResultFields
 
         $reference = $settings->get('referrerId') ? $settings->get('referrerId') : 106;
 
-        $itemDescriptionFields = ['urlContent'];
-        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';
+        $itemDescriptionFields = ['texts.urlPath'];
+
+        switch($settings->get('nameId'))
+        {
+            case 1:
+                $itemDescriptionFields[] = 'texts.name1';
+                break;
+            case 2:
+                $itemDescriptionFields[] = 'texts.name2';
+                break;
+            case 3:
+                $itemDescriptionFields[] = 'texts.name3';
+                break;
+            default:
+                $itemDescriptionFields[] = 'texts.name1';
+                break;
+        }
 
 		if($settings->get('descriptionType') == 'itemShortDescription'
             || $settings->get('previewTextType') == 'itemShortDescription')
@@ -90,9 +105,6 @@ class RakutenDE extends ResultFields
                 'variation.model',
                 'variation.isMain',
 
-                //text
-                implode(', ', $itemDescriptionFields),
-
                 //images
                 'images.all.type',
                 'images.all.path',
@@ -113,150 +125,21 @@ class RakutenDE extends ResultFields
                 'barcodes.type',
 
                 //attributes
+                'attributes.attributeValueSetId',
                 'attributes.attributeId',
                 'attributes.valueId',
+
             ],
 
             [
                 $imageMutator,
                 $languageMutator
             ],
-//			'itemBase'=> [
-//				'id', done
-//				'producerId', done
-//				'free1',   doesnt exist in elastic search   todo grab from idl
-//				'free2',   doesnt exist in elastic search   todo grab from idl
-//				'free3',   doesnt exist in elastic search   todo grab from idl
-//				'free4',   doesnt exist in elastic search   todo grab from idl
-//				'free5',   doesnt exist in elastic search   todo grab from idl
-//				'free6',   doesnt exist in elastic search   todo grab from idl
-//				'free7',   doesnt exist in elastic search   todo grab from idl
-//				'free8',   doesnt exist in elastic search   todo grab from idl
-//				'free9',   doesnt exist in elastic search   todo grab from idl
-//				'free10',  doesnt exist in elastic search   todo grab from idl
-//				'free11',  doesnt exist in elastic search   todo grab from idl
-//				'free12',  doesnt exist in elastic search   todo grab from idl
-//				'free13',  doesnt exist in elastic search   todo grab from idl
-//				'free14',  doesnt exist in elastic search   todo grab from idl
-//				'free15',  doesnt exist in elastic search   todo grab from idl
-//				'free16',  doesnt exist in elastic search   todo grab from idl
-//				'free17',  doesnt exist in elastic search   todo grab from idl
-//				'free18',  doesnt exist in elastic search   todo grab from idl
-//				'free19',  doesnt exist in elastic search   todo grab from idl
-//				'free20',  doesnt exist in elastic search   todo grab from idl
-//				'tradoriaCategory'  done
-//			],
-//
-//			'itemDescription' => [
-//                'params' => [
-//                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
-//                ],
-//                'fields' => $itemDescriptionFields, done
-//            ],
-//
-//			'itemPropertyList' => [
-//				'params' => [],
-//				'fields' => [
-//					'propertyId',       //research
-//					'propertyValue',    //research
-//				]
-//			],
-//
-//			'variationImageList' => [
-//				'params' => [
-//					'type' => 'all',
-//                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
-//				],
-//				'fields' => [
-//					'type',     done
-//					'path',     done
-//					'position', done
-//				]
-//			],
-//
-//			'variationBase' => [
-//				'availability',             done
-//				'attributeValueSetId',      done
-//				'content',                  done
-//				'id',                       done
-//				'limitOrderByStockSelect',  done
-//				'model',                    done
-//				'unitId',                   done
-//				'vatId',                    done
-//              'primaryVariation',         done
-//			],
-//
-//			'variationRecommendedRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
-//				],
-//				'fields' => [
-//					'price',    //todo grab from idl
-//				],
-//			],
-//
-//            'variationRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
-//				],
-//				'fields' => [
-//					'price',    //todo grab from idl
-//				],
-//            ],
-//
-//			'variationSpecialOfferRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
-//				],
-//				'fields' => [
-//					'retailPrice',  //todo grab from idl
-//				],
-//			],
-//
-//			'variationStandardCategory' => [
-//				'params' => [
-//					'plentyId' => $settings->get('plentyId'),
-//				],
-//				'fields' => [
-//					'categoryId',   done
-//				],
-//			],
-//
-//			'variationBarcodeList' => [
-//				'params' => [
-//					'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
-//				],
-//				'fields' => [
-//					'code',             done
-//					'barcodeType',      done
-//				]
-//			],
-//
-//			'variationMarketStatus' => [
-//				'params' => [
-//					'marketId' => 106
-//				],
-//				'fields' => [
-//					'sku'       //done
-//				]
-//			],
-//
-//			'variationStock' => [
-//				'params' => [
-//					'type' => 'virtual'
-//				],
-//				'fields' => [
-//					'stockNet'   //todo grab from idl
-//				]
-//			],
-//
-//			'variationAttributeValueList' => [
-//				'attributeId',      //done
-//				'attributeValueId'  //done
-//			]
-
 		];
-
+        foreach($itemDescriptionFields as $itemDescriptionField)
+        {
+            $fields[0][] = $itemDescriptionField;
+        }
 
 		return $fields;
 	}
