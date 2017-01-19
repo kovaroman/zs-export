@@ -939,10 +939,10 @@ class ElasticExportHelper
         $values = [];
         $unsortedValues = [];
 
-        if($item['attributes']['attributeValueSetId'])
+        if($item['data']['attributes'][0]['attributeValueSetId'])
         {
             $i = 0;
-            foreach($item['attributes'] as $attribute)
+            foreach($item['data']['attributes'] as $attribute)
             {
                 $attributeValueName = $this->marketAttributeHelperRepository->getAttributeValueName($attribute['attributeId'], $attribute['valueId'], $settings->get('lang') ? $settings->get('lang') : 'de');
 
