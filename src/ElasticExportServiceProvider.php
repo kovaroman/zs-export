@@ -4,6 +4,7 @@ namespace ElasticExport;
 
 use Plenty\Modules\DataExchange\Services\ExportPresetContainer;
 use Plenty\Plugin\DataExchangeServiceProvider;
+use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchAvailibilityRepositoryContract;
 
 class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
@@ -46,10 +47,19 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'TracdelightCOM',            
 		];
 
+        /**
+         * @var VariationElasticSearchAvailibilityRepositoryContract $variationElasticSearchAvailabilityRepository
+         */
+        $variationElasticSearchAvailabilityRepository = pluginApp(VariationElasticSearchAvailibilityRepositoryContract::class);
+
+        $ready = $variationElasticSearchAvailabilityRepository->isReady();
+        $isAvailableForElasticSearch = $variationElasticSearchAvailabilityRepository->isAvailable();
+        $esReadyMarketplaces = $this->getEsReadyMarketPlaces();
+
 		foreach ($formats as $format)
 		{
-            //todo richtige weiche einbauen
-            if($format == self::RAKUTEN_DE)
+            if(is_array($esReadyMarketplaces) && in_array($format, $esReadyMarketplaces) &&
+                $isAvailableForElasticSearch === true)
             {
                 $container->add(
                     $format,
@@ -69,4 +79,17 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             }
 		}
 	}
+
+    /**
+     * Get a List of Marketplaceformats which are already adjusted to work with ElasticSearch
+     * @return array
+     */
+	private function getEsReadyMarketPlaces()
+    {
+        $marketplaces = array(
+            self::RAKUTEN_DE,
+        );
+
+        return $marketplaces;
+    }
 }
