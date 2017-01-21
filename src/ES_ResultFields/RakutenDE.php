@@ -153,7 +153,8 @@ class RakutenDE extends ResultFields
 
             [
                 $imageMutator,
-                $languageMutator
+                $languageMutator,
+                $skuMutator
             ],
 		];
         foreach($itemDescriptionFields as $itemDescriptionField)
