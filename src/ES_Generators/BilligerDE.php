@@ -139,7 +139,7 @@ class BilligerDE extends CSVGenerator
                 continue;
             }
 
-            $dlvCost = $this->elasticExportHelper->getShippingCost($variation['data']['item']['id'], $settings);
+            $dlvCost = $this->elasticExportHelper->getEsShippingCost($variation['data']['item']['id'], $settings);
 
             if(!is_null($dlvCost))
             {
