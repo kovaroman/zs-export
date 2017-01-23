@@ -1373,9 +1373,9 @@ class ElasticExportHelper
     {
         $list = [];
 
-        if(array_key_exists('item', $item['data']['images']))
+        if(array_key_exists('variation', $item['data']['images']))
         {
-            foreach($item['data']['images']['all'] as $image)
+            foreach($item['data']['images']['variation'] as $image)
             {
                 $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
             }
@@ -1387,9 +1387,9 @@ class ElasticExportHelper
                 $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
             }
         }
-        if(array_key_exists('variation', $item['data']['images']))
+        if(array_key_exists('all', $item['data']['images']))
         {
-            foreach($item['data']['images']['variation'] as $image)
+            foreach($item['data']['images']['all'] as $image)
             {
                 $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
             }

@@ -10,6 +10,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
     const RAKUTEN_DE    = 'RakutenDE';
     const BILLIGER_DE   = 'BilligerDE';
+    const CDISCOUNT_COM = 'CdiscountCOM';
 
 	public function register()
 	{
@@ -89,7 +90,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
     {
         $marketplaces = array(
             self::RAKUTEN_DE,
-            self::BILLIGER_DE
+            self::BILLIGER_DE,
+            self::CDISCOUNT_COM,
         );
 
         return $marketplaces;
