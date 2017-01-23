@@ -77,7 +77,7 @@ class CdiscountCOM extends CSVGenerator
     }
     
     /**
-     * @param $resultData
+     * @param array $resultData
      * @param array $formatSettings
      */
     protected function generateContent($resultData, array $formatSettings = [])

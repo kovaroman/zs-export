@@ -39,10 +39,10 @@ class BasicPriceSearchEngine extends CSVGenerator
     }
 
     /**
-     * @param RecordList $resultData
+     * @param array $resultData
 	 * @param array $formatSettings
      */
-    protected function generateContent( $resultData, array $formatSettings = [])
+    protected function generateContent($resultData, array $formatSettings = [])
 	{
 		if(is_array($resultData) && count($resultData['documents']) > 0)
 		{
