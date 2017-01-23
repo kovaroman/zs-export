@@ -594,6 +594,44 @@ class ElasticExportHelper
 	}
 
     /**
+     * Get the item URL.
+     * @param  array $item
+     * @param  KeyValue $settings
+     * @param  bool $addReferrer = true  Choose if referrer id should be added as parameter.
+     * @param  bool $useIntReferrer = false Choose if referrer id should be used as integer.
+     * @param  bool $useHttps = true Choose if https protocol should be used.
+     * @return string Item url.
+     */
+    public function getEsUrl($item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false, bool $useHttps = true):string
+    {
+        if($settings->get('itemUrl') == self::ITEM_URL_NO)
+        {
+            return '';
+        }
+
+        $urlParams = [];
+
+        $link = $this->urlBuilderRepository->getItemUrl($item['data']['item']['id'], $settings->get('plentyId'), $item['data']['texts']['urlPath'], $settings->get('lang') ? $settings->get('lang') : 'de');
+
+        if($addReferrer && $settings->get('referrerId'))
+        {
+            $urlParams[] = 'ReferrerID=' . ($useIntReferrer ? (int) $settings->get('referrerId') : $settings->get('referrerId'));
+        }
+
+        if(strlen($settings->get('urlParam')))
+        {
+            $urlParams[] = $settings->get('urlParam');
+        }
+
+        if (is_array($urlParams) && count($urlParams) > 0)
+        {
+            $link .= '?' . implode('&', $urlParams);
+        }
+
+        return $link;
+    }
+
+    /**
      * Get category branch for a custom category id.
      * @param  int $categoryId
      * @param  string $lang
@@ -733,6 +771,60 @@ class ElasticExportHelper
                 elseif(is_null($mopId))
                 {
                     return $this->calculateShippingCost($item->itemBase->id, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get shipping cost.
+     * @param  int $itemId
+     * @param  KeyValue $settings
+     * @param  int|null  $mobId
+     * @return float|null
+     */
+    public function getEsShippingCost($itemId, KeyValue $settings, int $mopId = null)
+    {
+        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
+        {
+            return (float) $settings->get('shippingCostFlat');
+        }
+
+        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
+        {
+            $defaultShipping = $this->getDefaultShipping($settings);
+
+            if( $defaultShipping instanceof DefaultShipping &&
+                $defaultShipping->shippingDestinationId)
+            {
+                if(!is_null($mopId) && $mopId == $defaultShipping->paymentMethod2)
+                {
+                    $paymentMethodId = $defaultShipping->paymentMethod2;
+                    return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                }
+                if(!is_null($mopId) && $mopId == $defaultShipping->paymentMethod3)
+                {
+                    $paymentMethodId = $defaultShipping->paymentMethod3;
+                    return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                }
+                $paymentMethodId = $defaultShipping->paymentMethod2;
+
+                // 0 - is always "payment in advance" so we use always the second and third payment methods from the default shipping
+                if($settings->get('shippingCostMethodOfPayment') == 2)
+                {
+                    $paymentMethodId = $defaultShipping->paymentMethod3;
+                }
+                if(!is_null($mopId) && $mopId >= 0)
+                {
+                    if($mopId == $paymentMethodId)
+                    {
+                        return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
+                    }
+                }
+                elseif(is_null($mopId))
+                {
+                    return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
                 }
             }
         }
@@ -1084,6 +1176,80 @@ class ElasticExportHelper
         }
 	}
 
+    /**
+     * Get base price.
+     * @param  array    $item
+     * @param  array    $idlItem
+     * @param  KeyValue $settings
+     * @param  string   $separator	= '/'
+     * @param  bool     $compact    = false
+     * @param  bool     $dotPrice   = false
+     * @param  string   $currency   = ''
+     * @param  float    $price      = 0.0
+     * @param  bool     $addUnit    = true
+     * @return string
+     */
+    public function getEsBasePrice(
+        $item,
+        $idlItem,
+        KeyValue $settings,
+        string $separator = '/',
+        bool $compact = false,
+        bool $dotPrice = false,
+        string $currency = '',
+        float $price = 0.0,
+        bool $addUnit = true
+    ):string
+    {
+        $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
+        $price = $price > 0 ? $price : (float) $idlItem['variationRetailPrice.price'];
+        $lot = (int) $item['data']['unit']['content'];
+        $unitLang = $this->unitNameRepository->findByUnitId((int) $item['data']['unit']['id']);
+
+        if($unitLang instanceof UnitName)
+        {
+            $unitShortcut = $unitLang->unit->unitOfMeasurement;
+            $unitName = $unitLang->name;
+        }
+        else
+        {
+            $unitShortcut = '';
+            $unitName = '';
+        }
+
+        $basePriceDetails = $this->getBasePriceDetails($lot, $price, $unitShortcut);
+
+        if((float) $basePriceDetails['price'] <= 0 || ((int) $basePriceDetails['lot'] <= 1 && $basePriceDetails['unit'] == 'C62'))
+        {
+            return '';
+        }
+
+        if ($dotPrice == true)
+        {
+            $basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
+        }
+        else
+        {
+            $basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, ',', '');
+        }
+
+        if ($addUnit == true)
+        {
+            if ($compact == true)
+            {
+                return	'(' . (string) $basePriceDetails['price'] . $currency . $separator . (string) $basePriceDetails['lot'] . $unitShortcut . ')';
+            }
+            else
+            {
+                return	(string) $basePriceDetails['price'] . ' ' . $currency . $separator . (string) $basePriceDetails['lot'] . ' ' . $unitName;
+            }
+        }
+        else
+        {
+            return	(string) $basePriceDetails['price'];
+        }
+    }
+
 	/**
 	 * Get base price.
 	 *
@@ -1137,6 +1303,41 @@ class ElasticExportHelper
             elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image->position == 0)
             {
                 return (string)$this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Get main image.
+     * @param  array   $item
+     * @param  KeyValue $settings
+     * @param  string 	$imageType
+     * @return string
+     */
+    public function getEsMainImage($item, KeyValue $settings, string $imageType = 'normal'):string
+    {
+        foreach($item['data']['images']['variation'] as $image)
+        {
+            if($settings->get('imagePosition') == self::IMAGE_FIRST)
+            {
+                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
+            }
+            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
+            {
+                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
+            }
+        }
+        foreach($item['data']['images']['all'] as $image)
+        {
+            if($settings->get('imagePosition') == self::IMAGE_FIRST)
+            {
+                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
+            }
+            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
+            {
+                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
             }
         }
 

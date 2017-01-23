@@ -8,7 +8,8 @@ use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchAvailibilityRepos
 
 class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
-    const RAKUTEN_DE = 'RakutenDE';
+    const RAKUTEN_DE    = 'RakutenDE';
+    const BILLIGER_DE   = 'BilligerDE';
 
 	public function register()
 	{
@@ -88,6 +89,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
     {
         $marketplaces = array(
             self::RAKUTEN_DE,
+            self::BILLIGER_DE
         );
 
         return $marketplaces;
