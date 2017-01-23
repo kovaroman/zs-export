@@ -83,9 +83,9 @@ class CdiscountCOM extends ResultFields
                 'variation.widthMM',
 
                 //images
-                'images.all.type',
-                'images.all.path',
-                'images.all.position',
+                'images.item.type',
+                'images.item.path',
+                'images.item.position',
                 'images.variation.type',
                 'images.variation.path',
                 'images.variation.position',

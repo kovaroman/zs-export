@@ -162,7 +162,7 @@ class BilligerDE extends CSVGenerator
                 'image'		=> $this->elasticExportHelper->getEsMainImage($variation, $settings),
                 'dlv_time' 	=> $this->elasticExportHelper->getEsAvailability($variation, $settings, false),
                 'dlv_cost' 	=> $dlvCost,
-                'ppu' 		=> $this->elasticExportHelper->getEsBasePrice($variation, $this->idlVariations, $settings),
+                'ppu' 		=> $this->elasticExportHelper->getEsBasePrice($variation, $this->idlVariations),
                 'mpnr' 		=> $variation['data']['variation']['model'],
             ];
 

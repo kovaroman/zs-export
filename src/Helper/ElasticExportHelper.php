@@ -210,8 +210,6 @@ class ElasticExportHelper
      */
     public function getName(Record $item, KeyValue $settings, int $defaultNameLength = 0):string
 	{
-		$name = '';
-
 		switch($settings->get('nameId'))
 		{
 			case 3:
@@ -241,8 +239,6 @@ class ElasticExportHelper
      */
     public function getEsName($item, KeyValue $settings, int $defaultNameLength = 0):string
     {
-        $name = '';
-
         switch($settings->get('nameId'))
         {
             case 3:
@@ -357,6 +353,59 @@ class ElasticExportHelper
 
             case 'itemDescription':
                 $previewText = (string)$item->itemDescription->description;
+                break;
+
+            case 'dontTransfer':
+            default:
+                $previewText = '';
+                break;
+        }
+
+        $previewText = $this->convertUrl($previewText, $settings);
+
+        $previewText = $this->cleanText($previewText);
+
+        if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
+        {
+            $previewText = strip_tags($previewText, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
+        }
+
+        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
+
+        if($previewTextLength <= 0)
+        {
+            return $previewText;
+        }
+
+        return substr($previewText, 0, $previewTextLength);
+    }
+
+    /**
+     * Get preview text.
+     *
+     * @param  array        $item
+     * @param  KeyValue      $settings
+     * @param  int           $defaultPreviewTextLength
+     * @return string
+     */
+    public function getEsPreviewText($item, KeyValue $settings, int $defaultPreviewTextLength = 0):string
+    {
+        switch($settings->get('previewTextType'))
+        {
+            case 'itemShortDescription':
+                $previewText = (string)$item['data']['texts']['shortDescription'];
+                break;
+
+            case 'technicalData':
+                $previewText = (string)$item['data']['texts']['technicalData'];
+                break;
+
+            case 'itemDescriptionAndTechnicalData':
+                $previewText = (string)$item['data']['texts']['description'] . ' ' . (string)$item['data']['texts']['technicalData'];
+                break;
+
+            case 'itemDescription':
+                $previewText = (string)$item['data']['texts']['description'];
                 break;
 
             case 'dontTransfer':
@@ -698,6 +747,69 @@ class ElasticExportHelper
 
         return '';
     }
+
+    /**
+     * @param int $standardCategoryId
+     * @param KeyValue $settings
+     * @param int $categoryLevel
+     * @return string
+     */
+    public function getEsCategoryBranch($standardCategoryId, KeyValue $settings, int $categoryLevel):string
+    {
+        if($standardCategoryId <= 0)
+        {
+            return '';
+        }
+
+        $categoryBranch = $this->categoryBranchRepository->find($standardCategoryId);
+        $category = null;
+        $lang = $settings->get('lang') ? $settings->get('lang') : 'de';
+
+        if(!is_null($categoryBranch) && $categoryBranch instanceof CategoryBranch)
+        {
+            switch($categoryLevel)
+            {
+                case 1:
+                    $category = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
+                    break;
+
+                case 2:
+                    $category = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
+                    break;
+
+                case 3:
+                    $category = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
+                    break;
+
+                case 4:
+                    $category = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
+                    break;
+
+                case 5:
+                    $category = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
+                    break;
+
+                case 6:
+                    $category = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
+                    break;
+            }
+        }
+
+        if($category instanceof Category)
+        {
+            foreach($category->details as $categoryDetails)
+            {
+                if($categoryDetails->lang == $lang)
+                {
+                    return (string)$categoryDetails->name;
+                }
+            }
+        }
+
+        return '';
+    }
+
+
 
 	/**
 	 * Get category branch marketplace for a custom branch id.
@@ -1192,7 +1304,6 @@ class ElasticExportHelper
     public function getEsBasePrice(
         $item,
         $idlItem,
-        KeyValue $settings,
         string $separator = '/',
         bool $compact = false,
         bool $dotPrice = false,
@@ -1284,6 +1395,41 @@ class ElasticExportHelper
 			'unit' => (string)$unitName
 		];
 	}
+
+    /**
+     * Get base price.
+     *
+     * @param  array   $item
+     * @param  float    $price
+     * @param  KeyValue $settings
+     * @return array
+     */
+    public function getEsBasePriceList($item, float $price, KeyValue $settings):array
+    {
+        $lot = (int)$item['data']['unit']['content'];
+        $unitLang = $this->unitNameRepository->findByUnitId((int)$item['data']['unit']['id']);
+
+        if($unitLang instanceof UnitName)
+        {
+            $unitShortcut = $unitLang->unit->unitOfMeasurement;
+            $unitName = $unitLang->name;
+        }
+        else
+        {
+            $unitShortcut = '';
+            $unitName = '';
+        }
+
+        $basePriceDetails = $this->getBasePriceDetails($lot, $price, $unitShortcut);
+
+        $basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
+
+        return [
+            'lot' => (int)$basePriceDetails['lot'],
+            'price' => (float)$basePriceDetails['price'],
+            'unit' => (string)$unitName
+        ];
+    }
 
     /**
      * Get main image.

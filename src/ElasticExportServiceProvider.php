@@ -11,6 +11,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
     const RAKUTEN_DE    = 'RakutenDE';
     const BILLIGER_DE   = 'BilligerDE';
     const CDISCOUNT_COM = 'CdiscountCOM';
+    const BASICPRICESEARCHENGINE = 'BasicPriceSearchEngine';
 
 	public function register()
 	{
@@ -92,6 +93,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             self::RAKUTEN_DE,
             self::BILLIGER_DE,
             self::CDISCOUNT_COM,
+            self::BASICPRICESEARCHENGINE,
         );
 
         return $marketplaces;
