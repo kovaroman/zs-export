@@ -1449,6 +1449,29 @@ class ElasticExportHelper
         return '';
     }
 
+    /**
+     * Get item character value by backend name.
+     * @param  array $item
+     * @param KeyValue $settings
+     * @param  string $backendName
+     * @return string
+     */
+    public function getEsItemCharacterByBackendName($item, KeyValue $settings, string $backendName):string
+    {
+        foreach($item['itemPropertyList'] as $property)
+        {
+            $propertyName = $this->propertyNameRepository->findOne($property->propertyId, $settings->get('lang')? $settings->get('lang') : 'de');
+
+            if($propertyName instanceof PropertyName &&
+                $propertyName->name == $backendName)
+            {
+                return (string) $property->propertyValue;
+            }
+        }
+
+        return '';
+    }
+
 	/**
 	 * Get item characters that match referrer from settings and a given component id.
 	 * @param  Record   $item
@@ -1488,6 +1511,46 @@ class ElasticExportHelper
 
 		return $list;
 	}
+
+    /**
+     * Get item characters that match referrer from settings and a given component id.
+     * @param  array   $item
+     * @param  float   $marketId
+     * @param  int     $componentId  = null
+     * @return array
+     */
+    public function getEsItemCharactersByComponent($item, float $marketId, int $componentId = null):array
+    {
+        $marketProperties = $this->marketPropertyHelperRepository->getMarketProperty($marketId);
+
+        $list = array();
+
+        foreach($item['itemPropertyList'] as $property)
+        {
+            foreach($marketProperties as $marketProperty)
+            {
+                if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
+                {
+                    if (!is_null($componentId) && $marketProperty['component_id'] != $componentId)
+                    {
+                        continue;
+                    }
+                    $list[] = [
+                        'itemCharacterId' 	 => $property->itemPropertyId,
+                        'characterId' 		 => $property->propertyId,
+                        'characterValue' 	 => $property->propertyValue,
+                        'characterValueType' => $property->propertyValueType,
+                        'characterItemId' 	 => $marketProperty['character_item_id'],
+                        'componentId' 		 => $marketProperty['component_id'],
+                        'referrerId' 		 => $marketId,
+                        'externalComponent'  => $marketProperty['external_component'],
+                    ];
+                }
+            }
+        }
+
+        return $list;
+    }
 
     /**
      * Get barcode by a given type.
