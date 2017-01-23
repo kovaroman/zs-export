@@ -83,7 +83,7 @@ class BilligerDE extends CSVGenerator
                 /**
                  * @var \ElasticExport\ES_IDL_ResultList\RakutenDE $idlResultList
                  */
-                $idlResultList = pluginApp(\ElasticExport\ES_IDL_ResultList\RakutenDE::class);
+                $idlResultList = pluginApp(\ElasticExport\ES_IDL_ResultList\BilligerDE::class);
                 $idlResultList = $idlResultList->getResultList($variationIdList, $settings);
             }
 

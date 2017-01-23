@@ -43,7 +43,7 @@ class RakutenDE extends CSVGenerator
 	private $marketPropertyHelperRepository;
 
     /**
-     * @var array
+     * @var array $idlVariations
      */
     private $idlVariations = array();
 
