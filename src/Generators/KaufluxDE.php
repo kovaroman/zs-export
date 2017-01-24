@@ -141,7 +141,7 @@ class KaufluxDE extends CSVGenerator
                     $shippingCost = '';
                 }
 
-                $imageList = $this->getImageList($item, $settings);
+                $imageList = $this->elasticExportHelper->getImageListInOrder($item, $settings, 3, 'variationImages');
 
 				$data = [
 					'GroupID' 			=> $item->itemBase->id,
@@ -337,31 +337,4 @@ class KaufluxDE extends CSVGenerator
 
 		return true;
 	}
-
-    /**
-     * @param Record $item
-     * @param KeyValue $settings
-     */
-    private function getImageList(Record $item, KeyValue $settings)
-    {
-        $list = array();
-        foreach ($item->variationImageList['variationImages']->toArray() as $variationImage)
-        {
-            $list[] = $this->urlBuilderRepository->getImageUrl($variationImage['path'], $settings->get('plentyId'), 'normal', $variationImage['fileType'], $variationImage['type'] == 'external');
-            if(count($list) == 3)
-            {
-                return $list;
-            }
-        }
-        foreach ($item->variationImageList['itemImages']->toArray() as $variationImage)
-        {
-            $list[] = $this->urlBuilderRepository->getImageUrl($variationImage['path'], $settings->get('plentyId'), 'normal', $variationImage['fileType'], $variationImage['type'] == 'external');
-            if(count($list) == 3)
-            {
-                return $list;
-            }
-        }
-
-        return $list;
-    }
 }
