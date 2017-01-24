@@ -13,11 +13,11 @@ use Plenty\Modules\Market\Helper\Contracts\MarketPropertyHelperRepositoryContrac
 
 class RakutenDE extends CSVGenerator
 {
+	const MARKET_REFERENCE_RAKUTEN_DE = 106.00;
+
 	const PROPERTY_TYPE_ENERGY_CLASS       = 'energy_efficiency_class';
 	const PROPERTY_TYPE_ENERGY_CLASS_GROUP = 'energy_efficiency_class_group';
 	const PROPERTY_TYPE_ENERGY_CLASS_UNTIL = 'energy_efficiency_class_until';
-
-	const MARKET_REFERENZ_RAKUTEN_DE = 106.00;
 
 	/*
 	 * @var ElasticExportHelper
@@ -268,7 +268,7 @@ class RakutenDE extends CSVGenerator
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '',
-			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, self::MARKET_REFERENZ_RAKUTEN_DE, (string)$item->variationMarketStatus->sku, (int)$settings->get('marketAccountId')),
+			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, self::MARKET_REFERENCE_RAKUTEN_DE, (string)$item->variationMarketStatus->sku, (int)$settings->get('marketAccountId')),
 			'produkt_bestellbar'		=> $stockList['variationAvailable'],
 			'produktname'				=> $this->elasticExportHelper->getName($item, $settings, 150),
 			'hersteller'				=> $this->elasticExportHelper->getExternalManufacturerName($item->itemBase->producerId),
@@ -322,9 +322,9 @@ class RakutenDE extends CSVGenerator
 			'bild9'						=> $this->getImageByNumber($item, $settings, 8),
 			'bild10'					=> $this->getImageByNumber($item, $settings, 9),
 			'technical_data'			=> $this->elasticExportHelper->getTechnicalData($item, $settings),
-			'energie_klassen_gruppe'	=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENZ_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_GROUP),
-			'energie_klasse'			=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENZ_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS),
-			'energie_klasse_bis'		=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENZ_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_UNTIL),
+			'energie_klassen_gruppe'	=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENCE_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_GROUP),
+			'energie_klasse'			=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENCE_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS),
+			'energie_klasse_bis'		=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENCE_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_UNTIL),
 			'energie_klassen_bild'		=> '',
 		];
 
@@ -425,7 +425,7 @@ class RakutenDE extends CSVGenerator
 		$data = [
 			'id'						=> '',
 			'variante_zu_id'			=> '#'.$item->itemBase->id,
-			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, self::MARKET_REFERENZ_RAKUTEN_DE, (string)$item->variationMarketStatus->sku, (int)$settings->get('marketAccountId')),
+			'artikelnummer'				=> $this->elasticExportHelper->generateSku($item, self::MARKET_REFERENCE_RAKUTEN_DE, (string)$item->variationMarketStatus->sku, (int)$settings->get('marketAccountId')),
 			'produkt_bestellbar'		=> $stockList['variationAvailable'],
 			'produktname'				=> '',
 			'hersteller'				=> '',
@@ -479,9 +479,9 @@ class RakutenDE extends CSVGenerator
 			'bild9'						=> '',
 			'bild10'					=> '',
 			'technical_data'			=> '',
-			'energie_klassen_gruppe'	=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENZ_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_GROUP),
-			'energie_klasse'			=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENZ_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS),
-			'energie_klasse_bis'		=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENZ_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_UNTIL),
+			'energie_klassen_gruppe'	=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENCE_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_GROUP),
+			'energie_klasse'			=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENCE_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS),
+			'energie_klasse_bis'		=> $this->getItemPropertyByExternalComponent($item, self::MARKET_REFERENCE_RAKUTEN_DE, self::PROPERTY_TYPE_ENERGY_CLASS_UNTIL),
 			'energie_klassen_bild'		=> '',
 		];
 

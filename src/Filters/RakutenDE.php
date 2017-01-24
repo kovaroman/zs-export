@@ -8,6 +8,8 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
 
 class RakutenDE extends Filters
 {
+	const MARKET_REFERENCE_RAKUTEN_DE = 106.00;
+
     /*
 	 * @var ArrayHelper
 	 */
@@ -36,7 +38,7 @@ class RakutenDE extends Filters
             'variationVisibility.isVisibleForMarketplace' => [
 				'mandatoryOneMarketplace' => [],
 				'mandatoryAllMarketplace' => [
-					106
+					self::MARKET_REFERENCE_RAKUTEN_DE,
 				]
             ]
 		];
