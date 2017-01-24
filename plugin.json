@@ -1,8 +1,9 @@
 {
   "name": "ElasticExport",
-  "description": null,
+  "description": "This is the elastic export plugin for plentymarkets 7. The elastic export is used to create export formats for price search engines, price comparison portals, markets and affiliate service providers.",
   "namespace": "ElasticExport",
   "author": "plentymarkets",
   "type": "export",
-  "serviceProvider": "ElasticExport\\ElasticExportServiceProvider"
+  "serviceProvider": "ElasticExport\\ElasticExportServiceProvider",
+  "version": 0.1
 }

@@ -2,7 +2,7 @@
 
 # Elastic Export Plugin for plentymarkets 7
 
-This is the elastic export plugin for plentymarkets 7. The elastic export is used ti create export formats for price search engines, price comparison portals, markets and affiliate service providers.
+This is the elastic export plugin for plentymarkets 7. The elastic export is used to create export formats for price search engines, price comparison portals, markets and affiliate service providers.
 For furhter information about export formats see our [online manual](https://www.plentymarkets.co.uk/manual/data-exchange/data-formats/).
 
 ## Requirements
