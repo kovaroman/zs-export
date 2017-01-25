@@ -93,9 +93,9 @@ class BasicPriceSearchEngine extends CSVGenerator
             if(is_array($variationIdList) && count($variationIdList) > 0)
             {
                 /**
-                 * @var \ElasticExport\ES_IDL_ResultList\RakutenDE $idlResultList
+                 * @var \ElasticExport\ES_IDL_ResultList\BasicPriceSearchEngine $idlResultList
                  */
-                $idlResultList = pluginApp(\ElasticExport\ES_IDL_ResultList\RakutenDE::class);
+                $idlResultList = pluginApp(\ElasticExport\ES_IDL_ResultList\BasicPriceSearchEngine::class);
                 $idlResultList = $idlResultList->getResultList($variationIdList, $settings);
             }
 
