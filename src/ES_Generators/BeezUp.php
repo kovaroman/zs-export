@@ -121,7 +121,7 @@ class BeezUp extends CSVGenerator
                 $this->createIdlArray($idlResultList);
             }
 
-			foreach($resultData as $item)
+			foreach($resultData['documents'] as $item)
 			{
                 $variationAttributes = $this->getVariationAttributes($item, $settings);
 

@@ -112,6 +112,11 @@ class BeezUp extends ResultFields
             ],
         ];
 
+        foreach($itemDescriptionFields as $itemDescriptionField)
+        {
+            $fields[0][] = $itemDescriptionField;
+        }
+
         return $fields;
     }
 }
