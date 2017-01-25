@@ -48,10 +48,7 @@ class CdiscountCOM extends ResultFields
                 break;
         }
 
-        $itemDescriptionFields = [
-            'texts.shortDescription',
-            'texts.description',
-            'texts.technicalData'];
+        $itemDescriptionFields = array_merge($itemDescriptionFields, ['texts.shortDescription', 'texts.description', 'texts.technicalData']);
 
         /**
          * @var ImageMutator $imageMutator
