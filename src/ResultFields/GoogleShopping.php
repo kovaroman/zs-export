@@ -86,17 +86,25 @@ class GoogleShopping extends ResultFields
 				]
 			],
 
-			'variationImageList' => [
-				'params' => [
-					'type' => 'all',
-					'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
-				],
-				'fields' => [
-					'type',
-					'path',
-					'position',
-				]
-			],
+            'variationImageList' => [
+                'params' => [
+                    'itemImages' => [
+                        'type'                 => 'item', // all images
+                        'imageType'            => ['internal'],
+                        'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
+                    ],
+                    'variationImages'                    => [
+                        'type'                 => 'variation', // current variation images
+                        'imageType'            => ['internal'],
+                        'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
+                    ],
+                ],
+                'fields' => [
+                    'type',
+                    'path',
+                    'position',
+                ],
+            ],
 
 			'variationBase' => [
 				'id',
