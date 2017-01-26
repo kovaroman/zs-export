@@ -201,6 +201,8 @@ class GoogleShopping extends CSVGenerator
 
                 $basePriceComponents = $this->getBasePriceComponents($item, $settings);
 
+                $imageList = $this->elasticExportHelper->getImageListInOrder($item, $settings, 1, 'variationImages');
+
 				$data = [
 					'id' 						=> $item->variationBase->id,
 					'title' 					=> $this->elasticExportHelper->getName($item, $settings, 256),
@@ -208,7 +210,7 @@ class GoogleShopping extends CSVGenerator
 					'google_product_category'	=> $this->elasticExportHelper->getCategoryMarketplace((int)$item->variationStandardCategory->categoryId, (int)$settings->get('plentyId'), 129),
 					'product_type'				=> $this->elasticExportHelper->getCategory((int)$item->variationStandardCategory->categoryId, (string)$settings->get('lang'), (int)$settings->get('plentyId')),
 					'link'						=> $this->elasticExportHelper->getUrl($item, $settings, true, false),
-					'image_link'				=> $this->elasticExportHelper->getMainImage($item, $settings),
+					'image_link'				=> count($imageList) > 0 && array_key_exists(0, $imageList) ? $imageList[0] : '',
 					'condition'					=> $this->getCondition($item->itemBase->apiCondition),
 					'availability'				=> $this->elasticExportHelper->getAvailability($item, $settings, false),
 					'price'						=> $variationPrice,

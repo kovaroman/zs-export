@@ -93,9 +93,9 @@ class BasicPriceSearchEngine extends CSVGenerator
             if(is_array($variationIdList) && count($variationIdList) > 0)
             {
                 /**
-                 * @var \ElasticExport\ES_IDL_ResultList\RakutenDE $idlResultList
+                 * @var \ElasticExport\ES_IDL_ResultList\BasicPriceSearchEngine $idlResultList
                  */
-                $idlResultList = pluginApp(\ElasticExport\ES_IDL_ResultList\RakutenDE::class);
+                $idlResultList = pluginApp(\ElasticExport\ES_IDL_ResultList\BasicPriceSearchEngine::class);
                 $idlResultList = $idlResultList->getResultList($variationIdList, $settings);
             }
 
@@ -138,13 +138,13 @@ class BasicPriceSearchEngine extends CSVGenerator
                     'price'                 => number_format((float)$this->idlVariations[$item['id']]['variationRetailPrice.price'], 2, '.', ''),
                     'price_old'             => $rrp,
                     'weight'                => $item['data']['variation']['weightG'],
-                    'category1'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories']['id'], $settings, 1),
-                    'category2'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories']['id'], $settings, 2),
-                    'category3'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories']['id'], $settings, 3),
-                    'category4'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories']['id'], $settings, 4),
-                    'category5'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories']['id'], $settings, 5),
-                    'category6'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories']['id'], $settings, 6),
-                    'category_concat'       => $this->elasticExportHelper->getCategory((int)$item['data']['defaultCategories']['id'], $settings->get('lang'), $settings->get('plentyId')),
+                    'category1'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories'][0]['id'], $settings, 1),
+                    'category2'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories'][0]['id'], $settings, 2),
+                    'category3'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories'][0]['id'], $settings, 3),
+                    'category4'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories'][0]['id'], $settings, 4),
+                    'category5'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories'][0]['id'], $settings, 5),
+                    'category6'             => $this->elasticExportHelper->getEsCategoryBranch($item['data']['defaultCategories'][0]['id'], $settings, 6),
+                    'category_concat'       => $this->elasticExportHelper->getCategory((int)$item['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
                     'image_url_preview'     => $this->getImages($item, $settings, ';', 'preview'),
                     'image_url'             => $this->elasticExportHelper->getEsMainImage($item, $settings),
                     'shipment_and_handling' => $shipmentAndHandling,

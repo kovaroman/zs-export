@@ -12,7 +12,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
     const BILLIGER_DE   = 'BilligerDE';
     const CDISCOUNT_COM = 'CdiscountCOM';
     const BASICPRICESEARCHENGINE = 'BasicPriceSearchEngine';
-    const IDEALO_DE     = 'IdealoDE';
+    const BEEZUP = 'BeezUp';
+    const IDEALO_DE = 'IdealoDE';
 
 	public function register()
 	{
@@ -56,7 +57,6 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
          */
         $variationElasticSearchAvailabilityRepository = pluginApp(VariationElasticSearchAvailibilityRepositoryContract::class);
 
-        $ready = $variationElasticSearchAvailabilityRepository->isReady();
         $isAvailableForElasticSearch = $variationElasticSearchAvailabilityRepository->isAvailable();
         $esReadyMarketplaces = $this->getEsReadyMarketPlaces();
 
@@ -95,6 +95,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             self::BILLIGER_DE,
             self::CDISCOUNT_COM,
             self::BASICPRICESEARCHENGINE,
+            self::BEEZUP,
             self::IDEALO_DE,
         );
 

@@ -37,6 +37,8 @@ class BilligerDE extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
+        $this->setOrderByList(['variation.itemId', 'ASC']);
+
         $reference = $settings->get('referrerId') ? $settings->get('referrerId') : -1;
 
         $itemDescriptionFields = ['texts.urlPath'];

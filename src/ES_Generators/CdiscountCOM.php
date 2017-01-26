@@ -197,7 +197,7 @@ class CdiscountCOM extends CSVGenerator
                     'EAN'                                   =>  $this->elasticExportHelper->getEsBarcodeByType($item, $settings->get('barcode')),
                     'Brand'                                 =>  $this->elasticExportHelper->getExternalManufacturerName((int)$item['data']['item']['manufacturer']['id']),
                     'Nature of product'                     =>  strlen($color) || strlen($size) ? 'variante' : 'standard',
-                    'Category code'                         =>  $item['data']['defaultCategories']['id'],
+                    'Category code'                         =>  $item['data']['defaultCategories'][0]['id'],
                     'Basket short wording'                  =>  $this->elasticExportHelper->getEsName($item, $settings, 256),
                     'Basket long wording'                   =>  $item['data']['texts']['shortDescription']->itemDescription->shortDescription,
                     'Product description'                   =>  $this->getDescription($item, $settings),

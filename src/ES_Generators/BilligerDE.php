@@ -114,6 +114,12 @@ class BilligerDE extends CSVGenerator
                     $variations[] = $variation;
                     $previousItemId = $variation['data']['item']['id'];
                 }
+
+                // Write the last batch of variations
+                if (is_array($variations) && count($variations) > 0)
+                {
+                    $this->buildRows($settings, $variations);
+                }
             }
 		}
 	}
@@ -158,7 +164,7 @@ class BilligerDE extends CSVGenerator
                 'brand' 	=> $this->elasticExportHelper->getExternalManufacturerName((int)$variation['data']['item']['manufacturer']['id']),
                 'ean' 		=> $this->elasticExportHelper->getEsBarcodeByType($variation, $settings->get('barcode')),
                 'desc' 		=> $this->elasticExportHelper->getEsDescription($variation, $settings),
-                'shop_cat' 	=> $this->elasticExportHelper->getCategory((int)$variation['data']['defaultCategories']['id'], $settings->get('lang'), $settings->get('plentyId')),
+                'shop_cat' 	=> $this->elasticExportHelper->getCategory((int)$variation['data']['defaultCategories'][0]['id'], $settings->get('lang'), $settings->get('plentyId')),
                 'image'		=> $this->elasticExportHelper->getEsMainImage($variation, $settings),
                 'dlv_time' 	=> $this->elasticExportHelper->getEsAvailability($variation, $settings, false),
                 'dlv_cost' 	=> $dlvCost,
