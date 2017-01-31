@@ -8,9 +8,10 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
 use Plenty\Modules\Item\Search\Mutators\SkuMutator;
+use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
+
 /**
  * Class RakutenDE
- * @package ElasticExport\ResultFields
  */
 class RakutenDE extends ResultFields
 {
@@ -89,6 +90,12 @@ class RakutenDE extends ResultFields
          */
         $skuMutator = pluginApp(SkuMutator::class);
         $skuMutator->setMarket($reference);
+        /**
+         * @var DefaultCategoryMutator $defaultCategoryMutator
+         */
+        $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
+        $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
+
 
 		$fields = [
 		    [
@@ -154,7 +161,8 @@ class RakutenDE extends ResultFields
             [
                 $imageMutator,
                 $languageMutator,
-                $skuMutator
+                $skuMutator,
+                $defaultCategoryMutator
             ],
 		];
         foreach($itemDescriptionFields as $itemDescriptionField)

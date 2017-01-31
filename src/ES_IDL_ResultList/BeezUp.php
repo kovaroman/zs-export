@@ -15,6 +15,8 @@ class BeezUp
      */
     public function getResultList($variationIds, $settings)
     {
+        $referrerId = $settings->get('referrerId') ? $settings->get('referrerId') : 127;
+
         if(is_array($variationIds) && count($variationIds) > 0)
         {
             $searchFilter = array(
@@ -51,7 +53,7 @@ class BeezUp
 
                 'variationRetailPrice' => array(
                     'params' => array(
-                        'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 127,
+                        'referrerId' => $referrerId,
                     ),
                     'fields' => array(
                         'price',
@@ -60,7 +62,7 @@ class BeezUp
 
                 'variationRecommendedRetailPrice' => array(
                     'params' => array(
-                        'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 127,
+                        'referrerId' => $referrerId,
                     ),
                     'fields' => array(
                         'price',    // uvp

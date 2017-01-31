@@ -8,9 +8,9 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
 use Plenty\Modules\Item\Search\Mutators\SkuMutator;
+use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
 /**
  * Class BilligerDE
- * @package ElasticExport\ResultFields
  */
 class BilligerDE extends ResultFields
 {
@@ -84,6 +84,11 @@ class BilligerDE extends ResultFields
          * @var LanguageMutator $languageMutator
          */
         $languageMutator = pluginApp(LanguageMutator::class, [[$settings->get('lang')]]);
+        /**
+         * @var DefaultCategoryMutator $defaultCategoryMutator
+         */
+        $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
+        $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
 
         $fields = [
             [
@@ -129,7 +134,8 @@ class BilligerDE extends ResultFields
 
             [
                 $imageMutator,
-                $languageMutator
+                $languageMutator,
+                $defaultCategoryMutator
             ],
         ];
         foreach($itemDescriptionFields as $itemDescriptionField)

@@ -7,9 +7,13 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
+use Plenty\Modules\Item\Search\Mutators\SkuMutator;
 use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
 
-class BeezUp extends ResultFields
+/**
+ * Class KaufluxDE
+ */
+class KaufluxDE extends ResultFields
 {
     /*
      * @var ArrayHelper
@@ -17,6 +21,7 @@ class BeezUp extends ResultFields
     private $arrayHelper;
 
     /**
+     * Billiger constructor.
      * @param ArrayHelper $arrayHelper
      */
     public function __construct(ArrayHelper $arrayHelper)
@@ -28,9 +33,10 @@ class BeezUp extends ResultFields
     {
         $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        $reference = $settings->get('referrerId') ? $settings->get('referrerId') : 127;
+        $reference = $settings->get('referrerId') ? $settings->get('referrerId') : 116;
 
         $itemDescriptionFields = ['texts.urlPath'];
+        $itemDescriptionFields[] = 'texts.keywords';
 
         switch($settings->get('nameId'))
         {
@@ -74,6 +80,11 @@ class BeezUp extends ResultFields
          */
         $languageMutator = pluginApp(LanguageMutator::class, [[$settings->get('lang')]]);
         /**
+         * @var SkuMutator $skuMutator
+         */
+        $skuMutator = pluginApp(SkuMutator::class);
+        $skuMutator->setMarket($reference);
+        /**
          * @var DefaultCategoryMutator $defaultCategoryMutator
          */
         $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
@@ -84,16 +95,18 @@ class BeezUp extends ResultFields
                 //item
                 'item.id',
                 'item.manufacturer.id',
+                'item.free1',
+                'item.free2',
+                'item.free3',
+                'item.storeSpecial',
 
                 //variation
                 'id',
                 'variation.availability.id',
                 'variation.stockLimitation',
-                'variation.weightG',
+                'variation.vatId',
                 'variation.model',
-
-                //attributes
-                'attributes.valueId',
+                'variation.weightG',
 
                 //images
                 'images.item.type',
@@ -103,22 +116,31 @@ class BeezUp extends ResultFields
                 'images.variation.path',
                 'images.variation.position',
 
+                //unit
+                'unit.content',
+                'unit.id',
+
+                //sku
+                'skus.sku',
+
                 //defaultCategories
                 'defaultCategories.id',
 
                 //barcodes
                 'barcodes.code',
-                'barcodes.id',
                 'barcodes.type',
+
+                //attributes
+                'attributes.attributeValueSetId',
             ],
 
             [
                 $imageMutator,
                 $languageMutator,
+                $skuMutator,
                 $defaultCategoryMutator
             ],
         ];
-
         foreach($itemDescriptionFields as $itemDescriptionField)
         {
             $fields[0][] = $itemDescriptionField;
