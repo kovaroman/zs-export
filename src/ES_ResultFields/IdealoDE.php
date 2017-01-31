@@ -107,9 +107,11 @@ class IdealoDE extends ResultFields
                 'variation.weightG',
 
                 //images
+                'images.item.fileType',
                 'images.item.type',
                 'images.item.path',
                 'images.item.position',
+                'images.variation.fileType',
                 'images.variation.type',
                 'images.variation.path',
                 'images.variation.position',
