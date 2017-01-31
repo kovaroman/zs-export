@@ -20,6 +20,9 @@ use Plenty\Modules\Item\Property\Models\PropertySelection;
  */
 class IdealoDE extends CSVGenerator
 {
+    const IDEALO_DE = 121.00;
+    const IDEALO_CHECKOUT = 121.02;
+
     const DEFAULT_PAYMENT_METHOD = 'vorkasse';
 
     const SHIPPING_COST_TYPE_FLAT = 'flat';
@@ -401,7 +404,7 @@ class IdealoDE extends CSVGenerator
              */
             if($checkoutApproved == 'true')
             {
-                $data['article_id'] = $this->elasticExportHelper->generateEsSku($item['id'], 121.02, 0, (string)$this->filterAndGetVariationSku($item));
+                $data['article_id'] = $this->elasticExportHelper->generateEsSku($item['id'], self::IDEALO_CHECKOUT, 0, (string)$this->filterAndGetVariationSku($item));
                 $data['itemsInStock'] = $stock;
                 $fulfillmentType = $this->getProperty($item, 'FulfillmentType:Spedition');
 
@@ -447,7 +450,7 @@ class IdealoDE extends CSVGenerator
             }
             else
             {
-                $data['article_id'] = $this->elasticExportHelper->generateEsSku($item['id'], 121, 0, (string)$this->filterAndGetVariationSku($item));
+                $data['article_id'] = $this->elasticExportHelper->generateEsSku($item['id'], self::IDEALO_DE, 0, (string)$this->filterAndGetVariationSku($item));
                 $data['itemsInStock'] = '';
                 $data['fulfillmentType'] = '';
                 $data['twoManHandlingPrice'] = '';
@@ -504,7 +507,7 @@ class IdealoDE extends CSVGenerator
      */
     private function getFreeText($item):string
     {
-        $characterMarketComponentList = $this->elasticExportHelper->getEsItemCharactersByComponent($item, 121.00 , 1);
+        $characterMarketComponentList = $this->elasticExportHelper->getEsItemCharactersByComponent($item, self::IDEALO_DE, 1);
 
         $freeText = [];
 
