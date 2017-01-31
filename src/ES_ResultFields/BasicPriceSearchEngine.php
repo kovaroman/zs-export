@@ -7,9 +7,10 @@ use Plenty\Modules\DataExchange\Models\FormatSetting;
 use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
+use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
+
 /**
  * Class BasicPriceSearchEngine
- * @package ElasticExport\ResultFields
  */
 class BasicPriceSearchEngine extends ResultFields
 {
@@ -48,6 +49,11 @@ class BasicPriceSearchEngine extends ResultFields
          * @var LanguageMutator $languageMutator
          */
         $languageMutator = pluginApp(LanguageMutator::class, [[$settings->get('lang')]]);
+        /**
+         * @var DefaultCategoryMutator $defaultCategoryMutator
+         */
+        $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
+        $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
 
         $fields = [
             [
@@ -100,98 +106,10 @@ class BasicPriceSearchEngine extends ResultFields
             [
                 $imageMutator,
                 $languageMutator,
+                $defaultCategoryMutator,
             ],
         ];
 
         return $fields;
-
-//        return [
-//            'itemBase'=> [
-//                'id',                 done
-//                'producerId',         done
-//                'fedas'               done
-//            ],
-//
-//            'itemDescription' => [
-//                'params' => [
-//                    'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
-//                ],
-//                'fields' => [
-//					$settings->get('nameId') ? 'name' . $settings->get('nameId') : 'name1',     done
-//					'description',                  done
-//					'shortDescription',             done
-//					'technicalData',                done
-//                ],
-//            ],
-//
-//            'variationImageList' => [
-//                'params' => [
-//                    'type' => 'item_variation',
-//                    'referenceMarketplace' => $settings->get('referrerId'),
-//                ],
-//                'fields' => [
-//                    'imageId',        done
-//                    'type',           done
-//                    'fileType',       done
-//                    'path',           done
-//                    'position',       done
-//                    'cleanImageName', done
-//                ]
-//
-//            ],
-//
-//            'variationBase' => [
-//                'availability',       done
-//                'model',              done
-//                'customNumber',       //todo grab from idl
-//                'weightG'             done
-//            ],
-//
-//            'variationRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId'),
-//				],
-//				'fields' => [
-//					'price',
-//                    'retailPrice',        //todo grab from idl
-//                    'retailPriceNet',     //todo grab from idl
-//                    'basePrice',          //todo grab from idl
-//                    'basePriceNet',       //todo grab from idl
-//                    'unitPrice',          //todo grab from idl
-//                    'unitPriceNet',       //todo grab from idl
-//                ],
-//            ],
-//
-//            'variationRecommendedRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId'),
-//				],
-//				'fields' => [
-//					'price',                //todo grab from idl
-//				],
-//            ],
-//
-//            'variationStandardCategory' => [
-//                'params' => [
-//                    'plentyId' => $settings->get('plentyId'),
-//                ],
-//                'fields' => [
-//                    'categoryId'      done
-//                ],
-//            ],
-//
-//            'variationBarcodeList' => [
-//                'params' => [
-//                    'barcodeType' => $settings->get('barcode'),
-//                ],
-//                'fields' => [
-//                    'code',           done
-//                    'barcodeId',      done
-//					'barcodeType',      done
-//					'barcodeName',      done
-//					'variationId'
-//                ]
-//            ],
-//        ];
     }
 }

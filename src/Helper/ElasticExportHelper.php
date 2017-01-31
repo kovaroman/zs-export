@@ -1401,10 +1401,9 @@ class ElasticExportHelper
      *
      * @param  array   $item
      * @param  float    $price
-     * @param  KeyValue $settings
      * @return array
      */
-    public function getEsBasePriceList($item, float $price, KeyValue $settings):array
+    public function getEsBasePriceList($item, float $price):array
     {
         $lot = (int)$item['data']['unit']['content'];
         $unitLang = $this->unitNameRepository->findByUnitId((int)$item['data']['unit']['id']);
@@ -1586,6 +1585,47 @@ class ElasticExportHelper
     }
 
     /**
+     *Get list of a defined maximum number of images in a given order
+     *
+     * @param array $item
+     * @param KeyValue $settings
+     * @param int $limit
+     * @param string $first
+     * @param string $imageType
+     * @return array
+     */
+    public function getEsImageListInOrder($item, KeyValue $settings, $limit = 0, $first = '', $imageType = 'normal')
+    {
+        $sorting = $this->getEsImageOrder($first);
+
+        $listAllImages = array();
+
+        foreach ($sorting as $imageArray)
+        {
+            $listImageByGroup = $this->getEsSpecificImageList($item, $settings, $limit, $imageArray, $imageType);
+
+            foreach($listImageByGroup AS $element)
+            {
+                $listAllImages[] = $element;
+            }
+
+            if($limit != 0 && count($listAllImages) == $limit)
+            {
+                break;
+            }
+        }
+
+        if (count($listAllImages))
+        {
+            return $listAllImages;
+        }
+        else
+        {
+            return array();
+        }
+    }
+
+    /**
      * Get the defined order for images
      *
      * @param $first
@@ -1617,6 +1657,37 @@ class ElasticExportHelper
     }
 
     /**
+     * Get the defined order for images
+     *
+     * @param $first
+     * @return array
+     */
+    public function getEsImageOrder($first)
+    {
+        switch ($first)
+        {
+            case 'variationImages':
+                $sorting = [
+                    'variation',
+                    'item',
+                ];
+                break;
+            case 'itemImages':
+                $sorting = [
+                    'item',
+                    'variation',
+                ];
+                break;
+            default:
+                $sorting = [
+                    'all',
+                ];
+        }
+
+        return $sorting;
+    }
+
+    /**
      * Get list of a defined maximum number of a specific type of images
      *
      * @param Record $item
@@ -1631,6 +1702,43 @@ class ElasticExportHelper
         $listImageByGroup = array();
 
         foreach ($item->variationImageList[$imageArray]->toArray() as $image)
+        {
+            if($settings->get('imagePosition') == self::IMAGE_FIRST)
+            {
+                $listImageByGroup[] = (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type']== 'external');
+            }
+            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
+            {
+                $listImageByGroup[] = (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type']== 'external');
+            }
+
+            if($limit != 0 && count($listImageByGroup) == $limit)
+            {
+                return $listImageByGroup;
+            }
+        }
+        if(count($listImageByGroup))
+        {
+            return $listImageByGroup;
+        }
+        return null;
+    }
+
+    /**
+     * Get list of a defined maximum number of a specific type of images
+     *
+     * @param array $item
+     * @param KeyValue $settings
+     * @param int $limit
+     * @param string $imageOrder
+     * @param string $imageType
+     * @return array|string|null
+     */
+    public function getEsSpecificImageList($item, KeyValue $settings, $limit, $imageOrder, $imageType)
+    {
+        $listImageByGroup = array();
+
+        foreach ($item['data']['images'][$imageOrder] as $image)
         {
             if($settings->get('imagePosition') == self::IMAGE_FIRST)
             {

@@ -6,8 +6,7 @@ use Plenty\Modules\Item\DataLayer\Contracts\ItemDataLayerRepositoryContract;
 use Plenty\Modules\Helper\Models\KeyValue;
 use Plenty\Modules\Item\DataLayer\Models\RecordList;
 
-
-class BilligerDE
+class KaufluxDE
 {
     /**
      * @param array $variationIds
@@ -16,7 +15,7 @@ class BilligerDE
      */
     public function getResultList($variationIds, $settings)
     {
-        $referrerId = $settings->get('referrerId') ? $settings->get('referrerId') : -1;
+        $referrer = $settings->get('referrerId') ? $settings->get('referrerId') : 116;
 
         if(is_array($variationIds) && count($variationIds) > 0)
         {
@@ -35,12 +34,46 @@ class BilligerDE
                     'id'
                 ),
 
+                'itemCrossSellingList' => array(
+                    'itemId',
+                    'crossItemId',
+                ),
+
+                'itemPropertyList' => array(
+                    'params' => array(),
+                    'fields' => array(
+                        'itemPropertyId',
+                        'propertyId',
+                        'propertyValue',
+                        'propertyValueType',
+                    )
+                ),
+
+                'variationStock' => array(
+                    'params' => array(
+                        'type' => 'virtual'
+                    ),
+                    'fields' => array(
+                        'stockNet'
+                    )
+                ),
+
                 'variationRetailPrice' => array(
                     'params' => array(
-                        'referrerId' => $referrerId,
+                        'referrerId' => $referrer,
                     ),
                     'fields' => array(
                         'price',
+                        'vatValue',
+                    ),
+                ),
+
+                'variationRecommendedRetailPrice' => array(
+                    'params' => array(
+                        'referrerId' => $referrer,
+                    ),
+                    'fields' => array(
+                        'price',    // uvp
                     ),
                 ),
             );

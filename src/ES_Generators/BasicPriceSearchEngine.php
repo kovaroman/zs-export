@@ -110,7 +110,7 @@ class BasicPriceSearchEngine extends CSVGenerator
                 $rrp = $this->elasticExportHelper->getEsRecommendedRetailPrice($this->idlVariations[$item['id']], $settings) > $this->idlVariations[$item['id']]['variationRetailPrice.price']
                     ? $this->elasticExportHelper->getEsRecommendedRetailPrice($this->idlVariations[$item['id']], $settings) : '';
 
-                $basePriceList = $this->elasticExportHelper->getEsBasePriceList($item, (float) $this->idlVariations[$item['id']]['variationRetailPrice.price'], $settings);
+                $basePriceList = $this->elasticExportHelper->getEsBasePriceList($item, (float) $this->idlVariations[$item['id']]['variationRetailPrice.price']);
                 $shipmentAndHandling = $this->elasticExportHelper->getEsShippingCost($item['data']['item']['id'], $settings);
                 if(!is_null($shipmentAndHandling))
                 {

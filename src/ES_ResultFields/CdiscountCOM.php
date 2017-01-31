@@ -8,6 +8,7 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
 use Plenty\Modules\Item\Search\Mutators\SkuMutator;
+use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
 
 class CdiscountCOM extends ResultFields
 {
@@ -64,6 +65,11 @@ class CdiscountCOM extends ResultFields
          */
         $skuMutator = pluginApp(SkuMutator::class);
         $skuMutator->setMarket($reference);
+        /**
+         * @var DefaultCategoryMutator $defaultCategoryMutator
+         */
+        $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
+        $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
 
         $fields = [
             [
@@ -110,7 +116,8 @@ class CdiscountCOM extends ResultFields
             [
                 $imageMutator,
                 $languageMutator,
-                $skuMutator
+                $skuMutator,
+                $defaultCategoryMutator
             ],
         ];
         foreach($itemDescriptionFields as $itemDescriptionField)
@@ -119,101 +126,5 @@ class CdiscountCOM extends ResultFields
         }
 
         return $fields;
-//        $itemDescriptionFields = [
-//            'urlContent',         done
-//            'shortDescription',   done
-//            'description',        done
-//            'technicalData'       done
-//        ];
-//
-//        $itemDescriptionFields[] = ($settings->get('nameId')) ? 'name' . $settings->get('nameId') : 'name1';      done
-//
-//        $fields =
-//            [
-//                'itemBase'  =>  [
-//                    'id',             done
-//                    'producerId',     done
-//                ],
-//
-//                'itemDescription'   =>  [
-//                    'params' => [
-//                        'language' => $settings->get('lang') ? $settings->get('lang') : 'fr',
-//                    ],
-//                    'fields' => $itemDescriptionFields,   done
-//                ],
-//
-//                'itemPropertyList' => [
-//    				'params' => [],
-//    				'fields' => [
-//    					'itemPropertyId',           //todo grab from idl
-//    					'propertyId',               //todo grab from idl
-//    					'propertyValue',            //todo grab from idl
-//    					'propertyValueType',        //todo grab from idl
-//    					'isOrderProperty',          //todo grab from idl
-//    					'propertyOrderMarkup'       //todo grab from idl
-//    				]
-//    			],
-//
-//                'variationBase' =>  [
-//                    'id',                         //done
-//                    'model'                       //done
-//                ],
-//
-//                'variationRetailPrice' => [
-//					'params' => [
-//						'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 143,
-//					],
-//					'fields' => [
-//						'price',                //todo grab from idl
-//					],
-//                ],
-//
-//                'variationImageList' => [
-//                    'params' => [
-//                        'type' => 'item_variation',
-//                        'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 143,
-//                    ],
-//                    'fields' => [
-//                        'type',               //done
-//                        'path',               //done
-//                        'position',           //done
-//                    ]
-//                ],
-//
-//                'variationBarcodeList' => [
-//                    'params' => [
-//                        'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
-//                    ],
-//                    'fields' => [
-//                        'code',           //done
-//                        'barcodeId',      //done
-//                    ]
-//                ],
-//
-//                'variationStandardCategory' =>  [
-//                    'params'    =>  [
-//                        'plentyId'  =>  $settings->get('plentyId')
-//                    ],
-//                    'fields'    =>  [
-//                        'categoryId',     //done
-//                    ]
-//                ],
-//
-//                'variationMarketStatus' => [
-//                    'params' => [
-//                        'marketId' => 143,
-//                    ],
-//                    'fields' => [
-//                        'sku'         //done
-//                    ]
-//                ],
-//
-//                'variationAttributeValueList' => [
-//				    'attributeId',          //done
-//				    'attributeValueId'      //done
-//			    ],
-//            ];
-//
-//        return $fields;
     }
 }

@@ -15,6 +15,8 @@ class RakutenDE
      */
     public function getResultList($variationIds, $settings)
     {
+        $referrerId = $settings->get('referrerId') ? $settings->get('referrerId') : 106;
+
         if(is_array($variationIds) && count($variationIds) > 0)
         {
             $searchFilter = array(
@@ -35,8 +37,10 @@ class RakutenDE
                 'itemPropertyList' => array(
                     'params' => array(),
                     'fields' => array(
+                        'itemPropertyId',
                         'propertyId',
                         'propertyValue',
+                        'propertyValueType',
                     )
                 ),
 
@@ -51,7 +55,7 @@ class RakutenDE
 
                 'variationRetailPrice' => array(
                     'params' => array(
-                        'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+                        'referrerId' => $referrerId,
                     ),
                     'fields' => array(
                         'price',
@@ -61,7 +65,7 @@ class RakutenDE
 
                 'variationRecommendedRetailPrice' => array(
                     'params' => array(
-                        'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+                        'referrerId' => $referrerId,
                     ),
                     'fields' => array(
                         'price',    // uvp
@@ -70,7 +74,7 @@ class RakutenDE
 
                 'variationSpecialOfferRetailPrice' => array(
                     'params' => array(
-                        'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+                        'referrerId' => $referrerId,
                     ),
                     'fields' => array(
                         'retailPrice',
