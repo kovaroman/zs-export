@@ -1292,7 +1292,6 @@ class ElasticExportHelper
      * Get base price.
      * @param  array    $item
      * @param  array    $idlItem
-     * @param  KeyValue $settings
      * @param  string   $separator	= '/'
      * @param  bool     $compact    = false
      * @param  bool     $dotPrice   = false

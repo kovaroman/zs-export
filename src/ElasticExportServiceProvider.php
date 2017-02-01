@@ -14,6 +14,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
     const BASICPRICESEARCHENGINE = 'BasicPriceSearchEngine';
     const BEEZUP = 'BeezUp';
     const KAUFLUXDE = 'KaufluxDE';
+    const IDEALO_DE = 'IdealoDE';
 
 	public function register()
 	{
@@ -97,6 +98,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             self::BASICPRICESEARCHENGINE,
             self::BEEZUP,
             self::KAUFLUXDE,
+            self::IDEALO_DE,
         );
 
         return $marketplaces;
