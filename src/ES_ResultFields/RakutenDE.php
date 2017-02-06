@@ -136,6 +136,7 @@ class RakutenDE extends ResultFields
                 'images.all.type',
                 'images.all.path',
                 'images.all.position',
+                'images.all.fileType',
 
                 //unit
                 'unit.content',

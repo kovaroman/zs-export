@@ -112,9 +112,11 @@ class KaufluxDE extends ResultFields
                 'images.item.type',
                 'images.item.path',
                 'images.item.position',
+                'images.item.fileType',
                 'images.variation.type',
                 'images.variation.path',
                 'images.variation.position',
+                'images.variation.fileType',
 
                 //unit
                 'unit.content',
