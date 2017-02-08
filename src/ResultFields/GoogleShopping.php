@@ -119,6 +119,7 @@ class GoogleShopping extends ResultFields
 
 			'variationSpecialOfferRetailPrice' => [
 				'params' => [
+                    'plentyId' => $settings->get('plentyId'),
 					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
 				],
 				'fields' => [
@@ -140,6 +141,7 @@ class GoogleShopping extends ResultFields
 			],
 			'variationRetailPrice' => [
 				'params' => [
+                    'plentyId' => $settings->get('plentyId'),
 					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
 				],
 				'fields' => [
@@ -161,6 +163,7 @@ class GoogleShopping extends ResultFields
 			'variationBarcodeList' => [
 				'params' => [
 					'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
+                    'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
 				],
 				'fields' => [
 					'code',
