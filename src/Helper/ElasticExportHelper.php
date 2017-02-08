@@ -923,7 +923,115 @@ class ElasticExportHelper
         return $list;
     }
 
-	/**
+    /**
+     *Get list of a defined maximum number of images in a given order
+     *
+     * @param Record $item
+     * @param KeyValue $settings
+     * @param int $limit
+     * @param string $first
+     * @param string $imageType
+     * @return array
+     */
+    public function getImageListInOrder(Record $item, KeyValue $settings, $limit = 0, $first = '', $imageType = 'normal')
+    {
+        $sorting = $this->getImageOrder($first);
+
+        $listAllImages = array();
+
+        foreach ($sorting as $imageArray)
+        {
+            $listImageByGroup = $this->getSpecificImageList($item, $settings, $limit, $imageArray, $imageType);
+
+            foreach($listImageByGroup AS $element)
+            {
+                $listAllImages[] = $element;
+            }
+
+            if($limit != 0 && count($listAllImages) == $limit)
+            {
+                break;
+            }
+        }
+
+        if (count($listAllImages))
+        {
+            return $listAllImages;
+        }
+        else
+        {
+            return array();
+        }
+    }
+
+    /**
+     * Get the defined order for images
+     *
+     * @param $first
+     * @return array
+     */
+    public function getImageOrder($first)
+    {
+        switch ($first)
+        {
+            case 'variationImages':
+                $sorting = [
+                    'variationImages',
+                    'itemImages',
+                ];
+                break;
+            case 'itemImages':
+                $sorting = [
+                    'itemImages',
+                    'variationImages',
+                ];
+                break;
+            default:
+                $sorting = [
+                    'allImages',
+                ];
+        }
+
+        return $sorting;
+    }
+
+    /**
+     * Get list of a defined maximum number of a specific type of images
+     *
+     * @param Record $item
+     * @param KeyValue $settings
+     * @param $limit
+     * @param $imageArray
+     * @param $imageType
+     * @return array|string
+     */
+    public function getSpecificImageList(Record $item, KeyValue $settings, $limit, $imageArray, $imageType)
+    {
+        $listImageByGroup = array();
+
+        foreach ($item->variationImageList[$imageArray]->toArray() as $image)
+        {
+            if($settings->get('imagePosition') == self::IMAGE_FIRST)
+            {
+                $listImageByGroup[] = (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type']== 'external');
+            }
+            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
+            {
+                $listImageByGroup[] = (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type']== 'external');
+            }
+
+            if($limit != 0 && count($listImageByGroup) == $limit)
+            {
+                return $listImageByGroup;
+            }
+        }
+        if(count($listImageByGroup))
+        {
+            return $listImageByGroup;
+        }
+    }
+
+    /**
 	 * Get item characters that match referrer from settings and a given component id.
 	 * @param  Record   $item
 	 * @param  float    $marketId
