@@ -170,7 +170,7 @@ class GoogleShopping extends CSVGenerator
 
 			foreach($resultData as $item)
 			{
-                $variationAttributes = $this->getVariationAttributes($item);
+                $variationAttributes = $this->getVariationAttributes($item, $settings);
                 $variationPrice = number_format((float)$this->elasticExportHelper->getPrice($item), 2, '.', '');
                 $salePrice = number_format((float)$this->elasticExportHelper->getSpecialPrice($item, $settings), 2, '.', '');
 
@@ -226,24 +226,24 @@ class GoogleShopping extends CSVGenerator
 					'item_group_id'				=> $item->itemBase->id,
 					'shipping'					=> $shipping,
 					'shipping_weight'			=> $item->variationBase->weightG.' g',
-					'gender'					=> $this->getProperty($item, self::CHARACTER_TYPE_GENDER),
-					'age_group'					=> $this->getProperty($item, self::CHARACTER_TYPE_AGE_GROUP),
-					'excluded_destination'		=> $this->getProperty($item, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
-					'adwords_redirect'			=> $this->getProperty($item, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
+					'gender'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_GENDER),
+					'age_group'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_AGE_GROUP),
+					'excluded_destination'		=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_EXCLUDED_DESTINATION),
+					'adwords_redirect'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ADWORDS_REDIRECT),
 					'identifier_exists'			=> $this->getIdentifierExists($item, $settings),
 					'unit_pricing_measure'		=> $basePriceComponents['unit_pricing_measure'],
 					'unit_pricing_base_measure'	=> $basePriceComponents['unit_pricing_base_measure'],
-					'energy_efficiency_class'	=> $this->getProperty($item, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
-					'size_system'				=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_SYSTEM),
-					'size_type'					=> $this->getProperty($item, self::CHARACTER_TYPE_SIZE_TYPE),
-					'mobile_link'				=> $this->getProperty($item, self::CHARACTER_TYPE_MOBILE_LINK),
-					'sale_price_effective_date'	=> $this->getProperty($item, self::CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE),
+					'energy_efficiency_class'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_ENERGY_EFFICIENCY_CLASS),
+					'size_system'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_SYSTEM),
+					'size_type'					=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SIZE_TYPE),
+					'mobile_link'				=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_MOBILE_LINK),
+					'sale_price_effective_date'	=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_SALE_PRICE_EFFECTIVE_DATE),
 					'adult'						=> '',
-					'custom_label_0'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_0),
-					'custom_label_1'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_1),
-					'custom_label_2'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_2),
-					'custom_label_3'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_3),
-					'custom_label_4'			=> $this->getProperty($item, self::CHARACTER_TYPE_CUSTOM_LABEL_4),
+					'custom_label_0'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_0),
+					'custom_label_1'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_1),
+					'custom_label_2'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_2),
+					'custom_label_3'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_3),
+					'custom_label_4'			=> $this->getProperty($item, $settings, self::CHARACTER_TYPE_CUSTOM_LABEL_4),
 				];
 
 				$this->addCSVContent(array_values($data));
@@ -257,9 +257,9 @@ class GoogleShopping extends CSVGenerator
      * @param  string   $property
      * @return string
      */
-    private function getProperty(Record $item, string $propertyType):string
+    private function getProperty(Record $item,KeyValue $settings, string $propertyType):string
     {
-        $itemPropertyList = $this->getItemPropertyList($item);
+        $itemPropertyList = $this->getItemPropertyList($item, $settings);
 
         switch ($propertyType)
         {
@@ -367,8 +367,8 @@ class GoogleShopping extends CSVGenerator
      * @param 	Record $item
      * @return array<string,string>
      */
-    private function getItemPropertyList(Record $item):array
-	{
+    private function getItemPropertyList(Record $item, KeyValue $settings):array
+    {
         if(!array_key_exists($item->itemBase->id, $this->itemPropertyCache))
         {
             $characterMarketComponentList = $this->elasticExportHelper->getItemCharactersByComponent($item, 129.00);
@@ -383,21 +383,24 @@ class GoogleShopping extends CSVGenerator
                     {
                         if((string) $data['characterValueType'] == 'selection')
                         {
-                            $propertySelection = $this->propertySelectionRepository->findOne((int) $data['characterItemId'], 'de');
-                            if($propertySelection instanceof PropertySelection)
+                            $propertySelection = $this->propertySelectionRepository->findByPropertyId((int) $data['characterItemId']);
+                            foreach ($propertySelection as $selectionValue)
                             {
-                                $list[(string) $data['externalComponent']] = (string) $propertySelection->name;
+                                if( $selectionValue instanceof PropertySelection &&
+                                    $selectionValue->id == $data['characterValue'] &&
+                                    $selectionValue->lang == $settings->get('lang'))
+                                {
+                                    $list[(string) $data['externalComponent']] = (string) $selectionValue->name;
+                                }
                             }
                         }
                         else
                         {
                             $list[(string) $data['externalComponent']] = (string) $data['characterValue'];
                         }
-
                     }
                 }
             }
-
             $this->itemPropertyCache[$item->itemBase->id] = $list;
         }
 
@@ -552,7 +555,7 @@ class GoogleShopping extends CSVGenerator
 	 * @param  Record   $item
 	 * @return array<string,string>
 	 */
-    private function getVariationAttributes(Record $item):array
+    private function getVariationAttributes(Record $item, KeyValue $settings):array
     {
 		$list = [];
 		$variationAttributes = [];
@@ -577,7 +580,7 @@ class GoogleShopping extends CSVGenerator
 
 		foreach ($typeList as $type)
 		{
-			$property = $this->getProperty($item, $type);
+			$property = $this->getProperty($item, $settings, $type);
 			if (strlen(trim($property)) > 0)
 			{
 				$list[$type] = trim($property);
