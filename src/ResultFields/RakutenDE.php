@@ -12,6 +12,8 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
  */
 class RakutenDE extends ResultFields
 {
+	const MARKET_REFERENCE_RAKUTEN_DE = 106.00;
+
 	/*
 	 * @var ArrayHelper
 	 */
@@ -101,7 +103,7 @@ class RakutenDE extends ResultFields
 			'variationImageList' => [
 				'params' => [
 					'type' => 'all',
-                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+                    'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : self::MARKET_REFERENCE_RAKUTEN_DE,
 				],
 				'fields' => [
 					'type',
@@ -124,7 +126,7 @@ class RakutenDE extends ResultFields
 
 			'variationRecommendedRetailPrice' => [
 				'params' => [
-					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : self::MARKET_REFERENCE_RAKUTEN_DE,
 				],
 				'fields' => [
 					'price',
@@ -133,7 +135,7 @@ class RakutenDE extends ResultFields
 
             'variationRetailPrice' => [
 				'params' => [
-					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : self::MARKET_REFERENCE_RAKUTEN_DE,
 				],
 				'fields' => [
 					'price',
@@ -142,7 +144,7 @@ class RakutenDE extends ResultFields
 
 			'variationSpecialOfferRetailPrice' => [
 				'params' => [
-					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 106,
+					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : self::MARKET_REFERENCE_RAKUTEN_DE,
 				],
 				'fields' => [
 					'retailPrice',
@@ -170,7 +172,7 @@ class RakutenDE extends ResultFields
 
 			'variationMarketStatus' => [
 				'params' => [
-					'marketId' => 106
+					'marketId' => self::MARKET_REFERENCE_RAKUTEN_DE
 				],
 				'fields' => [
 					'sku'
