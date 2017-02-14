@@ -2,37 +2,47 @@
 
 namespace ElasticExport\Filters;
 
-use Plenty\Modules\DataExchange\Contracts\FiltersForElasticSearchContract;
+use Plenty\Modules\DataExchange\Contracts\Filters;
+use Plenty\Modules\DataExchange\Models\FormatSetting;
+use Plenty\Modules\Helper\Services\ArrayHelper;
 
-use Plenty\Plugin\Application;
-
-use Plenty\Modules\Item\Search\Filter\VariationBaseFilter;
-
-class RakutenDE extends FiltersForElasticSearchContract
+class RakutenDE extends Filters
 {
+	const MARKET_REFERENCE_RAKUTEN_DE = 106.00;
+
+    /*
+	 * @var ArrayHelper
+	 */
+	private $arrayHelper;
+
     /**
-     * @var Application $app
+     * Rakuten constructor.
+     * @param ArrayHelper $arrayHelper
      */
-    private $app;
-
-
-    public function __construct(Application $app)
+    public function __construct(ArrayHelper $arrayHelper)
     {
-        $this->app = $app;
+		$this->arrayHelper = $arrayHelper;
     }
 
     /**
+     * Generate filters.
+     * @param  array $formatSettings = []
      * @return array
      */
-    public function generateElasticSearchFilter():array
+    public function generateFilters(array $formatSettings = []):array
     {
-        /**
-         * @var VariationBaseFilter $variationBaseFilter
-         */
-        $variationBaseFilter = $this->app->make(VariationBaseFilter::class);
-        $variationBaseFilter->isActive();
-        $searchFilter[] = $variationBaseFilter;
+        $settings = $this->arrayHelper->buildMapFromObjectList($formatSettings, 'key', 'value');
 
-        return $searchFilter;
+		$searchFilter = [
+			'variationBase.isActive?' => [],
+            'variationVisibility.isVisibleForMarketplace' => [
+				'mandatoryOneMarketplace' => [],
+				'mandatoryAllMarketplace' => [
+					self::MARKET_REFERENCE_RAKUTEN_DE,
+				]
+            ]
+		];
+
+		return $searchFilter;
     }
 }
