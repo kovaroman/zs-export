@@ -379,11 +379,7 @@ class ElasticExportHelper
      */
     public function convertUrl(string $text, KeyValue $settings):string
     {
-        /** @var WebstoreRepositoryContract $webstoreRepo */
-        $webstoreRepo = pluginApp(WebstoreRepositoryContract::class);
-
-        $webstore = $webstoreRepo->findByPlentyId($settings->get('plentyId'));
-
+        $webstore = $this->webstoreRepository->findByPlentyId($settings->get('plentyId'));
         $text = preg_replace('/(src="\/.*?|src="\.\.\/\.\.\/.*?|src="\.\..*?)/i', 'src="' . $webstore->configuration->domainSsl . '/', $text );
 
         return $text;
