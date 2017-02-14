@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticExport\Generators;
+namespace ElasticExport\ES_Generators;
 
 use Plenty\Modules\DataExchange\Contracts\CSVGenerator;
 use Plenty\Modules\Helper\Services\ArrayHelper;
@@ -35,10 +35,10 @@ class GoogleShopping extends CSVGenerator
 	const CHARACTER_TYPE_CUSTOM_LABEL_2				= 'custom_label_2';
 	const CHARACTER_TYPE_CUSTOM_LABEL_3				= 'custom_label_3';
 	const CHARACTER_TYPE_CUSTOM_LABEL_4				= 'custom_label_4';
-	const CHARACTER_TYPE_DESCRIPTION					= 'description';
+	const CHARACTER_TYPE_DESCRIPTION				= 'description';
 	const CHARACTER_TYPE_COLOR						= 'color';
 	const CHARACTER_TYPE_SIZE						= 'size';
-	const CHARACTER_TYPE_PATTERN						= 'pattern';
+	const CHARACTER_TYPE_PATTERN					= 'pattern';
 	const CHARACTER_TYPE_MATERIAL					= 'material';
 
 	const ISO_CODE_2								= 'isoCode2';
@@ -120,6 +120,7 @@ class GoogleShopping extends CSVGenerator
 
 	/**
 	 * @param array $resultList
+     * @param array $formatSettings
 	 */
 	protected function generateContent($resultList, array $formatSettings = [])
 	{
@@ -363,6 +364,11 @@ class GoogleShopping extends CSVGenerator
 		return '';
 	}
 
+    /**
+     * @param array $variation
+     * @param KeyValue $settings
+     * @return array
+     */
 	private function getBasePriceComponents($variation, KeyValue $settings):array
 	{
 		$unitPricingMeasure = '';
@@ -397,7 +403,7 @@ class GoogleShopping extends CSVGenerator
 	 * @param array $variation
 	 * @return array<string,string>
 	 */
-	private function getItemPropertyList(Record $variation):array
+	private function getItemPropertyList($variation):array
 	{
 		if(!array_key_exists($variation['data']['item']['id'], $this->itemPropertyCache))
 		{
@@ -436,10 +442,10 @@ class GoogleShopping extends CSVGenerator
 
 	/**
 	 * Check if condition is valid.
-	 * @param int $condition
+	 * @param int|null $condition
 	 * @return string
 	 */
-	private function getCondition(int $conditionId):string
+	private function getCondition($conditionId):string
 	{
 		$conditionList = [
 			0 => 'new',

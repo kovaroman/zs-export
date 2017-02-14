@@ -8,6 +8,7 @@ use Plenty\Modules\Helper\Services\ArrayHelper;
 use Plenty\Modules\Item\Search\Mutators\ImageMutator;
 use Plenty\Modules\Cloud\ElasticSearch\Lib\Source\Mutator\BuiltIn\LanguageMutator;
 use Plenty\Modules\Item\Search\Mutators\SkuMutator;
+use Plenty\Modules\Item\Search\Mutators\DefaultCategoryMutator;
 
 /**
  * Class GoogleShopping
@@ -87,6 +88,11 @@ class GoogleShopping extends ResultFields
 		 */
 		$skuMutator = pluginApp(SkuMutator::class);
 		$skuMutator->setMarket($reference);
+        /**
+         * @var DefaultCategoryMutator $defaultCategoryMutator
+         */
+        $defaultCategoryMutator = pluginApp(DefaultCategoryMutator::class);
+        $defaultCategoryMutator->setPlentyId($settings->get('plentyId'));
 
 		$fields = [
 			[
@@ -107,6 +113,12 @@ class GoogleShopping extends ResultFields
 				'images.all.type',
 				'images.all.path',
 				'images.all.position',
+                'images.variation.type',
+                'images.variation.path',
+                'images.variation.position',
+                'images.item.type',
+                'images.item.path',
+                'images.item.position',
 
 				// Unit
 				'unit.content',
@@ -131,121 +143,9 @@ class GoogleShopping extends ResultFields
 			[
 				$imageMutator,
 				$languageMutator,
-				$skuMutator
+				$skuMutator,
+                $defaultCategoryMutator
 			],
-
-
-//			'itemBase'=> [
-//				'id',
-//				'producerId',
-//				'apiCondition',
-//			],
-
-//			'itemDescription' => [
-//				'params' => [
-//					'language' => $settings->get('lang') ? $settings->get('lang') : 'de',
-//				],
-//				'fields' => $itemDescriptionFields,
-//			],
-
-//			'itemPropertyList' => [
-//				'params' => [],
-//				'fields' => [
-//					'itemPropertyId',
-//					'propertyId',
-//					'propertyValue',
-//					'propertyValueType',
-//					'isOrderProperty',
-//					'propertyOrderMarkup'
-//				]
-//			],
-
-//			'variationImageList' => [
-//				'params' => [
-//					'itemImages' => [
-//						'type'				 => 'item', // all images
-//						'imageType'			=> ['internal'],
-//						'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
-//					],
-//					'variationImages'					=> [
-//						'type'				 => 'variation', // current variation images
-//						'imageType'			=> ['internal'],
-//						'referenceMarketplace' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
-//					],
-//				],
-//				'fields' => [
-//					'type',
-//					'path',
-//					'position',
-//				],
-//			],
-
-//			'variationBase' => [
-//				'id',
-//				'availability',
-//				'attributeValueSetId',
-//				'model',
-//				'limitOrderByStockSelect',
-//				'unitId',
-//				'content',
-//				'weightG',
-//			],
-
-//			'variationSpecialOfferRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
-//				],
-//				'fields' => [
-//					'retailPriceId',
-//					'retailPrice',
-//					'retailPriceNet',
-//					'basePrice',
-//					'basePriceNet',
-//					'unitPrice',
-//					'unitPriceNet',
-//					'orderParamsMarkup',
-//					'orderParamsMarkupNet',
-//					'vatId',
-//					'vatValue',
-//					'currency',
-//					'exchangeRatio',
-//					'lastUpdateTimestamp'
-//				],
-//			],
-//			'variationRetailPrice' => [
-//				'params' => [
-//					'referrerId' => $settings->get('referrerId') ? $settings->get('referrerId') : 7,
-//				],
-//				'fields' => [
-//					'price',
-//				],
-//			],
-
-//			'variationStandardCategory' => [
-//				'params' => [
-//					'plentyId' => $settings->get('plentyId'),
-//				],
-//				'fields' => [
-//					'categoryId',
-//					'plentyId',
-//					'manually',
-//				],
-//			],
-
-//			'variationBarcodeList' => [
-//				'params' => [
-//					'barcodeType' => $settings->get('barcode') ? $settings->get('barcode') : 'EAN',
-//				],
-//				'fields' => [
-//					'code',
-//					'barcodeId',
-//				]
-//			],
-
-//			'variationAttributeValueList' => [
-//				'attributeId',
-//				'attributeValueId',
-//			],
 		];
 
 		if (is_array($list) && count($list) > 0)

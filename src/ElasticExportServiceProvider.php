@@ -8,6 +8,7 @@ use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchAvailibilityRepos
 
 class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
+    //todo remove
     const RAKUTEN_DE    = 'RakutenDE';
     const BILLIGER_DE   = 'BilligerDE';
     const CDISCOUNT_COM = 'CdiscountCOM';
@@ -15,6 +16,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
     const BEEZUP = 'BeezUp';
     const KAUFLUXDE = 'KaufluxDE';
     const IDEALO_DE = 'IdealoDE';
+    const GOOGLE_SHOPPING = 'GoogleShopping';
 
 	public function register()
 	{
@@ -99,6 +101,7 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             self::BEEZUP,
             self::KAUFLUXDE,
             self::IDEALO_DE,
+            self::GOOGLE_SHOPPING
         );
 
         return $marketplaces;
