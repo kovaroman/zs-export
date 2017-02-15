@@ -60,7 +60,7 @@ class GuenstigerDE extends CSVGenerator
 			foreach($resultData as $item)
 			{
                 $shippingCost = number_format((float)$this->elasticExportHelper->getShippingCost($item, $settings));
-                $basePrice = number_format($this->elasticExportHelper->getBasePrice($item, $settings));
+                $basePrice = number_format((float)$this->elasticExportHelper->getBasePrice($item, $settings));
 
                 if(!is_null($shippingCost))
                 {
