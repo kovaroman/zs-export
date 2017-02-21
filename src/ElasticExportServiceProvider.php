@@ -4,20 +4,9 @@ namespace ElasticExport;
 
 use Plenty\Modules\DataExchange\Services\ExportPresetContainer;
 use Plenty\Plugin\DataExchangeServiceProvider;
-use Plenty\Modules\Item\Search\Contracts\VariationElasticSearchAvailibilityRepositoryContract;
 
 class ElasticExportServiceProvider extends DataExchangeServiceProvider
 {
-    //todo remove
-    const RAKUTEN_DE    = 'RakutenDE';
-    const BILLIGER_DE   = 'BilligerDE';
-    const CDISCOUNT_COM = 'CdiscountCOM';
-    const BASICPRICESEARCHENGINE = 'BasicPriceSearchEngine';
-    const BEEZUP = 'BeezUp';
-    const KAUFLUXDE = 'KaufluxDE';
-    const IDEALO_DE = 'IdealoDE';
-    const GOOGLE_SHOPPING = 'GoogleShopping';
-
 	public function register()
 	{
 	}
@@ -55,55 +44,14 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             'TracdelightCOM',            
 		];
 
-        /**
-         * @var VariationElasticSearchAvailibilityRepositoryContract $variationElasticSearchAvailabilityRepository
-         */
-        $variationElasticSearchAvailabilityRepository = pluginApp(VariationElasticSearchAvailibilityRepositoryContract::class);
-
-        $isAvailableForElasticSearch = $variationElasticSearchAvailabilityRepository->isAvailable();
-        $esReadyMarketplaces = $this->getEsReadyMarketPlaces();
-
 		foreach ($formats as $format)
 		{
-            if(is_array($esReadyMarketplaces) && in_array($format, $esReadyMarketplaces) &&
-                $isAvailableForElasticSearch === true)
-            {
-                $container->add(
-                    $format,
-                    'ElasticExport\ES_ResultFields\\'.$format,
-                    'ElasticExport\ES_Generators\\'.$format,
-                    'ElasticExport\Filters\\' . $format
-                );
-            }
-            else
-            {
-                $container->add(
-                    $format,
-                    'ElasticExport\ResultFields\\'.$format,
-                    'ElasticExport\Generators\\'.$format,
-                    'ElasticExport\Filters\\' . $format
-                );
-            }
+            $container->add(
+                $format,
+                'ElasticExport\ResultFields\\'.$format,
+                'ElasticExport\Generators\\'.$format,
+                'ElasticExport\Filters\\' . $format
+            );
 		}
 	}
-
-    /**
-     * Get a List of Marketplaceformats which are already adjusted to work with ElasticSearch
-     * @return array
-     */
-	private function getEsReadyMarketPlaces()
-    {
-        $marketplaces = array(
-            self::RAKUTEN_DE,
-            self::BILLIGER_DE,
-            self::CDISCOUNT_COM,
-            self::BASICPRICESEARCHENGINE,
-            self::BEEZUP,
-            self::KAUFLUXDE,
-            self::IDEALO_DE,
-            self::GOOGLE_SHOPPING
-        );
-
-        return $marketplaces;
-    }
 }
