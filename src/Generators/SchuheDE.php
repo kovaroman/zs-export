@@ -66,11 +66,12 @@ class SchuheDE extends CSVGenerator
 		$this->propertySelectionRepository = $propertySelectionRepository;
     }
 
-	/**
-	 * @param RecordList $resultData
-	 * @param array $formatSettings
-	 */
-	protected function generateContent($resultData, array $formatSettings = [])
+    /**
+     * @param RecordList $resultData
+     * @param array $formatSettings
+     * @param array $filter
+     */
+    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
 	{
 		if($resultData instanceof RecordList)
 		{

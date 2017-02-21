@@ -74,12 +74,13 @@ class CdiscountCOM extends CSVGenerator
         $this->attributeValueNameRepository = $attributeValueNameRepository;
         $this->propertySelectionRepository = $propertySelectionRepository;
     }
-    
+
     /**
-     * @param $resultData
+     * @param RecordList $resultData
      * @param array $formatSettings
+     * @param array $filter
      */
-    protected function generateContent($resultData, array $formatSettings = [])
+    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
 	{
 		if($resultData instanceof RecordList)
 		{

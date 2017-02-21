@@ -35,8 +35,10 @@ class EcondaDE extends CSVGenerator
 
     /**
      * @param RecordList $resultData
+     * @param array $formatSettings
+     * @param array $filter
      */
-    protected function generateContent($resultData, array $formatSettings = [])
+    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
 	{
 		if($resultData instanceof RecordList)
 		{

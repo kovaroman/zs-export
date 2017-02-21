@@ -43,10 +43,12 @@ class FashionDE extends CSVGenerator
 		$this->attributeValueNameRepository = $attributeValueNameRepository;
     }
 
-	/**
-	 * @param RecordList $resultData
-	 */
-	protected function generateContent($resultData, array $formatSettings = [])
+    /**
+     * @param RecordList $resultData
+     * @param array $formatSettings
+     * @param array $filter
+     */
+    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
 	{
         if($resultData instanceof RecordList)
 		{
