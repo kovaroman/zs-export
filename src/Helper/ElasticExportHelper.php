@@ -230,35 +230,6 @@ class ElasticExportHelper
     }
 
     /**
-     * Get name.
-     *
-     * @param  array $item
-     * @param  KeyValue  $settings
-     * @param  int $defaultNameLength
-     * @return string
-     */
-    public function getEsName($item, KeyValue $settings, int $defaultNameLength = 0):string
-    {
-        switch($settings->get('nameId'))
-        {
-            case 3:
-                $name = (string)$item['data']['texts'][0]['name3'];
-                break;
-
-            case 2:
-                $name = (string)$item['data']['texts'][0]['name2'];
-                break;
-
-            case 1:
-            default:
-                $name = (string)$item['data']['texts'][0]['name1'];
-                break;
-        }
-
-        return $this->cleanName($name, (int)$settings->get('nameMaxLength') ? (int)$settings->get('nameMaxLength') : (int)$defaultNameLength);
-    }
-
-    /**
      * Clean name to a defined length. If maxLength is 0 than named is returned intact.
      * @param  string 	$name
      * @param  int 		$maxLength
@@ -302,32 +273,6 @@ class ElasticExportHelper
     }
 
     /**
-     * Get technical data.
-     *
-     * @param array $item
-     * @param KeyValue $settings
-     * @return string
-     */
-    public function getEsTechnicalData($item, KeyValue $settings):string
-    {
-        $technicalData = (string)$item['data']['texts'][0]['technicalData'];
-
-        $technicalData = $this->convertUrl($technicalData, $settings);;
-
-        $technicalData = $this->cleanText($technicalData);
-
-        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
-        {
-            $technicalData = strip_tags($technicalData, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
-        }
-
-        $technicalData = html_entity_decode($technicalData);
-
-        return $technicalData;
-    }
-
-
-    /**
      * Get preview text.
      *
      * @param  Record        $item
@@ -353,59 +298,6 @@ class ElasticExportHelper
 
             case 'itemDescription':
                 $previewText = (string)$item->itemDescription->description;
-                break;
-
-            case 'dontTransfer':
-            default:
-                $previewText = '';
-                break;
-        }
-
-        $previewText = $this->convertUrl($previewText, $settings);
-
-        $previewText = $this->cleanText($previewText);
-
-        if($settings->get('previewTextRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
-        {
-            $previewText = strip_tags($previewText, str_replace([',', ' '], '', $settings->get('previewTextAllowHtmlTags')));
-        }
-
-        $previewTextLength = $settings->get('previewTextMaxLength') ? $settings->get('previewTextMaxLength') : $defaultPreviewTextLength;
-
-        if($previewTextLength <= 0)
-        {
-            return $previewText;
-        }
-
-        return substr($previewText, 0, $previewTextLength);
-    }
-
-    /**
-     * Get preview text.
-     *
-     * @param  array        $item
-     * @param  KeyValue      $settings
-     * @param  int           $defaultPreviewTextLength
-     * @return string
-     */
-    public function getEsPreviewText($item, KeyValue $settings, int $defaultPreviewTextLength = 0):string
-    {
-        switch($settings->get('previewTextType'))
-        {
-            case 'itemShortDescription':
-                $previewText = (string)$item['data']['texts'][0]['shortDescription'];
-                break;
-
-            case 'technicalData':
-                $previewText = (string)$item['data']['texts'][0]['technicalData'];
-                break;
-
-            case 'itemDescriptionAndTechnicalData':
-                $previewText = (string)$item['data']['texts'][0]['description'] . ' ' . (string)$item['data']['texts'][0]['technicalData'];
-                break;
-
-            case 'itemDescription':
-                $previewText = (string)$item['data']['texts'][0]['description'];
                 break;
 
             case 'dontTransfer':
@@ -484,56 +376,6 @@ class ElasticExportHelper
         return substr($description, 0, $descriptionLength);
     }
 
-    /**
-     * Get description.
-     *
-     * @param  array        $item
-     * @param  KeyValue      $settings
-     * @param  int           $defaultDescriptionLength
-     * @return string
-     */
-    public function getEsDescription($item, KeyValue $settings, int $defaultDescriptionLength = 0):string
-    {
-        switch($settings->get('descriptionType'))
-        {
-            case 'itemShortDescription':
-                $description = (string)$item['data']['texts'][0]['shortDescription'];
-                break;
-
-            case 'technicalData':
-                $description = (string)$item['data']['texts'][0]['technicalData'];
-                break;
-
-            case 'itemDescriptionAndTechnicalData':
-                $description = (string)$item['data']['texts'][0]['description'] . ' ' . (string)$item['data']['texts'][0]['technicalData'];
-                break;
-
-            case 'itemDescription':
-            default:
-                $description = (string)$item['data']['texts'][0]['description'];
-                break;
-        }
-
-        $description = $this->convertUrl($description, $settings);
-
-        $description = $this->cleanText($description);
-
-        if($settings->get('descriptionRemoveHtmlTags') == self::REMOVE_HTML_TAGS)
-        {
-            $description = strip_tags($description, str_replace([',', ' '], '', $settings->get('descriptionAllowHtmlTags')));
-        }
-
-        $description = html_entity_decode($description);
-
-        $descriptionLength = $settings->get('descriptionMaxLength') ? $settings->get('descriptionMaxLength') : $defaultDescriptionLength;
-
-        if($descriptionLength <= 0)
-        {
-            return $description;
-        }
-
-        return substr($description, 0, $descriptionLength);
-    }
 
     /**
      * Converts relative image url paths to absolute paths
@@ -583,24 +425,6 @@ class ElasticExportHelper
 	}
 
     /**
-     * Get variation availability days.
-     * @param  array   $item
-     * @param  KeyValue $settings
-     * @param  bool 	$returnAvailabilityName = true
-     * @return string
-     */
-    public function getEsAvailability($item, KeyValue $settings, bool $returnAvailabilityName = true):string
-    {
-        if($settings->get('transferItemAvailability') == self::TRANSFER_ITEM_AVAILABILITY_YES)
-        {
-            $availabilityIdString = 'itemAvailability' . $item['data']['variation']['availability']['id'];
-
-            return (string)$settings->get($availabilityIdString);
-        }
-        return $this->marketItemHelperRepository->getAvailability($item['data']['variation']['availability']['id'], $settings->get('lang'), $returnAvailabilityName);
-    }
-
-    /**
      * Get the item URL.
      * @param  Record $item
      * @param  KeyValue $settings
@@ -637,44 +461,6 @@ class ElasticExportHelper
 
 		return $link;
 	}
-
-    /**
-     * Get the item URL.
-     * @param  array $item
-     * @param  KeyValue $settings
-     * @param  bool $addReferrer = true  Choose if referrer id should be added as parameter.
-     * @param  bool $useIntReferrer = false Choose if referrer id should be used as integer.
-     * @param  bool $useHttps = true Choose if https protocol should be used.
-     * @return string Item url.
-     */
-    public function getEsUrl($item, KeyValue $settings, bool $addReferrer = true, bool $useIntReferrer = false, bool $useHttps = true):string
-    {
-        if($settings->get('itemUrl') == self::ITEM_URL_NO)
-        {
-            return '';
-        }
-
-        $urlParams = [];
-
-        $link = $this->urlBuilderRepository->getItemUrl($item['data']['item']['id'], $settings->get('plentyId'), $item['data']['texts']['urlPath'], $settings->get('lang') ? $settings->get('lang') : 'de');
-
-        if($addReferrer && $settings->get('referrerId'))
-        {
-            $urlParams[] = 'ReferrerID=' . ($useIntReferrer ? (int) $settings->get('referrerId') : $settings->get('referrerId'));
-        }
-
-        if(strlen($settings->get('urlParam')))
-        {
-            $urlParams[] = $settings->get('urlParam');
-        }
-
-        if (is_array($urlParams) && count($urlParams) > 0)
-        {
-            $link .= '?' . implode('&', $urlParams);
-        }
-
-        return $link;
-    }
 
     /**
      * Get category branch for a custom category id.
@@ -743,69 +529,6 @@ class ElasticExportHelper
 
         return '';
     }
-
-    /**
-     * @param int $standardCategoryId
-     * @param KeyValue $settings
-     * @param int $categoryLevel
-     * @return string
-     */
-    public function getEsCategoryBranch($standardCategoryId, KeyValue $settings, int $categoryLevel):string
-    {
-        if($standardCategoryId <= 0)
-        {
-            return '';
-        }
-
-        $categoryBranch = $this->categoryBranchRepository->find($standardCategoryId);
-        $category = null;
-        $lang = $settings->get('lang') ? $settings->get('lang') : 'de';
-
-        if(!is_null($categoryBranch) && $categoryBranch instanceof CategoryBranch)
-        {
-            switch($categoryLevel)
-            {
-                case 1:
-                    $category = $this->categoryRepository->get($categoryBranch->category1Id, $lang);
-                    break;
-
-                case 2:
-                    $category = $this->categoryRepository->get($categoryBranch->category2Id, $lang);
-                    break;
-
-                case 3:
-                    $category = $this->categoryRepository->get($categoryBranch->category3Id, $lang);
-                    break;
-
-                case 4:
-                    $category = $this->categoryRepository->get($categoryBranch->category4Id, $lang);
-                    break;
-
-                case 5:
-                    $category = $this->categoryRepository->get($categoryBranch->category5Id, $lang);
-                    break;
-
-                case 6:
-                    $category = $this->categoryRepository->get($categoryBranch->category6Id, $lang);
-                    break;
-            }
-        }
-
-        if($category instanceof Category)
-        {
-            foreach($category->details as $categoryDetails)
-            {
-                if($categoryDetails->lang == $lang)
-                {
-                    return (string)$categoryDetails->name;
-                }
-            }
-        }
-
-        return '';
-    }
-
-
 
 	/**
 	 * Get category branch marketplace for a custom branch id.
@@ -885,59 +608,6 @@ class ElasticExportHelper
         return null;
     }
 
-    /**
-     * Get shipping cost.
-     * @param  int $itemId
-     * @param  KeyValue $settings
-     * @param  int|null  $mobId
-     * @return float|null
-     */
-    public function getEsShippingCost($itemId, KeyValue $settings, int $mopId = null)
-    {
-        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_FLAT)
-        {
-            return (float) $settings->get('shippingCostFlat');
-        }
-
-        if($settings->get('shippingCostType') == self::SHIPPING_COST_TYPE_CONFIGURATION)
-        {
-            $defaultShipping = $this->getDefaultShipping($settings);
-
-            if( $defaultShipping instanceof DefaultShipping &&
-                $defaultShipping->shippingDestinationId)
-            {
-                if(!is_null($mopId) && $mopId == $defaultShipping->paymentMethod2)
-                {
-                    $paymentMethodId = $defaultShipping->paymentMethod2;
-                    return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
-                }
-                if(!is_null($mopId) && $mopId == $defaultShipping->paymentMethod3)
-                {
-                    $paymentMethodId = $defaultShipping->paymentMethod3;
-                    return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
-                }
-                $paymentMethodId = $defaultShipping->paymentMethod2;
-
-                // 0 - is always "payment in advance" so we use always the second and third payment methods from the default shipping
-                if($settings->get('shippingCostMethodOfPayment') == 2)
-                {
-                    $paymentMethodId = $defaultShipping->paymentMethod3;
-                }
-                if(!is_null($mopId) && $mopId >= 0)
-                {
-                    if($mopId == $paymentMethodId)
-                    {
-                        return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
-                    }
-                }
-                elseif(is_null($mopId))
-                {
-                    return $this->calculateShippingCost($itemId, $defaultShipping->shippingDestinationId, $defaultShipping->referrerId, $paymentMethodId);
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * Calculate default shipping cost.
@@ -979,21 +649,6 @@ class ElasticExportHelper
     }
 
     /**
-     * @param float $price
-     * @param KeyValue $settings
-     * @return float
-     */
-    public function getEsRecommendedRetailPrice($price, KeyValue $settings):float
-    {
-        if($settings->get('transferRrp') == self::TRANSFER_RRP_YES)
-        {
-            return $price;
-        }
-
-        return 0.00;
-    }
-
-    /**
      * returns the specialOfferPrice of the given variation if transferOfferPrice is set
      * @param Record $item
      * @param KeyValue $settings
@@ -1009,20 +664,6 @@ class ElasticExportHelper
         return 0.00;
     }
 
-    /**
-     * @param float $price
-     * @param KeyValue $settings
-     * @return float
-     */
-    public function getEsSpecialPrice($price, KeyValue $settings):float
-    {
-        if($settings->get('transferOfferPrice') == self::TRANSFER_OFFER_PRICE_YES)
-        {
-            return (float)$price;
-        }
-
-        return 0.00;
-    }
 
     /**
      * Get the attributeNames
@@ -1052,33 +693,6 @@ class ElasticExportHelper
     }
 
     /**
-     * @param array    $item
-     * @param KeyValue  $settings
-     * @param string    $delimiter
-     * @return string
-     */
-    public function getEsAttributeName($item, KeyValue $settings, string $delimiter = '|'):string
-    {
-        $values = [];
-
-        if(!is_null($item['data']['attributes'][0]['attributeValueSetId']))
-        {
-            foreach($item['data']['attributes'] as $attribute)
-            {
-                $attributeName = $this->marketAttributeHelperRepository->getAttributeName($attribute['attributeId'], $settings->get('lang') ? $settings->get('lang') : 'de');
-
-                if(strlen($attributeName) > 0)
-                {
-                    $values[] = $attributeName;
-                }
-            }
-        }
-
-        return implode($delimiter, $values);
-    }
-
-
-    /**
      * Get the attribute value set short frontend name. Ex. blue, XL
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -1101,54 +715,6 @@ class ElasticExportHelper
                 if(strlen($attributeValueName) > 0)
                 {
                     $unsortedValues[$attribute->attributeId] = $attributeValueName;
-                    $i++;
-                }
-            }
-
-            /**
-             * sort the attribute value names depending on the order of the $attributeNameCombination
-             */
-            if(is_array($attributeNameCombination) && count($attributeNameCombination) > 0)
-            {
-                $j = 0;
-                while($i > 0)
-                {
-                    $values[] = $unsortedValues[$attributeNameCombination[$j]];
-                    $j++;
-                    $i--;
-                }
-            }
-            else
-            {
-                $values = $unsortedValues;
-            }
-        }
-
-        return implode($delimiter, $values);
-    }
-
-    /**
-     * @param  array   $item
-     * @param  KeyValue $settings
-     * @param  string $delimiter
-     * @param  array $attributeNameCombination
-     * @return string
-     */
-    public function getEsAttributeValueSetShortFrontendName($item, KeyValue $settings, string $delimiter = ', ', array $attributeNameCombination = null):string
-    {
-        $values = [];
-        $unsortedValues = [];
-
-        if($item['data']['attributes'][0]['attributeValueSetId'])
-        {
-            $i = 0;
-            foreach($item['data']['attributes'] as $attribute)
-            {
-                $attributeValueName = $this->marketAttributeHelperRepository->getAttributeValueName($attribute['attributeId'], $attribute['valueId'], $settings->get('lang') ? $settings->get('lang') : 'de');
-
-                if(strlen($attributeValueName) > 0)
-                {
-                    $unsortedValues[$attribute['attributeId']] = $attributeValueName;
                     $i++;
                 }
             }
@@ -1284,77 +850,6 @@ class ElasticExportHelper
         }
 	}
 
-    /**
-     * Get base price.
-     * @param  array    $item
-     * @param  array    $idlItem
-     * @param  string   $separator	= '/'
-     * @param  bool     $compact    = false
-     * @param  bool     $dotPrice   = false
-     * @param  string   $currency   = ''
-     * @param  float    $price      = 0.0
-     * @param  bool     $addUnit    = true
-     * @return string
-     */
-    public function getEsBasePrice(
-        $item,
-        $idlItem,
-        string $separator = '/',
-        bool $compact = false,
-        bool $dotPrice = false,
-        string $currency = '',
-        float $price = 0.0,
-        bool $addUnit = true
-    ):string
-    {
-        $currency = strlen($currency) ? $currency : $this->getDefaultCurrency();
-        $price = $price > 0 ? $price : (float) $idlItem['variationRetailPrice.price'];
-        $lot = (int) $item['data']['unit']['content'];
-        $unitLang = $this->unitNameRepository->findByUnitId((int) $item['data']['unit']['id']);
-
-        if($unitLang instanceof UnitName)
-        {
-            $unitShortcut = $unitLang->unit->unitOfMeasurement;
-            $unitName = $unitLang->name;
-        }
-        else
-        {
-            $unitShortcut = '';
-            $unitName = '';
-        }
-
-        $basePriceDetails = $this->getBasePriceDetails($lot, $price, $unitShortcut);
-
-        if((float) $basePriceDetails['price'] <= 0 || ((int) $basePriceDetails['lot'] <= 1 && $basePriceDetails['unit'] == 'C62'))
-        {
-            return '';
-        }
-
-        if ($dotPrice == true)
-        {
-            $basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
-        }
-        else
-        {
-            $basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, ',', '');
-        }
-
-        if ($addUnit == true)
-        {
-            if ($compact == true)
-            {
-                return	'(' . (string) $basePriceDetails['price'] . $currency . $separator . (string) $basePriceDetails['lot'] . $unitShortcut . ')';
-            }
-            else
-            {
-                return	(string) $basePriceDetails['price'] . ' ' . $currency . $separator . (string) $basePriceDetails['lot'] . ' ' . $unitName;
-            }
-        }
-        else
-        {
-            return	(string) $basePriceDetails['price'];
-        }
-    }
 
 	/**
 	 * Get base price.
@@ -1392,40 +887,6 @@ class ElasticExportHelper
 	}
 
     /**
-     * Get base price.
-     *
-     * @param  array   $item
-     * @param  float    $price
-     * @return array
-     */
-    public function getEsBasePriceList($item, float $price):array
-    {
-        $lot = (int)$item['data']['unit']['content'];
-        $unitLang = $this->unitNameRepository->findByUnitId((int)$item['data']['unit']['id']);
-
-        if($unitLang instanceof UnitName)
-        {
-            $unitShortcut = $unitLang->unit->unitOfMeasurement;
-            $unitName = $unitLang->name;
-        }
-        else
-        {
-            $unitShortcut = '';
-            $unitName = '';
-        }
-
-        $basePriceDetails = $this->getBasePriceDetails($lot, $price, $unitShortcut);
-
-        $basePriceDetails['price'] = number_format($basePriceDetails['price'], 2, '.', '');
-
-        return [
-            'lot' => (int)$basePriceDetails['lot'],
-            'price' => (float)$basePriceDetails['price'],
-            'unit' => (string)$unitName
-        ];
-    }
-
-    /**
      * Get main image.
      * @param  Record   $item
      * @param  KeyValue $settings
@@ -1443,41 +904,6 @@ class ElasticExportHelper
             elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image->position == 0)
             {
                 return (string)$this->urlBuilderRepository->getImageUrl($image->path, $settings->get('plentyId'), $imageType, $image->fileType, $image->type == 'external');
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Get main image.
-     * @param  array   $item
-     * @param  KeyValue $settings
-     * @param  string 	$imageType
-     * @return string
-     */
-    public function getEsMainImage($item, KeyValue $settings, string $imageType = 'normal'):string
-    {
-        foreach($item['data']['images']['variation'] as $image)
-        {
-            if($settings->get('imagePosition') == self::IMAGE_FIRST)
-            {
-                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
-            }
-            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
-            {
-                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
-            }
-        }
-        foreach($item['data']['images']['all'] as $image)
-        {
-            if($settings->get('imagePosition') == self::IMAGE_FIRST)
-            {
-                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
-            }
-            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
-            {
-                return (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image->type == 'external');
             }
         }
 
@@ -1503,41 +929,6 @@ class ElasticExportHelper
         return $list;
     }
 
-    /**
-     * @param array $item
-     * @param KeyValue $settings
-     * @param string $imageType = 'normal'
-     * @return array
-     */
-    public function getEsImageList($item, KeyValue $settings, string $imageType = 'normal'):array
-    {
-        $list = [];
-
-        if(array_key_exists('variation', $item['data']['images']))
-        {
-            foreach($item['data']['images']['variation'] as $image)
-            {
-                $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
-            }
-        }
-        if(array_key_exists('item', $item['data']['images']))
-        {
-            foreach($item['data']['images']['item'] as $image)
-            {
-                $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
-            }
-        }
-        if(array_key_exists('all', $item['data']['images']))
-        {
-            foreach($item['data']['images']['all'] as $image)
-            {
-                $list[] = $this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type'] == 'external');
-            }
-        }
-
-        return $list;
-    }
-
 	/**
      *Get list of a defined maximum number of images in a given order
      *
@@ -1557,47 +948,6 @@ class ElasticExportHelper
         foreach ($sorting as $imageArray)
         {
             $listImageByGroup = $this->getSpecificImageList($item, $settings, $limit, $imageArray, $imageType);
-
-            foreach($listImageByGroup AS $element)
-            {
-                $listAllImages[] = $element;
-            }
-
-            if($limit != 0 && count($listAllImages) == $limit)
-            {
-                break;
-            }
-        }
-
-        if (count($listAllImages))
-        {
-            return $listAllImages;
-        }
-        else
-        {
-            return array();
-        }
-    }
-
-    /**
-     *Get list of a defined maximum number of images in a given order
-     *
-     * @param array $item
-     * @param KeyValue $settings
-     * @param int $limit
-     * @param string $first
-     * @param string $imageType
-     * @return array
-     */
-    public function getEsImageListInOrder($item, KeyValue $settings, $limit = 0, $first = '', $imageType = 'normal')
-    {
-        $sorting = $this->getEsImageOrder($first);
-
-        $listAllImages = array();
-
-        foreach ($sorting as $imageArray)
-        {
-            $listImageByGroup = $this->getEsSpecificImageList($item, $settings, $limit, $imageArray, $imageType);
 
             foreach($listImageByGroup AS $element)
             {
@@ -1652,37 +1002,6 @@ class ElasticExportHelper
     }
 
     /**
-     * Get the defined order for images
-     *
-     * @param $first
-     * @return array
-     */
-    public function getEsImageOrder($first)
-    {
-        switch ($first)
-        {
-            case 'variationImages':
-                $sorting = [
-                    'variation',
-                    'item',
-                ];
-                break;
-            case 'itemImages':
-                $sorting = [
-                    'item',
-                    'variation',
-                ];
-                break;
-            default:
-                $sorting = [
-                    'all',
-                ];
-        }
-
-        return $sorting;
-    }
-
-    /**
      * Get list of a defined maximum number of a specific type of images
      *
      * @param Record $item
@@ -1697,43 +1016,6 @@ class ElasticExportHelper
         $listImageByGroup = array();
 
         foreach ($item->variationImageList[$imageArray]->toArray() as $image)
-        {
-            if($settings->get('imagePosition') == self::IMAGE_FIRST)
-            {
-                $listImageByGroup[] = (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type']== 'external');
-            }
-            elseif($settings->get('imagePosition')== self::IMAGE_POSITION0 && $image['position'] == 0)
-            {
-                $listImageByGroup[] = (string)$this->urlBuilderRepository->getImageUrl($image['path'], $settings->get('plentyId'), $imageType, $image['fileType'], $image['type']== 'external');
-            }
-
-            if($limit != 0 && count($listImageByGroup) == $limit)
-            {
-                return $listImageByGroup;
-            }
-        }
-        if(count($listImageByGroup))
-        {
-            return $listImageByGroup;
-        }
-        return null;
-    }
-
-    /**
-     * Get list of a defined maximum number of a specific type of images
-     *
-     * @param array $item
-     * @param KeyValue $settings
-     * @param int $limit
-     * @param string $imageOrder
-     * @param string $imageType
-     * @return array|string|null
-     */
-    public function getEsSpecificImageList($item, KeyValue $settings, $limit, $imageOrder, $imageType)
-    {
-        $listImageByGroup = array();
-
-        foreach ($item['data']['images'][$imageOrder] as $image)
         {
             if($settings->get('imagePosition') == self::IMAGE_FIRST)
             {
@@ -1807,29 +1089,6 @@ class ElasticExportHelper
         return '';
     }
 
-    /**
-     * Get item character value by backend name.
-     * @param  array $item
-     * @param KeyValue $settings
-     * @param  string $backendName
-     * @return string
-     */
-    public function getEsItemCharacterByBackendName($item, KeyValue $settings, string $backendName):string
-    {
-        foreach($item['itemPropertyList'] as $property)
-        {
-            $propertyName = $this->propertyNameRepository->findOne($property->propertyId, $settings->get('lang')? $settings->get('lang') : 'de');
-
-            if($propertyName instanceof PropertyName &&
-                $propertyName->name == $backendName)
-            {
-                return (string) $property->propertyValue;
-            }
-        }
-
-        return '';
-    }
-
 	/**
 	 * Get item characters that match referrer from settings and a given component id.
 	 * @param  Record   $item
@@ -1871,46 +1130,6 @@ class ElasticExportHelper
 	}
 
     /**
-     * Get item characters that match referrer from settings and a given component id.
-     * @param  array   $item
-     * @param  float   $marketId
-     * @param  int     $componentId  = null
-     * @return array
-     */
-    public function getEsItemCharactersByComponent($item, float $marketId, int $componentId = null):array
-    {
-        $marketProperties = $this->marketPropertyHelperRepository->getMarketProperty($marketId);
-
-        $list = array();
-
-        foreach($item['itemPropertyList'] as $property)
-        {
-            foreach($marketProperties as $marketProperty)
-            {
-                if(is_array($marketProperty) && count($marketProperty) > 0 && $marketProperty['character_item_id'] == $property->propertyId)
-                {
-                    if (!is_null($componentId) && $marketProperty['component_id'] != $componentId)
-                    {
-                        continue;
-                    }
-                    $list[] = [
-                        'itemCharacterId' 	 => $property->itemPropertyId,
-                        'characterId' 		 => $property->propertyId,
-                        'characterValue' 	 => $property->propertyValue,
-                        'characterValueType' => $property->propertyValueType,
-                        'characterItemId' 	 => $marketProperty['character_item_id'],
-                        'componentId' 		 => $marketProperty['component_id'],
-                        'referrerId' 		 => $marketId,
-                        'externalComponent'  => $marketProperty['external_component'],
-                    ];
-                }
-            }
-        }
-
-        return $list;
-    }
-
-    /**
      * Get barcode by a given type.
      * @param  Record   $item
      * @param  string   $barcodeType
@@ -1923,24 +1142,6 @@ class ElasticExportHelper
             if($variationBarcode->barcodeType == $barcodeType || $barcodeType == 'FirstBarcode')
             {
                 return (string) $variationBarcode->code;
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * @param  array   $item
-     * @param  string   $barcodeType
-     * @return string
-     */
-    public function getEsBarcodeByType($item, string $barcodeType):string
-    {
-        foreach($item['data']['barcodes'] as $variationBarcode)
-        {
-            if($variationBarcode['type'] == $barcodeType || $barcodeType == 'FirstBarcode')
-            {
-                return (string) $variationBarcode['code'];
             }
         }
 
@@ -2196,30 +1397,6 @@ class ElasticExportHelper
 			$accountId,
 			$setLastExportedTimestamp
 		);
-    }
-
-    /**
-     * @param int $variationId
-     * @param float $marketId
-     * @param int $accountId
-     * @param string|null $sku
-     * @param bool $setLastExportedTimestamp
-     * @return string
-     */
-    public function generateEsSku(int $variationId,
-                                float $marketId,
-                                int $accountId = 0,
-                                string $sku = null,
-                                bool $setLastExportedTimestamp = true
-    ):string
-    {
-        return $this->variationSkuRepository->generateSku(
-            $variationId,
-            $marketId,
-            $accountId,
-            $sku,
-            $setLastExportedTimestamp
-        );
     }
 
 	/**
