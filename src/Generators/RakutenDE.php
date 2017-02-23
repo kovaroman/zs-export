@@ -61,11 +61,11 @@ class RakutenDE extends CSVGenerator
 		$this->marketPropertyHelperRepository = $marketPropertyHelperRepository;
 	}
 
-	/**
-	 * @param RecordList $resultData
-	 * @param array $formatSettings
-	 */
-	protected function generateContent($resultData, array $formatSettings = [])
+    /**
+     * @param RecordList $resultData
+     * @param array $formatSettings
+     */
+    protected function generateContent($resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{

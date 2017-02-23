@@ -115,6 +115,7 @@ class GoogleShopping extends CSVGenerator
 
     /**
      * @param RecordList $resultData
+     * @param array $formatSettings
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{
