@@ -78,9 +78,8 @@ class CdiscountCOM extends CSVGenerator
     /**
      * @param RecordList $resultData
      * @param array $formatSettings
-     * @param array $filter
      */
-    protected function generateContent($resultData, array $formatSettings = [], array $filter = [])
+    protected function generateContent($resultData, array $formatSettings = [])
 	{
 		if($resultData instanceof RecordList)
 		{

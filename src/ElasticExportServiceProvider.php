@@ -49,7 +49,8 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
             $container->add(
                 $format,
                 'ElasticExport\ResultFields\\'.$format,
-                'ElasticExport\Generators\\'.$format
+                'ElasticExport\Generators\\'.$format,
+                ''
             );
 		}
 	}
