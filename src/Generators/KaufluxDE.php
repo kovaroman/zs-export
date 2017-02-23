@@ -83,6 +83,10 @@ class KaufluxDE extends CSVGenerator
         $this->urlBuilderRepository = $urlBuilderRepository;
     }
 
+    /**
+     * @param RecordList $resultData
+     * @param array $formatSettings
+     */
     protected function generateContent($resultData, array $formatSettings = [])
     {
         if($resultData instanceof RecordList)

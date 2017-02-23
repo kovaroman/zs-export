@@ -46,12 +46,12 @@ class ElasticExportServiceProvider extends DataExchangeServiceProvider
 
 		foreach ($formats as $format)
 		{
-			$container->add(
-				$format,
-				'ElasticExport\ResultFields\\'.$format,
-				'ElasticExport\Generators\\'.$format,
-				'ElasticExport\Filters\\' . $format
-			);
+            $container->add(
+                $format,
+                'ElasticExport\ResultFields\\'.$format,
+                'ElasticExport\Generators\\'.$format,
+                ''
+            );
 		}
 	}
 }

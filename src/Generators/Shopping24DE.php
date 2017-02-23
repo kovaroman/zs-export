@@ -61,7 +61,7 @@ class Shopping24DE extends CSVGenerator
 
     /**
      * @param RecordList $resultData
-	 * @param array $formatSettings
+     * @param array $formatSettings
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{

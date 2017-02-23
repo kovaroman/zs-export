@@ -74,9 +74,9 @@ class CdiscountCOM extends CSVGenerator
         $this->attributeValueNameRepository = $attributeValueNameRepository;
         $this->propertySelectionRepository = $propertySelectionRepository;
     }
-    
+
     /**
-     * @param $resultData
+     * @param RecordList $resultData
      * @param array $formatSettings
      */
     protected function generateContent($resultData, array $formatSettings = [])

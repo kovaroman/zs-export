@@ -32,11 +32,6 @@ class BeezUp extends CSVGenerator
 	 */
     private $attributeValueNameRepository;
 
-	/**
-	 * @var array
-	 */
-    private $itemPropertyCache = [];
-
     /**
      * Geizhals constructor.
      * @param ElasticExportHelper $elasticExportHelper
@@ -56,6 +51,7 @@ class BeezUp extends CSVGenerator
 
     /**
      * @param RecordList $resultData
+     * @param array $formatSettings
      */
     protected function generateContent($resultData, array $formatSettings = [])
 	{
