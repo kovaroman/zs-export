@@ -1,4 +1,4 @@
-# Release Notes for Elastic Export
+# Release Notes for ElasticExport
 
 ## v1.0.0 (2017-03-08)
  

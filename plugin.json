@@ -10,8 +10,8 @@
   "pluginIcon": "icon_plugin_md.png",
   "price": 0.00,
   "shortDescription": {
-    "de": "Dies ist das Plugin elastischer Export für plentymarkets 7. Der elastische Export wird verwendet um Exportformate für Preissuchmaschinen, Preisvergleichsportale, Marktplätze und Affiliateserviceanbieter zu erstellen.",
-    "en": "This is the elastic export plugin for plentymarkets 7. The elastic export is used to create export formats for price search engines, price comparison portals, markets and affiliate service providers."
+    "de": "Dies ist das Plugin ElasticExport für plentymarkets 7. Der elastische Export wird verwendet, um Exportformate für Preissuchmaschinen, Preisvergleichsportale, Marktplätze und Affiliateserviceanbieter zu erstellen.",
+    "en": "This is the ElasticExport plugin for plentymarkets 7. The elastic export is used to create export formats for price search engines, price comparison portals, markets and affiliate service providers."
   },
   "categories": [
     "3523"
