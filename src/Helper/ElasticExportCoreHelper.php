@@ -57,6 +57,7 @@ class ElasticExportCoreHelper
 
     const BARCODE_EAN = 'GTIN_13';
     const BARCODE_ISBN = 'ISBN';
+    const BARCODE_FIRST = 'FirstBarcode';
 
     /**
      * CategoryBranchRepositoryContract $categoryBranchRepository
@@ -949,7 +950,7 @@ class ElasticExportCoreHelper
             }
         }
 
-        return $list;
+        return array_values(array_unique($list));
     }
 
     /**
@@ -1162,7 +1163,7 @@ class ElasticExportCoreHelper
         $barcodeType = str_replace('EAN', 'GTIN', $barcodeType);
         foreach($item['data']['barcodes'] as $variationBarcode)
         {
-            if($variationBarcode['type'] == $barcodeType || $barcodeType == 'FirstBarcode')
+            if($variationBarcode['type'] == $barcodeType || $barcodeType == self::BARCODE_FIRST)
             {
                 return (string) $variationBarcode['code'];
             }
