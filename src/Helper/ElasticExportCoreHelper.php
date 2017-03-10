@@ -55,8 +55,9 @@ class ElasticExportCoreHelper
     const TRANSFER_RRP_YES = 1;
     const TRANSFER_RRP_NO = 0;
 
-    const BARCODE_EAN = 'EAN_13';
+    const BARCODE_EAN = 'GTIN_13';
     const BARCODE_ISBN = 'ISBN';
+    const BARCODE_FIRST = 'FirstBarcode';
 
     /**
      * CategoryBranchRepositoryContract $categoryBranchRepository
@@ -438,7 +439,7 @@ class ElasticExportCoreHelper
 
         $urlParams = [];
 
-        $link = $this->urlBuilderRepository->getItemUrl($item['data']['item']['id'], $settings->get('plentyId'), $item['data']['texts']['urlPath'], $settings->get('lang') ? $settings->get('lang') : 'de');
+        $link = $this->urlBuilderRepository->getItemUrl($item['data']['item']['id'], $settings->get('plentyId'), $item['data']['texts'][0]['urlPath'], $settings->get('lang') ? $settings->get('lang') : 'de');
 
         if($addReferrer && $settings->get('referrerId'))
         {
@@ -949,7 +950,7 @@ class ElasticExportCoreHelper
             }
         }
 
-        return $list;
+        return array_values(array_unique($list));
     }
 
     /**
@@ -1063,16 +1064,16 @@ class ElasticExportCoreHelper
 
     /**
      * Get item characters that match referrer from settings and a given component id.
-     * @param  Record   $item
+     * @param  array   $idlItem
      * @param  float    $marketId
      * @param  string  $externalComponent
      * @return string
      */
-    public function getItemPropertyByExternalComponent(Record $item, float $marketId, $externalComponent):string
+    public function getItemPropertyByExternalComponent(array $idlItem, float $marketId, $externalComponent):string
     {
         $marketProperties = $this->marketPropertyHelperRepository->getMarketProperty($marketId);
 
-        foreach($item->itemPropertyList as $property)
+        foreach($idlItem['itemPropertyList'] as $property)
         {
             foreach($marketProperties as $marketProperty)
             {
@@ -1159,9 +1160,10 @@ class ElasticExportCoreHelper
      */
     public function getBarcodeByType($item, string $barcodeType):string
     {
+        $barcodeType = str_replace('EAN', 'GTIN', $barcodeType);
         foreach($item['data']['barcodes'] as $variationBarcode)
         {
-            if($variationBarcode['type'] == $barcodeType || $barcodeType == 'FirstBarcode')
+            if($variationBarcode['type'] == $barcodeType || $barcodeType == self::BARCODE_FIRST)
             {
                 return (string) $variationBarcode['code'];
             }
