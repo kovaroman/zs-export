@@ -16,5 +16,6 @@
   "categories": [
     "3523"
   ],
-  "version": "0.2.5"
+  "version": "0.2.6",
+  "isClosedSource": "true"
 }
